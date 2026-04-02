@@ -5,7 +5,7 @@
   "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anivault/anivault.git"
+    "url": "https://github.com/PhantomBum/Anivault.git"
   },
   "main": ".vite/build/main.js",
   "scripts": {
