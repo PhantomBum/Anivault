@@ -107,11 +107,21 @@ const config: ForgeConfig = {
 
           nsis: {
 
+            // Must be explicit booleans: app-builder treats omitted oneClick as true (one-click installer).
             oneClick: false,
 
             allowToChangeInstallationDirectory: true,
 
             allowElevation: true,
+
+            // false = show "install for current user vs all users", then (with allowToChange…) folder page.
+            perMachine: false,
+
+            selectPerMachineByDefault: false,
+
+            installerLanguages: ["en_US"],
+
+            multiLanguageInstaller: false,
 
             installerIcon: windowsIconIco,
 

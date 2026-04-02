@@ -1,5 +1,8 @@
 AniVault — changelog
 
+1.0.0-alpha.12
+- Windows NSIS: assisted installer + folder picker now forced via package.json `build.nsis` (electron-builder defaults `oneClick` to true when the flag is missing — that was hiding the directory page). Use Next after “install for me / all users” to reach “Choose install location”.
+
 1.0.0-alpha.11
 - CI: Windows release workflow now uploads AniVaultSetup.exe + latest.yml via GitHub Release assets (forge publish dry-run was failing; no binaries were attached on alpha.10)
 

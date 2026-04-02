@@ -1,13 +1,24 @@
 {
   "name": "anivault",
   "productName": "AniVault",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.12",
   "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
   "repository": {
     "type": "git",
     "url": "https://github.com/PhantomBum/Anivault.git"
   },
   "main": ".vite/build/main.js",
+  "build": {
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "perMachine": false,
+      "selectPerMachineByDefault": false,
+      "installerLanguages": ["en_US"],
+      "multiLanguageInstaller": false
+    }
+  },
   "scripts": {
     "start": "electron-forge start",
     "build": "electron-forge package",
