@@ -1,0 +1,10 @@
+AniVault — update logs
+======================
+(Mirror for the app: desktop/src/renderer/data/update-logs.txt — keep both in sync when you edit.)
+
+1.0.0-alpha.1
+- Windows installer: AniVaultSetup.exe (Electron; no extra installs required)
+- Mini player bar on Watch while browsing episodes
+- Install docs simplified; changelog in app (Settings → Updates) and this file
+
+(Add new versions above this line when you ship updates.)

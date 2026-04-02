@@ -4,13 +4,11 @@ Electron app + **ani-cli** for streaming.
 
 ## Install (most people)
 
-You do **not** need Node or this folder on disk.
+**Only** the installer from GitHub Releases — see repo root **[GET-ANIVAULT.txt](../GET-ANIVAULT.txt)** (three steps).
 
-1. Go to **[github.com/PhantomBum/Anivault/releases](https://github.com/PhantomBum/Anivault/releases)**.
-2. Download **`AniVaultSetup.exe`** from the latest release (**Assets**).
-3. Run it and launch **AniVault**.
+1. **[Releases](https://github.com/PhantomBum/Anivault/releases)** → **`AniVaultSetup.exe`** → run it. No Node, no clone.
 
-**Updates:** *Settings → Check for updates*, or grab a newer `AniVaultSetup.exe` from Releases.
+**Updates:** *Settings → Check for updates*, or a newer `AniVaultSetup.exe`. Changelog: repo **[UPDATE-LOGS.txt](../UPDATE-LOGS.txt)** (mirror: `src/renderer/data/update-logs.txt` in this folder for the in-app copy).
 
 ---
 

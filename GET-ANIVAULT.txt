@@ -1,0 +1,9 @@
+GET ANIVAULT (Windows)
+
+You do NOT need to download the whole GitHub repo, Node.js, or anything else.
+
+1) Open: https://github.com/PhantomBum/Anivault/releases
+2) Download: AniVaultSetup.exe  (under Assets on the latest release)
+3) Run the installer. Done.
+
+No command line. No zip of source code. Just that one .exe from Releases.

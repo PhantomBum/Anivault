@@ -1,25 +1,21 @@
 # AniVault
 
-Desktop anime streaming (Windows).
+**[Download AniVault for Windows](https://github.com/PhantomBum/Anivault/releases)** → get **`AniVaultSetup.exe`** under **Assets** → run it. Nothing else is required (no Node, no cloning this repo).
 
-## Install (Windows)
+- **Quick steps:** [GET-ANIVAULT.txt](GET-ANIVAULT.txt)
+- **Paths & build output:** [START-ANIVAULT.txt](START-ANIVAULT.txt)
+- **What changed each version:** [UPDATE-LOGS.txt](UPDATE-LOGS.txt)
 
-1. Open **[Releases](https://github.com/PhantomBum/Anivault/releases)**.
-2. Under **Assets**, download **`AniVaultSetup.exe`** (latest release).
-3. Run the installer and start **AniVault** from the Start menu or desktop shortcut.
-
-Updates: use **Settings → Check for updates** in the app, or install a newer release from the same Releases page.
-
-**About file size:** The installer is usually **~120–150 MB**. That’s normal for Electron (it ships a full Chromium browser). [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) allows large assets (up to **2 GB** per file), so you can attach `AniVaultSetup.exe` without a problem.
+The rest of this repository is **source code** for developers. If you only want to use the app, use **Releases** only.
 
 ---
 
-## Repository layout
+## Repository layout (for contributors)
 
-| Folder | What it is |
-|--------|------------|
-| [`desktop/`](desktop/) | Windows app (Electron). Build from source: [desktop/README.md](desktop/README.md) |
-| [`landing/`](landing/) | Optional marketing site |
-| [`server/`](server/) | Optional API |
+| Folder | Purpose |
+|--------|---------|
+| [desktop/](desktop/) | Windows app source |
+| [landing/](landing/) | Optional site |
+| [server/](server/) | Optional API |
 
-Maintainers: releases are built by [GitHub Actions](.github/workflows/release-desktop.yml) when a version tag is pushed. Details live in [desktop/README.md](desktop/README.md).
+Releases are built in CI when a version tag is pushed ([workflow](.github/workflows/release-desktop.yml)).

@@ -1,15 +1,13 @@
-Install AniVault (Windows):
+=== PATHS (one place to look) ===
+
+DOWNLOAD — public release (recommended):
   https://github.com/PhantomBum/Anivault/releases
-  Download AniVaultSetup.exe from the latest release, run it.
+  File to grab: AniVaultSetup.exe  (only file you need; standalone installer)
 
-Developers (from repo root):
-  cd desktop
-  npm install
-  npm start
+LOCAL BUILD — installer after you run npm run make (developers):
+  desktop\out\make\squirrel.windows\x64\AniVaultSetup.exe
 
-Build installer:
-  cd desktop
-  npm run make
-  (If EPERM: quit AniVault, then npm run make:clean)
+CHANGELOG:
+  UPDATE-LOGS.txt  (repo root — same text is in the app under Settings → Updates)
 
-Root index.html = AniList catalog in the browser only — use the desktop app to watch.
+See GET-ANIVAULT.txt if you only want the 3-step download instructions.

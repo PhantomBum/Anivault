@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
 import { translateText } from "@/renderer/lib/translation";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
+import updateLogsText from "@/renderer/data/update-logs.txt?raw";
 
 const LANGUAGES = [
   { value: "en-US", label: "English (US)" },
@@ -373,6 +374,12 @@ export function SettingsPage() {
           {updateMsg ? (
             <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">{updateMsg}</p>
           ) : null}
+          <div className="space-y-2">
+            <span className="text-xs font-medium text-[var(--av-muted)]">Update logs</span>
+            <pre className="max-h-48 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-3 text-[10px] leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
+              {updateLogsText.trim()}
+            </pre>
+          </div>
           <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
             Background update polling is off by default. After you publish GitHub Releases with
             Squirrel/electron-updater files, set <code className="font-mono">ANIVAULT_AUTO_UPDATE=1</code>{" "}
