@@ -1,0 +1,26 @@
+AniVault desktop (OpenAnime core + custom UI)
+================================================================================
+
+The app in openanime/desktop is forked from: https://github.com/wuon/openanime
+Changes: AniVault branding, purple/zinc theme, sidebar (Discover / Search), title bar labels.
+Playback and search still use the same OpenAnime / ani-cli stack.
+
+Run it from PowerShell:
+
+  cd C:\Users\rdw16\anivault\openanime\desktop
+  npm start
+
+First time only (already done if you ran npm install):
+
+  cd C:\Users\rdw16\anivault\openanime\desktop
+  npm install
+
+You need Node.js + npm installed.
+
+What this is NOT
+----------------
+index.html in this folder is a separate, browser-only AniList catalog. It cannot stream
+episodes like OpenAnime. For the actual player UI (Electron + ani-cli style stack), use
+npm start in openanime\desktop above.
+
+Official release builds (installer): https://github.com/wuon/openanime/releases

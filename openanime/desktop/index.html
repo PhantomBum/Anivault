@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AniVault</title>
+    <link rel="icon" type="image/png" href="./icon-rounded.png" />
+    <!-- Allow local assets, AniList API/CDN, and blob/data thumbnails under file:// -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' blob: http: https:; connect-src 'self' http: https: ws: wss:; font-src 'self' data:;"
+    />
+    <link rel="stylesheet" href="/src/renderer/styles/global.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/renderer/renderer.ts"></script>
+  </body>
+</html>

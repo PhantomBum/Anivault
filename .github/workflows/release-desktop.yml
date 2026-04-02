@@ -1,0 +1,46 @@
+# Build and publish the Electron desktop app to GitHub Releases.
+# Produces Squirrel artifacts + latest.yml (see scripts/forge-post-make-latest-yml.ts) for electron-updater.
+#
+# Prerequisites:
+# - Repository layout: this workflow assumes the desktop app lives at `openanime/desktop/`
+#   (monorepo root = anivault). If your repo is ONLY the desktop app, change `working-directory` to `.`
+#   in both places below.
+#
+# Trigger: push a version tag, e.g. `git tag v1.0.1 && git push origin v1.0.1`
+# Bump `openanime/desktop/package.json` version to match the tag first.
+
+name: Release desktop (Windows)
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: openanime/desktop
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: openanime/desktop/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run publish

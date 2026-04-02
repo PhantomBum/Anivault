@@ -1,0 +1,258 @@
+@import "@fontsource-variable/dm-sans/wght.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Monochrome shell: black / zinc surfaces, white & grey highlights + layered depth. */
+:root,
+.anivault-shell {
+  --av-bg: #09090b;
+  --av-bg-elevated: #0c0c0f;
+  --av-bg-gradient: linear-gradient(165deg, #0a0a0c 0%, #09090b 45%, #0d0d12 100%);
+  --av-main-gradient: linear-gradient(180deg, #0a0a0d 0%, #09090b 32%, #08080a 100%);
+  --av-surface: #18181b;
+  --av-surface-hover: #27272a;
+  --av-surface-gradient: linear-gradient(145deg, #1c1c21 0%, #18181b 55%, #141418 100%);
+  --av-border: #27272a;
+  --av-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --av-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --av-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --av-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --av-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --av-text: #fafafa;
+  --av-muted: #a1a1aa;
+  --av-muted-foreground: #71717a;
+  --av-accent: #e4e4e7;
+  --av-accent-dim: #a1a1aa;
+  --av-accent-muted: rgba(255, 255, 255, 0.08);
+  --av-nav-active-bg: rgba(255, 255, 255, 0.08);
+  --av-nav-active-edge: #fafafa;
+  --av-sidebar-w: 252px;
+  --av-shell-header-title: 1.1rem;
+  --av-shell-header-sub: 0.78rem;
+  --av-page-pad-y: 0.75rem;
+  --av-page-pad-x: 1rem;
+}
+
+.anivault-shell[data-density="compact"] {
+  --av-sidebar-w: 232px;
+  --av-shell-header-title: 1.1rem;
+  --av-shell-header-sub: 0.75rem;
+  --av-page-pad-y: 0.65rem;
+  --av-page-pad-x: 0.85rem;
+}
+
+/* Narrow rail: icon-only nav + smaller horizontal padding */
+.anivault-shell[data-sidebar="collapsed"] {
+  --av-sidebar-w: 68px;
+}
+
+.anivault-shell[data-sidebar="collapsed"][data-density="compact"] {
+  --av-sidebar-w: 62px;
+}
+
+.anivault-shell {
+  background-color: var(--av-bg);
+  background-image: var(--av-bg-gradient);
+}
+
+.av-shell-main {
+  background: var(--av-main-gradient);
+}
+
+/* Shared layout utilities (mirrors index.html `.card`, `.watch-callout`). */
+@layer components {
+  .av-card {
+    background: var(--av-surface-gradient);
+    border: 1px solid var(--av-border);
+    border-radius: 1rem;
+    box-shadow: var(--av-shadow-sm), var(--av-shadow-inset);
+    overflow: hidden;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .av-card:hover {
+    border-color: var(--av-accent-dim);
+    box-shadow: var(--av-shadow-md), var(--av-shadow-inset);
+    transform: translateY(-1px);
+  }
+
+  .av-callout {
+    margin: 0 0 1.25rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.875rem;
+    border: 1px solid var(--av-border);
+    border-left: 4px solid var(--av-accent);
+    background: var(--av-surface);
+    box-shadow: var(--av-shadow-xs);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--av-muted);
+  }
+
+  .av-callout strong {
+    color: var(--av-text);
+  }
+}
+
+/* Shadcn bridge: dark theme maps to AniVault shell tones (not generic gray admin UI). */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 0% 20%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 9%;
+    --radius: 1rem;
+    --chart-1: 0 0% 30%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 55%;
+    --chart-4: 0 0% 65%;
+    --chart-5: 0 0% 75%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 6%;
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 9%;
+  }
+
+  .dark {
+    --background: 240 4% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 4% 9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 4% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 94%;
+    --primary-foreground: 240 6% 5%;
+    --secondary: 240 3% 15%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 240 3% 15%;
+    --muted-foreground: 240 4% 55%;
+    --accent: 240 3% 13%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3% 17%;
+    --input: 240 3% 17%;
+    --ring: 240 4% 58%;
+    --chart-1: 0 0% 70%;
+    --chart-2: 0 0% 55%;
+    --chart-3: 0 0% 45%;
+    --chart-4: 0 0% 35%;
+    --chart-5: 0 0% 25%;
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 94%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 9%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.45) hsl(var(--muted));
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  *::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.45);
+    border-radius: 9999px;
+    border: 2px solid hsl(var(--muted));
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.65);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family:
+      "DM Sans Variable",
+      "DM Sans",
+      ui-sans-serif,
+      system-ui,
+      sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    scrollbar-gutter: stable;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .av-card {
+      transition-duration: 0.01ms;
+    }
+    .av-card:hover {
+      transform: none;
+    }
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  .draglayer {
+    @apply bg-background;
+    -webkit-app-region: drag;
+
+    .clickable {
+      -webkit-app-region: no-drag;
+    }
+  }
+
+  /* Custom smooth cursor (see SmoothCursor component) */
+  html.av-custom-cursor-active,
+  html.av-custom-cursor-active body,
+  html.av-custom-cursor-active body * {
+    cursor: none !important;
+  }
+
+  html.av-custom-cursor-active input[type="text"],
+  html.av-custom-cursor-active input[type="search"],
+  html.av-custom-cursor-active input[type="email"],
+  html.av-custom-cursor-active input[type="url"],
+  html.av-custom-cursor-active input[type="password"],
+  html.av-custom-cursor-active input[type="number"],
+  html.av-custom-cursor-active textarea,
+  html.av-custom-cursor-active [contenteditable="true"] {
+    cursor: text !important;
+  }
+
+  /* Keep the custom SVG cursor on top of video/canvas (dark areas) */
+  html.av-custom-cursor-active video,
+  html.av-custom-cursor-active canvas {
+    cursor: none !important;
+  }
+}
