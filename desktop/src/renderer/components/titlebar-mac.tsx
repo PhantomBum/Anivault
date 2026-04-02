@@ -53,7 +53,21 @@ export function MacTitlebar({
 
         {children}
 
-        <div className="flex flex-auto justify-end gap-2">
+        <div className="flex flex-auto items-center justify-end gap-2">
+          <img
+            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 dark:hidden select-none pointer-events-none"
+            src={LogoRoundedSquare}
+            alt=""
+            draggable={false}
+            title="AniVault"
+          />
+          <img
+            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 hidden dark:block select-none pointer-events-none"
+            src={LogoRoundedSquareLight}
+            alt=""
+            draggable={false}
+            title="AniVault"
+          />
           <ThemePicker className="clickable" isIconFormat />
         </div>
       </div>

@@ -1,5 +1,12 @@
 AniVault — changelog
 
+1.0.0-alpha.8
+- Settings: larger tabs and panels; new Appearance tab (UI density); smooth cursor + shell effects always on (documented)
+- Welcome spotlight: glass-style blurred poster background (Nexus-inspired)
+- Custom cursor: tip aligned with the real pointer; white branded pointer; scale feedback only
+- Title bar: AniVault mark on Windows/macOS; shell blur always enabled in layout
+- Minor cleanup (unused config wiring in sidebar layout)
+
 1.0.0-alpha.7
 - Stream resolution: retries on transient failures, 90s overall cap, HTTP timeouts on AllAnime fetches
 - Clearer load errors on the watch page; recovery hints when another episode may work

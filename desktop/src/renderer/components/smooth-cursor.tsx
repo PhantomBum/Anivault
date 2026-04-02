@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-/** Custom pointer image (`public/cursor-pointer.png`) with white SVG fallback. Hotspot ~22,12. */
+/** Custom pointer (`public/cursor-pointer.png`) — white via CSS filter. Hotspot at arrow tip (right wedge ~24px asset). */
 const CURSOR_PNG = `${import.meta.env.BASE_URL}cursor-pointer.png`;
 const VIEW_W = 24;
 const VIEW_H = 24;
-const HOTSPOT_X = 22;
-const HOTSPOT_Y = 12;
+/** Tip of the pointer in image space — aligns visual tip with the real cursor position (same idea as OS arrow hotspot). */
+const HOTSPOT_X = 21;
+const HOTSPOT_Y = 11;
 const POINTER_STIFFNESS = 18;
 const INTERACTIVE_SELECTOR =
   'a[href], button, [role="button"], input:not([type="hidden"]), textarea, select, label, summary, [data-cursor="pointer"]';
@@ -22,10 +23,10 @@ export function SmoothCursor() {
   const rootEl = useRef<HTMLDivElement | null>(null);
 
   const targetRef = useRef({ x: -100, y: -100 });
-  const posRef = useRef({ x: -100, y: -100 });
   const visibleRef = useRef(false);
   const interactiveRef = useRef(false);
   const pressedRef = useRef(false);
+  const scaleRef = useRef(1);
   const rafRef = useRef(0);
   const lastTRef = useRef(0);
 
@@ -92,16 +93,13 @@ export function SmoothCursor() {
 
       const tx = targetRef.current.x;
       const ty = targetRef.current.y;
-      const p = posRef.current;
-
-      p.x = smoothToward(p.x, tx, dt, POINTER_STIFFNESS);
-      p.y = smoothToward(p.y, ty, dt, POINTER_STIFFNESS);
 
       const vis = visibleRef.current ? 1 : 0;
-      const inter = interactiveRef.current;
-      const scale = inter ? 0.92 : pressedRef.current ? 0.88 : 1;
+      const scaleTarget = pressedRef.current ? 0.88 : interactiveRef.current ? 0.92 : 1;
+      // Tip uses clientX/Y (same hit-testing as the OS cursor); scale eases for feedback.
+      scaleRef.current = smoothToward(scaleRef.current, scaleTarget, dt, POINTER_STIFFNESS * 1.25);
 
-      apply(p.x, p.y, vis, scale);
+      apply(tx, ty, vis, scaleRef.current);
 
       rafRef.current = requestAnimationFrame(loop);
     };

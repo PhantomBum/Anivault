@@ -1,4 +1,3 @@
-import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { BrandMark } from "@/renderer/components/brand-mark";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
 import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
@@ -91,7 +90,6 @@ function readSidebarCollapsed(): boolean {
 export default function SidebarLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { config } = useAnivaultConfig();
   const { title, sub } = useRouteHeading(location.pathname);
   const isHome = location.pathname === "/";
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -191,7 +189,7 @@ export default function SidebarLayout() {
       className="anivault-shell min-h-screen text-[var(--av-text)]"
       data-density="comfortable"
       data-sidebar={railCollapsed ? "collapsed" : "expanded"}
-      data-shell-effects={config?.shellVisualEffects ? "standard" : "minimal"}
+      data-shell-effects="standard"
     >
       <Titlebar className="border-0 bg-transparent">
         <div className="flex min-w-0 flex-1 items-center gap-2" />

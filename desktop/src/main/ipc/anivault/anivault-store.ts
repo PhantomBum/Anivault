@@ -15,8 +15,8 @@ export const anivaultDefaults: AnivaultStoreSchema = {
   playerSeekStepSec: 5,
   defaultPlaybackSpeed: 1,
   autoPlayNextEpisode: true,
-  smoothCursor: false,
-  shellVisualEffects: false,
+  smoothCursor: true,
+  shellVisualEffects: true,
 };
 
 export const anivaultStore = new Store<AnivaultStoreSchema>({

@@ -67,7 +67,21 @@ export function WindowsTitlebar({
 
         {children}
 
-        <div className="flex flex-auto justify-end items-center gap-1.5 pr-1">
+        <div className="flex flex-auto justify-end items-center gap-2 pr-1">
+          <img
+            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 dark:hidden select-none pointer-events-none"
+            src={LogoRoundedSquare}
+            alt=""
+            draggable={false}
+            title="AniVault"
+          />
+          <img
+            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 hidden dark:block select-none pointer-events-none"
+            src={LogoRoundedSquareLight}
+            alt=""
+            draggable={false}
+            title="AniVault"
+          />
           <ThemePicker className="clickable h-9 w-9 shrink-0" isIconFormat />
           <div className="flex items-center gap-1">
             <Button

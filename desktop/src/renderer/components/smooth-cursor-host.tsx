@@ -1,10 +1,7 @@
 import { SmoothCursor } from "@/renderer/components/smooth-cursor";
-import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import React from "react";
 
-/** Renders custom cursor only when enabled in Settings (off by default). */
+/** Nexus-style smooth pointer — always on (hit-testing stays the real OS cursor). */
 export function SmoothCursorHost() {
-  const { config } = useAnivaultConfig();
-  if (!config?.smoothCursor) return null;
   return <SmoothCursor />;
 }

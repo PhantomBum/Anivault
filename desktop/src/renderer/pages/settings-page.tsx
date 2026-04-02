@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/renderer/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/renderer/components/ui/tabs";
+import { Palette } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -67,37 +68,46 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 text-[var(--av-text)]">
-      <div className="border-b border-[var(--av-border)] pb-5">
-        <h2 className="text-lg font-bold tracking-tight text-[var(--av-text)]">Settings</h2>
-        <p className="mt-1 text-sm text-[var(--av-muted)]">
-          Playback · language · translation · updates
+    <div className="mx-auto max-w-5xl space-y-8 px-1 pb-10 text-[var(--av-text)]">
+      <div className="border-b border-[var(--av-border)] pb-6">
+        <h2 className="text-2xl font-bold tracking-tight text-[var(--av-text)] md:text-[1.75rem]">
+          Settings
+        </h2>
+        <p className="mt-2 text-base text-[var(--av-muted)]">
+          Playback · appearance · language · translation · updates
         </p>
       </div>
 
       <Tabs defaultValue="playback" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 gap-1 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-1 sm:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 gap-2 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-2 sm:grid-cols-3 lg:grid-cols-5">
           <TabsTrigger
             value="playback"
-            className="rounded-xl text-xs transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-sm"
+            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
           >
             Playback
           </TabsTrigger>
           <TabsTrigger
+            value="appearance"
+            className="flex min-h-[3rem] items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
+          >
+            <Palette className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+            Appearance
+          </TabsTrigger>
+          <TabsTrigger
             value="language"
-            className="rounded-xl text-xs transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-sm"
+            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
           >
             Language
           </TabsTrigger>
           <TabsTrigger
             value="translation"
-            className="rounded-xl text-xs transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-sm"
+            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
           >
             Translation
           </TabsTrigger>
           <TabsTrigger
             value="updates"
-            className="rounded-xl text-xs transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-sm"
+            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
           >
             Updates
           </TabsTrigger>
@@ -105,12 +115,12 @@ export function SettingsPage() {
 
         <TabsContent
           value="playback"
-          className="mt-6 space-y-4 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-5 shadow-sm transition-shadow"
+          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
         >
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <span className="text-xs font-medium text-[var(--av-muted)]">Default volume</span>
-              <p className="text-[10px] text-[var(--av-muted-foreground)]">
+              <span className="text-sm font-medium text-[var(--av-muted)]">Default volume</span>
+              <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">
                 Applied when opening the player
               </p>
             </div>
@@ -119,114 +129,65 @@ export function SettingsPage() {
               min={0}
               max={1}
               step={0.05}
-              className="w-24 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs tabular-nums"
+              className="h-11 w-full max-w-[8rem] rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm tabular-nums sm:w-28"
               value={cfg.volumeDefault}
               onChange={(e) =>
                 void persist({ volumeDefault: Number.parseFloat(e.target.value) || 0 })
               }
             />
           </div>
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <span className="text-xs font-medium text-[var(--av-muted)]">Prefetch next episode</span>
-              <p className="text-[10px] text-[var(--av-muted-foreground)]">Resolve metadata when idle</p>
+              <span className="text-sm font-medium text-[var(--av-muted)]">Prefetch next episode</span>
+              <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">Resolve metadata when idle</p>
             </div>
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
+              className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-zinc-400"
               checked={cfg.prefetchNextEpisode}
               onChange={(e) => void persist({ prefetchNextEpisode: e.target.checked })}
             />
           </div>
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div>
-              <span className="text-xs font-medium text-[var(--av-muted)]">Auto-play next episode</span>
-              <p className="text-[10px] text-[var(--av-muted-foreground)]">
+              <span className="text-sm font-medium text-[var(--av-muted)]">Auto-play next episode</span>
+              <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">
                 After one episode ends, show a short countdown then continue the series
               </p>
             </div>
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
+              className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-zinc-400"
               checked={cfg.autoPlayNextEpisode}
               onChange={(e) => void persist({ autoPlayNextEpisode: e.target.checked })}
             />
           </div>
 
-          <div className="border-t border-[var(--av-border)] pt-4">
-            <p className="mb-3 text-xs font-medium text-[var(--av-muted)]">Interface</p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-xs text-[var(--av-muted-foreground)]">UI density</span>
-              <Select
-                value={cfg.uiDensity}
-                onValueChange={(v) =>
-                  void persist({ uiDensity: v as AnivaultStoreSchema["uiDensity"] })
-                }
-              >
-                <SelectTrigger className="w-full rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs sm:w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="comfortable">Comfortable</SelectItem>
-                  <SelectItem value="compact">Compact</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-4 border-t border-[var(--av-border)] pt-4">
-              <div>
-                <span className="text-xs font-medium text-[var(--av-muted)]">Smooth cursor</span>
-                <p className="text-[10px] text-[var(--av-muted-foreground)]">
-                  Animated pointer — uses extra CPU; leave off for lightest performance.
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
-                checked={cfg.smoothCursor}
-                onChange={(e) => void persist({ smoothCursor: e.target.checked })}
-              />
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-4">
-              <div>
-                <span className="text-xs font-medium text-[var(--av-muted)]">Shell visual effects</span>
-                <p className="text-[10px] text-[var(--av-muted-foreground)]">
-                  Light blur on title bar, sidebar, and mini-player (more GPU work when on).
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
-                checked={cfg.shellVisualEffects}
-                onChange={(e) => void persist({ shellVisualEffects: e.target.checked })}
-              />
-            </div>
-          </div>
-
-          <div className="border-t border-[var(--av-border)] pt-4">
-            <p className="mb-3 text-xs font-medium text-[var(--av-muted)]">Player</p>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4">
+          <div className="border-t border-[var(--av-border)] pt-6">
+            <p className="mb-4 text-sm font-semibold text-[var(--av-text)]">Player</p>
+            <div className="space-y-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div>
-                  <span className="text-xs font-medium text-[var(--av-muted)]">Native video controls</span>
-                  <p className="text-[10px] text-[var(--av-muted-foreground)]">
+                  <span className="text-sm font-medium text-[var(--av-muted)]">Native video controls</span>
+                  <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">
                     Browser controls vs custom bar (when off)
                   </p>
                 </div>
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
+                  className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-zinc-400"
                   checked={cfg.useNativeVideoControls}
                   onChange={(e) => void persist({ useNativeVideoControls: e.target.checked })}
                 />
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-xs text-[var(--av-muted-foreground)]">Seek step (keyboard)</span>
+                <span className="text-sm text-[var(--av-muted-foreground)]">Seek step (keyboard)</span>
                 <Input
                   type="number"
                   min={1}
                   max={120}
                   step={1}
-                  className="w-full rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs sm:w-24"
+                  className="h-11 w-full rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm sm:w-28"
                   value={cfg.playerSeekStepSec}
                   onChange={(e) =>
                     void persist({
@@ -239,12 +200,12 @@ export function SettingsPage() {
                 />
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-xs text-[var(--av-muted-foreground)]">Default speed</span>
+                <span className="text-sm text-[var(--av-muted-foreground)]">Default speed</span>
                 <Select
                   value={String(cfg.defaultPlaybackSpeed)}
                   onValueChange={(v) => void persist({ defaultPlaybackSpeed: Number.parseFloat(v) })}
                 >
-                  <SelectTrigger className="w-full rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs sm:w-36">
+                  <SelectTrigger className="h-11 w-full rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm sm:w-40">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -259,13 +220,13 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="border-t border-[var(--av-border)] pt-4">
-            <p className="mb-3 text-xs font-medium text-[var(--av-muted)]">Server</p>
-            <p className="mb-2 text-[10px] text-[var(--av-muted-foreground)]">
+          <div className="border-t border-[var(--av-border)] pt-6">
+            <p className="mb-3 text-sm font-semibold text-[var(--av-text)]">Server</p>
+            <p className="mb-3 text-xs text-[var(--av-muted-foreground)]">
               Cloud account and optional features use this API base (local AniVault server by default).
             </p>
             <Input
-              className="rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-xs"
+              className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-sm"
               value={cfg.apiBaseUrl}
               onChange={(e) => void persist({ apiBaseUrl: e.target.value.trim() })}
             />
@@ -273,11 +234,62 @@ export function SettingsPage() {
         </TabsContent>
 
         <TabsContent
-          value="language"
-          className="mt-6 space-y-4 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-5 shadow-sm"
+          value="appearance"
+          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
         >
-          <div className="space-y-2">
-            <span className="text-xs font-medium text-[var(--av-muted)]">App language</span>
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">UI density</span>
+            <p className="text-xs text-[var(--av-muted-foreground)]">
+              Controls spacing and padding across lists, cards, and the shell.
+            </p>
+            <Select
+              value={cfg.uiDensity}
+              onValueChange={(v) =>
+                void persist({ uiDensity: v as AnivaultStoreSchema["uiDensity"] })
+              }
+            >
+              <SelectTrigger className="h-12 w-full max-w-md rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="comfortable">Comfortable</SelectItem>
+                <SelectItem value="compact">Compact</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--av-border)]/80 bg-[var(--av-bg)]/40 p-5">
+            <p className="text-sm font-semibold text-[var(--av-text)]">Visual polish (always on)</p>
+            <p className="mt-2 text-xs leading-relaxed text-[var(--av-muted-foreground)]">
+              Smooth cursor animation and shell blur effects are built into this build for a consistent
+              HiAnime-style experience. Clicks still register at the system pointer — the custom graphic
+              follows for display only.
+            </p>
+            <ul className="mt-4 space-y-3 text-sm text-[var(--av-muted)]">
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--av-accent)]" />
+                <span>
+                  <span className="font-medium text-[var(--av-text)]">Smooth cursor</span> — white branded
+                  pointer with eased motion
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--av-accent)]" />
+                <span>
+                  <span className="font-medium text-[var(--av-text)]">Shell visual effects</span> — frosted
+                  title bar, sidebar, and overlays
+                </span>
+              </li>
+            </ul>
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value="language"
+          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
+        >
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">App language</span>
             <Select
               value={i18n.language}
               onValueChange={(lng) => {
@@ -285,7 +297,7 @@ export function SettingsPage() {
                 localStorage.setItem("i18nLng", lng);
               }}
             >
-              <SelectTrigger className="rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs">
+              <SelectTrigger className="h-12 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -301,17 +313,17 @@ export function SettingsPage() {
 
         <TabsContent
           value="translation"
-          className="mt-6 space-y-4 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-5 shadow-sm"
+          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
         >
-          <div className="space-y-2">
-            <span className="text-xs font-medium text-[var(--av-muted)]">Provider</span>
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">Provider</span>
             <Select
               value={cfg.translationProvider}
               onValueChange={(v) =>
                 void persist({ translationProvider: v as AnivaultStoreSchema["translationProvider"] })
               }
             >
-              <SelectTrigger className="rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs">
+              <SelectTrigger className="h-12 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -321,24 +333,24 @@ export function SettingsPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <span className="text-xs font-medium text-[var(--av-muted)]">API key (stored locally)</span>
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">API key (stored locally)</span>
             <Input
               type="password"
-              className="rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-xs"
+              className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-sm"
               placeholder="••••••••"
               value={cfg.translationApiKey}
               onChange={(e) => void persist({ translationApiKey: e.target.value })}
             />
           </div>
-          <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
+          <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
             When using AniVault Cloud with a signed-in account, server-side translation may use the
             server&apos;s DeepL key if configured. Keys you enter here stay on this device only.
           </p>
           <Button
             type="button"
             variant="outline"
-            className="rounded-xl border-[var(--av-border)] text-xs"
+            className="h-11 rounded-xl border-[var(--av-border)] px-5 text-sm"
             onClick={() => {
               void (async () => {
                 try {
@@ -358,23 +370,23 @@ export function SettingsPage() {
             Test translation
           </Button>
           {translateSample ? (
-            <p className="text-[10px] text-[var(--av-muted)]">{translateSample}</p>
+            <p className="text-sm text-[var(--av-muted)]">{translateSample}</p>
           ) : null}
         </TabsContent>
 
         <TabsContent
           value="updates"
-          className="mt-6 space-y-5 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-5 shadow-sm"
+          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
         >
-          <div className="space-y-1">
-            <span className="text-xs font-medium text-[var(--av-muted)]">App version</span>
-            <p className="text-sm tabular-nums text-[var(--av-muted-foreground)]">{appVersion || "—"}</p>
+          <div className="space-y-2">
+            <span className="text-sm font-medium text-[var(--av-muted)]">App version</span>
+            <p className="text-base tabular-nums text-[var(--av-muted-foreground)]">{appVersion || "—"}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="outline"
-              className="rounded-xl text-xs uppercase transition-transform active:scale-[0.98]"
+              className="h-11 rounded-xl px-5 text-sm uppercase transition-transform active:scale-[0.98]"
               onClick={() => {
                 setUpdateMsg(null);
                 void window.app.checkElectronUpdates().then((r) => {
@@ -405,21 +417,21 @@ export function SettingsPage() {
             </Button>
           </div>
           {updateMsg ? (
-            <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">{updateMsg}</p>
+            <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">{updateMsg}</p>
           ) : null}
-          <div className="space-y-2">
-            <span className="text-xs font-medium text-[var(--av-muted)]">Update logs</span>
-            <pre className="max-h-72 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-3 text-[10px] leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">Update logs</span>
+            <pre className="max-h-80 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-4 text-xs leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
               {updateLogsText.trim()}
             </pre>
           </div>
-          <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
+          <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
             Background update polling is off by default. After you publish GitHub Releases with
             Squirrel/electron-updater files, set <code className="font-mono">ANIVAULT_AUTO_UPDATE=1</code>{" "}
             to enable. Manual &quot;Check for updates&quot; may show a message until{" "}
             <code className="font-mono">latest.yml</code> exists. Restart still applies downloads.
           </p>
-          <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
+          <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
             <span className="font-medium text-[var(--av-muted)]">How to test auto-update:</span> install an{" "}
             <span className="font-medium">older</span> release from GitHub, then publish a{" "}
             <span className="font-medium">newer</span> one (same repo) that includes{" "}
@@ -432,7 +444,7 @@ export function SettingsPage() {
       </Tabs>
 
       {saved ? (
-        <p className="text-center text-[10px] tracking-wide text-[var(--av-muted)]">Saved</p>
+        <p className="text-center text-sm tracking-wide text-[var(--av-muted)]">Saved</p>
       ) : null}
     </div>
   );

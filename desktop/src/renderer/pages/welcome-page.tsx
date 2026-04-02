@@ -250,15 +250,26 @@ export function WelcomePage() {
         </header>
 
         {hero ? (
-          <section className="relative overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-sm">
+          <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)]/90 shadow-2xl shadow-black/40 ring-1 ring-white/[0.06]">
             {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
-              <div
-                className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.14]"
-                style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
-                aria-hidden
-              />
+              <>
+                <div
+                  className="pointer-events-none absolute -inset-8 scale-110 bg-cover bg-center opacity-45 blur-3xl saturate-150"
+                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.22]"
+                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
+                  aria-hidden
+                />
+              </>
             ) : null}
-            <div className="relative flex flex-col gap-3 p-4 sm:flex-row sm:items-stretch sm:gap-4">
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--av-bg)]/95 via-[var(--av-bg)]/75 to-[var(--av-bg-elevated)]/85"
+              aria-hidden
+            />
+            <div className="relative flex flex-col gap-4 p-5 backdrop-blur-2xl backdrop-saturate-150 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6 bg-[color-mix(in_srgb,var(--av-bg-elevated)_68%,transparent)]">
               <div className="relative h-32 w-[5.25rem] shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] sm:h-36 sm:w-24">
                 {(() => {
                   const thumbResolved = hero.id in spotlightThumbs;
