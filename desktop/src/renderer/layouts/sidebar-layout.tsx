@@ -1,5 +1,7 @@
 import { BrandMark } from "@/renderer/components/brand-mark";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
+import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
+import { useNowPlaying } from "@/renderer/context/now-playing-context";
 import { KeyboardShortcutsDialog } from "@/renderer/components/keyboard-shortcuts-dialog";
 import { SidebarProfileFooter } from "@/renderer/components/sidebar-profile-footer";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
@@ -98,6 +100,7 @@ export default function SidebarLayout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [showBackTop, setShowBackTop] = useState(false);
   const mainScrollRef = useRef<HTMLDivElement>(null);
+  const { session: nowPlayingSession } = useNowPlaying();
 
   const railCollapsed = sidebarCollapsed && isMdUp;
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -326,7 +329,8 @@ export default function SidebarLayout() {
             ref={mainScrollRef}
             onScroll={onMainScroll}
             className={cn(
-              "flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto py-[var(--av-page-pad-y)] pb-6 pl-[var(--av-page-pad-x)] pr-[var(--av-page-pad-x)] md:px-6",
+              "flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto py-[var(--av-page-pad-y)] pl-[var(--av-page-pad-x)] pr-[var(--av-page-pad-x)] md:px-6",
+              nowPlayingSession ? "pb-28" : "pb-6",
               isHome && "px-0 py-0"
             )}
           >
@@ -339,10 +343,15 @@ export default function SidebarLayout() {
         </div>
       </div>
 
+      <MiniPlayerBar />
+
       {showBackTop ? (
         <button
           type="button"
-          className="fixed bottom-6 right-5 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] shadow-av-lg transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:shadow-av-md active:scale-95 md:right-8"
+          className={cn(
+            "fixed right-5 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] shadow-av-lg transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:shadow-av-md active:scale-95 md:right-8",
+            nowPlayingSession ? "bottom-28" : "bottom-6"
+          )}
           aria-label="Back to top"
           title="Back to top"
           onClick={() =>

@@ -2,6 +2,12 @@
 
 Electron + React desktop app for streaming via **ani-cli**. This package is the shipped **AniVault** UI.
 
+## Download (Windows)
+
+Built binaries (`AniVaultSetup.exe`, `latest.yml`, nupkg, etc.) are **not** stored in GitHub’s source tree; they are attached to **[Releases](https://github.com/PhantomBum/Anivault/releases)** after each tagged build. CI publishes them when you push a version tag (see below).
+
+Pick the latest release and download **`AniVaultSetup.exe`** (Squirrel installer under *Assets*).
+
 ## Requirements
 
 - **Node.js** 20+

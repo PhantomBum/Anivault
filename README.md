@@ -1,7 +1,10 @@
 # AniVault
 
 Watch anime anytime, anywhere — straight from your desktop.
-Open sourced from open anime.
+
+## Download the Windows app
+
+Installers are **not** checked into this repo (build output is in `.gitignore`). Get the latest **AniVaultSetup.exe** and update files from **[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)**.
 
 Monorepo layout:
 

@@ -12,6 +12,7 @@ import { AppGate } from "@/renderer/components/app-gate";
 import { AvToastHost } from "@/renderer/components/av-toast-host";
 import { SmoothCursor } from "@/renderer/components/smooth-cursor";
 import { UpdateAvailableDialog } from "@/renderer/components/update-available-dialog";
+import { NowPlayingProvider } from "@/renderer/context/now-playing-context";
 import SidebarLayout from "@/renderer/layouts/sidebar-layout";
 
 const WelcomePage = lazy(() =>
@@ -84,7 +85,13 @@ export default function App() {
         <UpdateAvailableDialog />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route element={<SidebarLayout />}>
+            <Route
+              element={
+                <NowPlayingProvider>
+                  <SidebarLayout />
+                </NowPlayingProvider>
+              }
+            >
               <Route path="/" element={<WelcomePage />} />
               <Route path="/discover" element={<DiscoverPage />} />
               <Route path="/browse" element={<Navigate to="/discover" replace />} />

@@ -149,6 +149,10 @@ module.exports = {
           "0%, 100%": { opacity: "0.55" },
           "50%": { opacity: "1" },
         },
+        "av-title-marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -159,6 +163,7 @@ module.exports = {
         "av-fade-in": "av-fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both",
         "av-fade-up": "av-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
         "av-soft-pulse": "av-soft-pulse 1.8s ease-in-out infinite",
+        "av-title-marquee": "av-title-marquee 16s linear infinite",
       },
     },
   },

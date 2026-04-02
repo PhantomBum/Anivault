@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Link, useLocation } from "react-router-dom";
 
 import { WatchPlayerStage } from "@/renderer/components/player/watch-player-stage";
+import { useNowPlaying } from "@/renderer/context/now-playing-context";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
 import { useWatchKeyboard } from "@/renderer/hooks/use-watch-keyboard";
@@ -125,6 +126,8 @@ export function WatchPage() {
   }, [sortedEpisodes, episodeFilter]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const playerSectionRef = useRef<HTMLDivElement | null>(null);
+  const { setSession: setNowPlayingSession } = useNowPlaying();
   /** Seconds to seek to after the next successful load (set before reload). */
   const resumeAfterLoadRef = useRef<number | null>(null);
   /** Last known position when playback failed (for manual retry after overlay). */
@@ -251,7 +254,6 @@ export function WatchPage() {
     (ep: string) => {
       setCurrentEpisode(ep);
       void loadStream(ep);
-      setEpisodeSheetOpen(false);
       setEpisodeFilter("");
     },
     [loadStream]
@@ -342,6 +344,39 @@ export function WatchPage() {
       void v.requestPictureInPicture?.();
     }
   }, []);
+
+  useEffect(() => {
+    if (!playUrl || !anime) {
+      setNowPlayingSession(null);
+      return;
+    }
+    const displayName = details?.name ?? anime.name;
+    setNowPlayingSession({
+      title: displayName,
+      episodeLine: `${currentEpisode} · ${anime.mode === "dub" ? "English dub" : "Japanese sub"}`,
+      posterUrl: details?.thumbnail ?? null,
+      getVideo: () => videoRef.current,
+      onPrev: episodeNav?.onPrev,
+      onNext: episodeNav?.onNext,
+      canPrev: Boolean(episodeNav?.onPrev),
+      canNext: Boolean(episodeNav?.onNext),
+      onPictureInPicture: togglePictureInPicture,
+      onFullscreen: toggleFullscreen,
+      scrollToPlayer: () =>
+        playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
+    });
+    return () => setNowPlayingSession(null);
+  }, [
+    playUrl,
+    anime,
+    details?.name,
+    details?.thumbnail,
+    currentEpisode,
+    episodeNav,
+    setNowPlayingSession,
+    togglePictureInPicture,
+    toggleFullscreen,
+  ]);
 
   const persistVolume = useCallback(() => {
     const v = videoRef.current;
@@ -535,7 +570,7 @@ export function WatchPage() {
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 pb-8 pt-4 sm:px-5">
         <div className="mx-auto w-full max-w-5xl space-y-6">
-          <div className="relative w-full">
+          <div ref={playerSectionRef} className="relative w-full scroll-mt-24">
             {upNext ? (
               <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-4 rounded-2xl bg-black/88 px-6 text-center backdrop-blur-md">
                 <p className="text-sm font-semibold text-zinc-100">Up next</p>
