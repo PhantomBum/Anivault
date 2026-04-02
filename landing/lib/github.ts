@@ -1,5 +1,5 @@
 const GITHUB_API = "https://api.github.com"
-const REPO = "wuon/openanime"
+const REPO = "PhantomBum/Anivault"
 
 export interface GitHubStats {
   stars: number
@@ -34,7 +34,7 @@ function formatCount(n: number): string {
 
 export async function getGitHubStats(): Promise<GitHubStats> {
   const headers: HeadersInit = {
-    "User-Agent": "openanime-landing",
+    "User-Agent": "anivault-landing",
     Accept: "application/vnd.github.v3+json",
   }
 

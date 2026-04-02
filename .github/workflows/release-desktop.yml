@@ -2,12 +2,11 @@
 # Produces Squirrel artifacts + latest.yml (see scripts/forge-post-make-latest-yml.ts) for electron-updater.
 #
 # Prerequisites:
-# - Repository layout: this workflow assumes the desktop app lives at `openanime/desktop/`
-#   (monorepo root = anivault). If your repo is ONLY the desktop app, change `working-directory` to `.`
-#   in both places below.
+# - Repository layout: desktop app lives at `desktop/` (monorepo root = anivault).
+#   If your repo is ONLY the desktop app at root, change `working-directory` to `.` in both places below.
 #
 # Trigger: push a version tag, e.g. `git tag v1.0.1 && git push origin v1.0.1`
-# Bump `openanime/desktop/package.json` version to match the tag first.
+# Bump `desktop/package.json` version to match the tag first.
 
 name: Release desktop (Windows)
 
@@ -24,7 +23,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        working-directory: openanime/desktop
+        working-directory: desktop
 
     steps:
       - name: Checkout
@@ -35,7 +34,7 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: openanime/desktop/package-lock.json
+          cache-dependency-path: desktop/package-lock.json
 
       - name: Install dependencies
         run: npm ci

@@ -11,7 +11,7 @@ Electron + React desktop app for streaming via **ani-cli**. This package is the 
 ## Development
 
 ```bash
-cd openanime/desktop
+cd desktop
 npm install
 npm start
 ```
@@ -55,7 +55,7 @@ Artifacts (Windows Squirrel):
    git push -u origin main
    ```
 
-4. **Releases from your PC:** install deps in `openanime/desktop`, bump `version` in `package.json`, set `GITHUB_TOKEN` (classic PAT with **repo** scope), then `npm run publish` — uploads installers to a GitHub Release.
+4. **Releases from your PC:** install deps in `desktop/`, bump `version` in `package.json`, set `GITHUB_TOKEN` (classic PAT with **repo** scope), then `npm run publish` — uploads installers to a GitHub Release.
 
 5. **Releases from GitHub Actions (no token on your PC):** bump `version`, commit, then tag and push the tag. Workflow [`.github/workflows/release-desktop.yml`](../../.github/workflows/release-desktop.yml) runs `npm run publish` on Windows using the built-in `GITHUB_TOKEN`.
 
@@ -96,7 +96,7 @@ If `ANIVAULT_AUTO_UPDATE` is unset, the app still supports **Settings → Check 
 Needs a GitHub token with **`contents: write`** (and release upload). Do **not** commit the token.
 
 ```powershell
-cd openanime/desktop
+cd desktop
 # bump version in package.json first
 $env:GITHUB_TOKEN = "ghp_xxxxxxxx"
 npm run publish
@@ -119,7 +119,7 @@ This repo includes [`.github/workflows/release-desktop.yml`](../../.github/workf
 
 4. The workflow runs on **Windows**, executes `npm ci` and `npm run publish`, and uses the built-in **`GITHUB_TOKEN`** to attach assets to a release.
 
-**Monorepo layout:** the workflow uses `working-directory: openanime/desktop`. If your repository is **only** the desktop app (no `openanime/` parent folder), edit the workflow and set `working-directory` to **`.`** in both the `defaults.run` block and `cache-dependency-path`.
+**Monorepo layout:** the workflow uses `working-directory: desktop`. If your repository is **only** the desktop app at the repo root, edit the workflow and set `working-directory` to **`.`** in both the `defaults.run` block and `cache-dependency-path`.
 
 ### If you see `latest.yml` / 404
 

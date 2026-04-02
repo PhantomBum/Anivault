@@ -83,7 +83,7 @@ function readSidebarCollapsed(): boolean {
 
 /**
  * Layout aligned with `anivault/index.html`: fixed-width sidebar, main column + topbar, mobile drawer.
- * Replaces the OpenAnime/shadcn collapsible sidebar pattern.
+ * Collapsible sidebar shell (shadcn-style pattern).
  */
 export default function SidebarLayout() {
   const location = useLocation();

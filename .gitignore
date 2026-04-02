@@ -22,6 +22,9 @@ Thumbs.db
 *.tgz
 coverage/
 
+# Old monorepo path; remove locally if a leftover `openanime/` folder still exists
+openanime/
+
 # Local server database (regenerated on run)
 server/data/*.sqlite
 server/data/*.sqlite-journal

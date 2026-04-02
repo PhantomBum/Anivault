@@ -7,7 +7,7 @@ import type { GitHubStats } from "@/lib/github";
 import { formatCount } from "@/lib/github";
 import Link from "next/link";
 
-const GITHUB_REPO = "https://github.com/wuon/openanime";
+const GITHUB_REPO = "https://github.com/PhantomBum/Anivault";
 
 interface HeroProps {
   stats: GitHubStats;
@@ -17,7 +17,7 @@ export function Hero({ stats }: HeroProps) {
   const macDownloadUrl =
     stats.downloadLinks.mac ??
     (stats.latestRelease
-      ? `${GITHUB_REPO}/releases/download/v${stats.latestRelease}/Openanime-darwin-arm64-${stats.latestRelease}.zip`
+      ? `${GITHUB_REPO}/releases/download/v${stats.latestRelease}/AniVault-darwin-arm64-${stats.latestRelease}.zip`
       : `${GITHUB_REPO}/releases`);
   const windowsDownloadUrl =
     stats.downloadLinks.windows ?? `${GITHUB_REPO}/releases`;
@@ -44,7 +44,7 @@ export function Hero({ stats }: HeroProps) {
             />
           </div>
           <span className="font-sans text-xl font-semibold tracking-tight text-foreground">
-            Openanime
+            AniVault
           </span>
         </div>
         <div className="flex items-center gap-2">

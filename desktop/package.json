@@ -54,10 +54,7 @@
     "vite": "^8.0.3"
   },
   "keywords": [],
-  "author": {
-    "name": "wuon",
-    "email": "20260270+wuon@users.noreply.github.com"
-  },
+  "author": "AniVault",
   "license": "MIT",
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.2.8",

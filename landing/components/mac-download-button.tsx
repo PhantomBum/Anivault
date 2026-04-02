@@ -27,7 +27,7 @@ export function MacDownloadButton({
       // Start the download
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = downloadUrl.split("/").pop() ?? "Openanime.zip";
+      link.download = downloadUrl.split("/").pop() ?? "AniVault.zip";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       document.body.appendChild(link);
@@ -65,10 +65,10 @@ export function MacDownloadButton({
           <div className="space-y-4 py-4">
             <div>
               <p className="text-sm font-medium mb-2">
-                1. Extract the zip and move Openanime to Applications
+                1. Extract the zip and move AniVault to Applications
               </p>
               <p className="text-sm text-muted-foreground">
-                Drag Openanime.app into your Applications folder.
+                Drag AniVault.app into your Applications folder.
               </p>
             </div>
 
@@ -77,7 +77,7 @@ export function MacDownloadButton({
                 2. Run this command in Terminal
               </p>
               <code className="block w-full rounded-md bg-muted px-4 py-3 text-sm font-mono text-foreground break-all">
-                xattr -cr /Applications/Openanime.app
+                xattr -cr /Applications/AniVault.app
               </code>
               <p className="text-xs text-muted-foreground mt-2">
                 Copies this command so you can paste it in Terminal
@@ -97,7 +97,7 @@ export function MacDownloadButton({
             <Button
               onClick={() => {
                 navigator.clipboard.writeText(
-                  "xattr -cr /Applications/Openanime.app",
+                  "xattr -cr /Applications/AniVault.app",
                 );
                 setOpen(false);
               }}
