@@ -1,21 +1,15 @@
-AniVault desktop app (Electron + React UI, ani-cli streaming stack)
+Install AniVault (Windows):
+  https://github.com/PhantomBum/Anivault/releases
+  Download AniVaultSetup.exe from the latest release, run it.
 
-Run from the monorepo:
-
-  cd C:\Users\rdw16\anivault\desktop
+Developers (from repo root):
+  cd desktop
   npm install
   npm start
 
-Build (Windows):
-
-  cd C:\Users\rdw16\anivault\desktop
+Build installer:
+  cd desktop
   npm run make
+  (If EPERM: quit AniVault, then npm run make:clean)
 
-If the build fails with EPERM on anivault.exe, quit AniVault (and any Explorer window on out\) then
-  npm run clean
-  npm run make
-
-Static AniList browser page (index.html in the repo root) is a catalog only — no episode playback.
-Use the desktop app for the full player.
-
-Releases: https://github.com/PhantomBum/Anivault/releases
+Root index.html = AniList catalog in the browser only — use the desktop app to watch.
