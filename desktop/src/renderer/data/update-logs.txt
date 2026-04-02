@@ -2,6 +2,9 @@ AniVault — update logs
 ======================
 (Mirror for GitHub: UPDATE-LOGS.txt at repo root — keep both in sync when you edit.)
 
+1.0.0-alpha.2
+- CI: fix npm install on GitHub Actions (legacy-peer-deps) so Releases publish correctly
+
 1.0.0-alpha.1
 - Windows installer: AniVaultSetup.exe (Electron; no extra installs required)
 - Mini player bar on Watch while browsing episodes
