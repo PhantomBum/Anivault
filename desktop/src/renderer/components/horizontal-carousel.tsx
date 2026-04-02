@@ -97,7 +97,7 @@ function HorizontalCarouselCard({
         ) : null}
         <div
           className={cn(
-            "h-full w-full overflow-hidden bg-[var(--av-bg-elevated)]",
+            "h-full w-full overflow-hidden bg-[var(--av-bg-elevated)] motion-safe:transition-[transform] motion-safe:duration-200 motion-safe:ease-out motion-safe:group-hover:scale-[1.012]",
             isHome ? "rounded-[13px]" : "rounded-[0.9rem]"
           )}
         >
@@ -260,10 +260,10 @@ export const HorizontalCarousel = React.memo(function HorizontalCarousel({
             aria-label="Scroll left"
             onClick={() => scrollByPage("left")}
             className={cn(
-              "absolute left-2 top-[5.5rem] z-10 inline-flex h-12 w-9 -translate-y-1/2 items-center justify-center rounded-xl border shadow-sm backdrop-blur transition-colors",
+              "absolute left-2 top-[5.5rem] z-10 inline-flex h-12 w-9 -translate-y-1/2 items-center justify-center rounded-xl border shadow-sm transition-colors",
               variant === "home"
-                ? "border-[var(--av-border)] bg-[var(--av-bg)]/95 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-                : "border-[var(--av-border)] bg-[var(--av-surface)]/95 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                ? "border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
             )}
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -276,10 +276,10 @@ export const HorizontalCarousel = React.memo(function HorizontalCarousel({
             aria-label="Scroll right"
             onClick={() => scrollByPage("right")}
             className={cn(
-              "absolute right-2 top-[5.5rem] z-10 inline-flex h-12 w-9 -translate-y-1/2 items-center justify-center rounded-xl border shadow-sm backdrop-blur transition-colors",
+              "absolute right-2 top-[5.5rem] z-10 inline-flex h-12 w-9 -translate-y-1/2 items-center justify-center rounded-xl border shadow-sm transition-colors",
               variant === "home"
-                ? "border-[var(--av-border)] bg-[var(--av-bg)]/95 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-                : "border-[var(--av-border)] bg-[var(--av-surface)]/95 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                ? "border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                : "border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
             )}
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />

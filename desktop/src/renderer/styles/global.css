@@ -4,30 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Monochrome shell: black / zinc surfaces, white & grey highlights + layered depth. */
+/* Strict monochrome: neutral zinc only — minimal gradients for GPU/CPU cost. */
 :root,
 .anivault-shell {
   --av-bg: #09090b;
-  --av-bg-elevated: #0c0c0f;
-  --av-bg-gradient: linear-gradient(165deg, #0a0a0c 0%, #09090b 45%, #0d0d12 100%);
-  --av-main-gradient: linear-gradient(180deg, #0a0a0d 0%, #09090b 32%, #08080a 100%);
+  --av-bg-elevated: #0c0c0e;
+  --av-bg-gradient: linear-gradient(180deg, #0b0b0d 0%, #09090b 100%);
+  --av-main-gradient: linear-gradient(180deg, #0a0a0c 0%, #09090b 100%);
   --av-surface: #18181b;
   --av-surface-hover: #27272a;
-  --av-surface-gradient: linear-gradient(145deg, #1c1c21 0%, #18181b 55%, #141418 100%);
-  --av-border: #27272a;
-  --av-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.45);
-  --av-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.35);
-  --av-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
-  --av-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
-  --av-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --av-text: #fafafa;
+  --av-surface-gradient: linear-gradient(180deg, #1a1a1e 0%, #18181b 100%);
+  --av-border: #2e2e33;
+  --av-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --av-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --av-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --av-shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.48);
+  --av-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --av-text: #f4f4f5;
   --av-muted: #a1a1aa;
   --av-muted-foreground: #71717a;
-  --av-accent: #e4e4e7;
-  --av-accent-dim: #a1a1aa;
-  --av-accent-muted: rgba(255, 255, 255, 0.08);
-  --av-nav-active-bg: rgba(255, 255, 255, 0.08);
-  --av-nav-active-edge: #fafafa;
+  --av-accent: #d4d4d8;
+  --av-accent-dim: #9ca3af;
+  --av-accent-muted: rgba(255, 255, 255, 0.06);
+  --av-nav-active-bg: rgba(255, 255, 255, 0.06);
+  --av-nav-active-edge: #e4e4e7;
   --av-sidebar-w: 252px;
   --av-shell-header-title: 1.1rem;
   --av-shell-header-sub: 0.78rem;
@@ -76,9 +76,9 @@
   }
 
   .av-card:hover {
-    border-color: var(--av-accent-dim);
-    box-shadow: var(--av-shadow-md), var(--av-shadow-inset);
-    transform: translateY(-1px);
+    border-color: var(--av-border);
+    box-shadow: var(--av-shadow-sm), var(--av-shadow-inset);
+    transform: translateY(0);
   }
 
   .av-callout {
@@ -255,4 +255,25 @@
   html.av-custom-cursor-active canvas {
     cursor: none !important;
   }
+}
+
+/* Optional shell polish (Settings → Shell visual effects) — uses GPU blur when enabled. */
+.anivault-shell[data-shell-effects="standard"] .draglayer {
+  backdrop-filter: blur(10px);
+  background-color: rgba(9, 9, 11, 0.86);
+}
+
+.anivault-shell[data-shell-effects="standard"] aside[aria-label="Sidebar"] {
+  backdrop-filter: blur(12px);
+  background: linear-gradient(to bottom, rgba(14, 14, 16, 0.94), rgba(9, 9, 11, 0.98));
+}
+
+.anivault-shell[data-shell-effects="standard"] .av-shell-header {
+  backdrop-filter: blur(10px);
+  background-color: rgba(9, 9, 11, 0.9);
+}
+
+.anivault-shell[data-shell-effects="standard"] .av-mini-player {
+  backdrop-filter: blur(14px);
+  background-color: rgba(12, 12, 14, 0.93);
 }

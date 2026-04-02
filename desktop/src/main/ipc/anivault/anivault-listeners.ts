@@ -7,11 +7,12 @@ import {
 } from "./anivault-channels";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 
-import { anivaultStore } from "./anivault-store";
+import { anivaultDefaults, anivaultStore } from "./anivault-store";
 
 export function addAnivaultListeners() {
   ipcMain.handle(ANIVAULT_CONFIG_GET_ALL, () => {
-    return anivaultStore.store as AnivaultStoreSchema;
+    const stored = anivaultStore.store as Partial<AnivaultStoreSchema>;
+    return { ...anivaultDefaults, ...stored };
   });
 
   ipcMain.handle(ANIVAULT_CONFIG_GET, (_e, key: keyof AnivaultStoreSchema) => {

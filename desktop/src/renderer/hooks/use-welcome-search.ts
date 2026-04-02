@@ -4,6 +4,7 @@ import {
   type AnimeSearchResult,
   getAniCli,
 } from "@/renderer/lib/ani-cli-bridge";
+import { cachedAniSearch } from "@/renderer/lib/ani-session-cache";
 import {
   SHOW_DETAILS_FETCH_CONCURRENCY,
   mergeShowThumbnailsFromShowDetails,
@@ -31,8 +32,7 @@ export function useWelcomeSearch(debouncedQuery: string) {
     setError(null);
     setSearchThumbnails({});
     const aniCli = getAniCli();
-    void aniCli
-      .search(q)
+    void cachedAniSearch(q, () => aniCli.search(q))
       .then((list) => {
         if (cancelled || gen !== searchGen.current) return;
         setResults(list);

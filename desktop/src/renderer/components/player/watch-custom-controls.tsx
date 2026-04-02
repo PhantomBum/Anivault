@@ -128,20 +128,19 @@ export function WatchCustomControls({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 bottom-0 z-20 flex flex-col bg-gradient-to-t from-black via-black/90 to-transparent px-3 pb-4 pt-8 transition-opacity duration-300 ease-out sm:px-4",
+        "absolute inset-x-0 bottom-0 z-20 flex flex-col border-t border-zinc-800/80 bg-zinc-950/95 px-3 pb-3 pt-3 transition-opacity duration-200 ease-out sm:px-4",
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       )}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         <div className="relative px-0.5">
-          <div className="relative h-1.5 w-full overflow-hidden rounded-full sm:h-2">
-            <div className="absolute inset-0 rounded-full bg-white/10" />
+          <div className="relative h-2 w-full overflow-hidden rounded-full bg-zinc-800">
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-white/20"
+              className="absolute inset-y-0 left-0 rounded-full bg-zinc-600/50"
               style={{ width: `${bufPct}%` }}
             />
             <div
-              className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-zinc-200 to-white"
+              className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-zinc-200"
               style={{ width: `${playedPct}%` }}
             />
             <input
@@ -157,13 +156,13 @@ export function WatchCustomControls({
           </div>
         </div>
 
-        <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex w-full min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={togglePlay}
               aria-label={paused ? "Play" : "Pause"}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-black shadow-lg transition hover:bg-zinc-200"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-600 bg-zinc-100 text-zinc-950 shadow-sm transition hover:bg-white"
             >
               {paused ? (
                 <Play className="ml-0.5 h-5 w-5 fill-current" />
@@ -171,17 +170,17 @@ export function WatchCustomControls({
                 <Pause className="h-5 w-5 fill-current" />
               )}
             </button>
-            <span className="min-w-0 tabular-nums text-xs font-medium text-zinc-300 sm:text-sm">
-              <span className="text-white">{fmt(current)}</span>
-              <span className="text-zinc-500"> / </span>
-              <span className="text-zinc-400">{fmt(duration)}</span>
+            <span className="min-w-0 tabular-nums text-xs font-medium text-zinc-400 sm:text-sm">
+              <span className="text-zinc-100">{fmt(current)}</span>
+              <span className="text-zinc-600"> / </span>
+              <span className="text-zinc-500">{fmt(duration)}</span>
             </span>
           </div>
 
-          <div className="flex min-w-0 flex-1 items-center gap-3 sm:max-w-md sm:justify-center">
+          <div className="flex min-w-0 flex-1 items-center gap-2 lg:max-w-md lg:justify-center">
             <button
               type="button"
-              className="shrink-0 rounded-lg p-2 text-zinc-300 transition hover:bg-white/10 hover:text-white"
+              className="shrink-0 rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100"
               onClick={toggleMute}
               aria-label={muted ? "Unmute" : "Mute"}
             >
@@ -198,12 +197,12 @@ export function WatchCustomControls({
               step={0.02}
               value={muted ? 0 : volume}
               onChange={(e) => setVol(Number.parseFloat(e.target.value))}
-              className="h-1.5 w-full min-w-0 flex-1 cursor-pointer accent-zinc-300"
+              className="h-1.5 w-full min-w-0 flex-1 cursor-pointer accent-zinc-400"
               aria-label="Volume"
             />
           </div>
 
-          <div className="flex shrink-0 items-center justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
             <label className="flex items-center">
               <span className="sr-only">Playback speed</span>
               <select
@@ -214,7 +213,7 @@ export function WatchCustomControls({
                   if (v) v.playbackRate = next;
                   setRate(next);
                 }}
-                className="h-9 cursor-pointer rounded-lg border border-white/10 bg-black/60 px-2.5 text-xs font-medium text-zinc-200 outline-none backdrop-blur-sm transition hover:border-white/25 hover:bg-black/80 focus-visible:ring-2 focus-visible:ring-white/30"
+                className="h-9 cursor-pointer rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 text-xs font-medium text-zinc-200 outline-none transition hover:border-zinc-500 hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-500"
               >
                 {RATES.map((r) => (
                   <option key={r} value={String(r)} className="bg-zinc-900">
@@ -228,7 +227,7 @@ export function WatchCustomControls({
               type="button"
               size="icon"
               variant="ghost"
-              className="h-9 w-9 shrink-0 text-zinc-300 hover:bg-white/10 hover:text-white"
+              className="h-9 w-9 shrink-0 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
               onClick={onPictureInPicture}
               title="Picture in picture"
             >
@@ -238,7 +237,7 @@ export function WatchCustomControls({
               type="button"
               size="icon"
               variant="ghost"
-              className="h-9 w-9 shrink-0 text-zinc-300 hover:bg-white/10 hover:text-white"
+              className="h-9 w-9 shrink-0 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
               onClick={onFullscreen}
               title="Fullscreen"
             >
@@ -246,6 +245,10 @@ export function WatchCustomControls({
             </Button>
           </div>
         </div>
+
+        <p className="hidden text-center text-[10px] leading-tight text-zinc-600 sm:block">
+          Space · play/pause · M · mute · F · fullscreen · ← / → · seek
+        </p>
       </div>
     </div>
   );

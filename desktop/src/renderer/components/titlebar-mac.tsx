@@ -22,7 +22,7 @@ export function MacTitlebar({
   return (
     <div
       className={cn(
-        "draglayer fixed z-10 flex min-h-12 w-screen border-b border-[var(--av-border)] bg-[var(--av-bg)]/95 text-[var(--av-text)] backdrop-blur-sm",
+        "draglayer fixed z-10 flex min-h-12 w-screen border-b border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-text)]",
         className
       )}
     >

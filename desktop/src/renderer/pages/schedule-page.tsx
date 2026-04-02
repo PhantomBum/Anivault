@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { anivaultFetch } from "@/renderer/lib/anivault-api";
+import { fetchAniListAiringSchedule, type AniListScheduleEntry } from "@/renderer/lib/anilist-schedule";
 
 type ScheduleEntry = {
   id: string;
@@ -17,36 +18,55 @@ const LOCAL_FALLBACK: ScheduleEntry[] = (() => {
     d.setDate(d.getDate() + i);
     out.push({
       id: `local-${i}`,
-      title: i === 0 ? "Today — open Discover for new picks" : `Week highlight · day ${i + 1}`,
+      title: i === 0 ? "Today — open Discover for catalog picks" : `Week highlight · day ${i + 1}`,
       air_date: d.toISOString().slice(0, 10),
       note:
         i === 0
-          ? "Connect the AniVault server for editorial calendar entries. This row is a local placeholder."
+          ? "Offline preview. Connect your AniVault server for editorial rows, or use AniList data when online."
           : null,
     });
   }
   return out;
 })();
 
+function mapAniList(rows: AniListScheduleEntry[]): ScheduleEntry[] {
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    air_date: r.air_date,
+    note: r.note,
+  }));
+}
+
 export function SchedulePage() {
   const [rows, setRows] = useState<ScheduleEntry[]>([]);
   const [err, setErr] = useState<string | null>(null);
-  const [usedFallback, setUsedFallback] = useState(false);
+  const [source, setSource] = useState<"anilist" | "server" | "local">("local");
 
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      const al = await fetchAniListAiringSchedule();
+      if (cancelled) return;
+      if (al && al.length > 0) {
+        setRows(mapAniList(al));
+        setSource("anilist");
+        setErr(null);
+        return;
+      }
+
       const res = await anivaultFetch<{ entries: ScheduleEntry[] }>("/api/schedule");
       if (cancelled) return;
       if (res.ok && res.data?.entries && res.data.entries.length > 0) {
         setRows(res.data.entries);
-        setUsedFallback(false);
+        setSource("server");
         setErr(null);
         return;
       }
-      setErr(res.error ?? null);
+
+      setErr(res.error ?? (al === null ? null : "AniList schedule unavailable"));
       setRows(LOCAL_FALLBACK);
-      setUsedFallback(true);
+      setSource("local");
     })();
     return () => {
       cancelled = true;
@@ -56,21 +76,29 @@ export function SchedulePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-4 py-4 text-[var(--av-text)]">
       <p className="text-sm text-[var(--av-muted)]">
-        Editorial dates from your AniVault server (not licensors&apos; broadcast schedules). If the
-        server is offline, a local week preview is shown.
+        {source === "anilist" ? (
+          <>
+            Upcoming episode air times from{" "}
+            <span className="text-[var(--av-text)]">AniList</span> (community metadata — not a
+            licensor broadcast guarantee).
+          </>
+        ) : source === "server" ? (
+          <>Editorial calendar from your AniVault server.</>
+        ) : (
+          <>
+            Offline preview week. Online, AniVault loads AniList airing data automatically when the
+            network allows.
+          </>
+        )}
       </p>
-      {usedFallback && err ? (
+      {source === "local" && err ? (
         <p className="text-sm text-amber-400/95" role="status">
-          Server calendar unavailable ({err}). Showing offline preview.
-        </p>
-      ) : null}
-      {!usedFallback && err ? (
-        <p className="text-sm text-amber-400" role="status">
-          {err}
+          {err ? `Calendar note: ${err}. ` : null}
+          Showing built-in week preview.
         </p>
       ) : null}
       <ul className="space-y-2">
-        {rows.length === 0 && !err ? (
+        {rows.length === 0 ? (
           <li className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-6 text-center text-sm text-[var(--av-muted)]">
             No schedule entries yet.
           </li>
@@ -78,7 +106,7 @@ export function SchedulePage() {
           rows.map((r) => (
             <li
               key={r.id}
-              className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 py-3"
+              className="av-card rounded-xl px-4 py-3 transition-transform duration-200 hover:-translate-y-px"
             >
               <p className="font-medium">{r.title}</p>
               <p className="text-xs text-[var(--av-muted)]">{r.air_date}</p>

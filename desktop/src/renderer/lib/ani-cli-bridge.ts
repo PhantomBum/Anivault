@@ -3,7 +3,11 @@
  * Use this in renderer code so TypeScript and ESLint see the correct types.
  */
 export function getAniCli(): AniCliContext {
-  return (window as Window & { aniCli: AniCliContext }).aniCli;
+  const w = window as Window & { aniCli?: AniCliContext };
+  if (!w.aniCli) {
+    throw new Error("AniVault bridge is not ready. Restart the app.");
+  }
+  return w.aniCli;
 }
 
 interface AnimeSearchResult {

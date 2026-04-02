@@ -21,6 +21,8 @@ export function AppGate({ children }: { children: React.ReactNode }) {
   const [code, setCode] = useState("");
   const [code2, setCode2] = useState("");
   const [currentCode, setCurrentCode] = useState("");
+  const [initProgress, setInitProgress] = useState(0);
+  const [initLabel, setInitLabel] = useState("Preparing…");
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goToApp = useCallback(() => {
@@ -39,16 +41,45 @@ export function AppGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+    const MIN_MS = 520;
+
     const run = async () => {
-      const minSplash = new Promise<void>((r) => setTimeout(r, 1280));
+      const t0 = Date.now();
+      const waitRemainingMin = async () => {
+        const elapsed = Date.now() - t0;
+        const rest = Math.max(0, MIN_MS - elapsed);
+        if (rest > 0) await new Promise<void>((r) => setTimeout(r, rest));
+      };
+
+      const tick = (pct: number, text: string) => {
+        if (!cancelled) {
+          setInitProgress(pct);
+          setInitLabel(text);
+        }
+      };
+
+      tick(6, "Preparing…");
+
       if (typeof window.security === "undefined") {
-        await minSplash;
+        tick(40, "Starting interface…");
+        await waitRemainingMin();
+        if (cancelled) return;
+        tick(100, "Ready");
+        await new Promise<void>((r) => setTimeout(r, 180));
         if (!cancelled) goToApp();
         return;
       }
+
+      tick(18, "Checking access…");
       const st = await window.security.getStatus();
-      await minSplash;
       if (cancelled) return;
+      tick(72, "Finishing…");
+      await waitRemainingMin();
+      if (cancelled) return;
+      tick(100, "Ready");
+      await new Promise<void>((r) => setTimeout(r, 160));
+      if (cancelled) return;
+
       if (!st.enabled) {
         goToApp();
         return;
@@ -174,7 +205,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">AniVault</h1>
           {mode === "init" ? (
-            <p className="text-sm text-neutral-400">Starting up…</p>
+            <p className="text-sm text-neutral-400">{initLabel}</p>
           ) : null}
           {mode === "leave" ? (
             <p className="text-sm text-neutral-500">Launching…</p>
@@ -190,7 +221,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
           ) : null}
         </div>
 
-        {mode === "init" && <AvLoadingBar showLabel />}
+        {mode === "init" && <AvLoadingBar progress={initProgress} />}
 
         {showAuthCard && (
           <div

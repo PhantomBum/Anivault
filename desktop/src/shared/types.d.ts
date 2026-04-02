@@ -65,7 +65,13 @@ interface AppContext {
   quitAndInstall: () => Promise<boolean>;
   checkElectronUpdates: () => Promise<
     | { kind: "skipped"; reason: string }
-    | { kind: "ok"; version: string | null }
+    | {
+        kind: "ok";
+        /** Latest version reported by the updater feed (may match current). */
+        version: string | null;
+        currentVersion: string;
+        isUpdateAvailable: boolean;
+      }
     | { kind: "error"; message: string }
   >;
   onUpdateDownloaded: (cb: () => void) => () => void;

@@ -31,9 +31,20 @@ export function addAppEventListeners() {
     }
     try {
       const r = await autoUpdater.checkForUpdates();
+      const currentVersion = app.getVersion();
+      if (!r) {
+        return {
+          kind: "ok" as const,
+          version: null,
+          currentVersion,
+          isUpdateAvailable: false,
+        };
+      }
       return {
         kind: "ok" as const,
-        version: r?.updateInfo?.version ?? null,
+        version: r.updateInfo?.version ?? null,
+        currentVersion,
+        isUpdateAvailable: r.isUpdateAvailable,
       };
     } catch (e) {
       return {

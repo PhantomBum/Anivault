@@ -32,7 +32,7 @@ export function MiniPlayerBar() {
   const { session } = useNowPlaying();
   const [tick, setTick] = useState(0);
   const [volume, setVolume] = useState(1);
-  const useMarqueeTitle = (session?.title.length ?? 0) > 34;
+  const useMarqueeTitle = (session?.title.length ?? 0) > 42;
 
   const video = session?.getVideo() ?? null;
   const current = video && Number.isFinite(video.currentTime) ? video.currentTime : 0;
@@ -43,7 +43,7 @@ export function MiniPlayerBar() {
 
   useEffect(() => {
     if (!session) return;
-    const id = window.setInterval(() => setTick((t) => t + 1), 200);
+    const id = window.setInterval(() => setTick((t) => t + 1), 400);
     return () => clearInterval(id);
   }, [session]);
 
@@ -94,16 +94,18 @@ export function MiniPlayerBar() {
 
   return (
     <div
-      className={cn(
-        "pointer-events-auto fixed bottom-0 right-0 z-[65] flex flex-col border-t border-[var(--av-border)] bg-[var(--av-bg-elevated)]/95 shadow-[0_-8px_32px_rgba(0,0,0,0.45)] backdrop-blur-xl",
-        "left-0 md:left-[var(--av-sidebar-w)]"
-      )}
-      role="region"
-      aria-label="Now playing"
+      className="pointer-events-none fixed inset-x-0 bottom-3 z-[65] flex justify-center px-3 md:bottom-4 md:pl-[calc(var(--av-sidebar-w)+0.75rem)] md:pr-5"
     >
-      {/* Progress (Spotify-style strip) */}
       <div
-        className="group relative h-1 w-full cursor-pointer bg-zinc-800/90"
+        className={cn(
+          "av-mini-player pointer-events-auto flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-[0_8px_32px_rgba(0,0,0,0.45)]",
+          "md:max-w-lg"
+        )}
+        role="region"
+        aria-label="Now playing"
+      >
+      <div
+        className="group relative h-0.5 w-full cursor-pointer bg-zinc-800/80"
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
           onBarPointer(e);
@@ -117,16 +119,11 @@ export function MiniPlayerBar() {
           className="absolute inset-y-0 left-0 bg-[var(--av-accent-dim)] transition-[width] duration-150 ease-out"
           style={{ width: `${progress * 100}%` }}
         />
-        <div
-          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white opacity-0 shadow-md transition-opacity group-hover:opacity-100"
-          style={{ left: `calc(${progress * 100}% - 6px)` }}
-        />
       </div>
 
-      <div className="flex min-h-[4.25rem] items-center gap-3 px-3 py-2 sm:gap-4 sm:px-4">
-        {/* Art + titles */}
-        <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-white/10">
+      <div className="flex min-h-0 items-center gap-2 px-2 py-1.5 sm:gap-3 sm:px-3 sm:py-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-zinc-900 ring-1 ring-white/10">
             {session.posterUrl ? (
               <img
                 src={session.posterUrl}
@@ -135,77 +132,76 @@ export function MiniPlayerBar() {
                 draggable={false}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 text-[10px] font-medium text-zinc-500">
-                AniVault
+              <div className="flex h-full w-full items-center justify-center bg-zinc-900 text-[9px] font-medium text-zinc-500">
+                AV
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1 overflow-hidden">
             <div
               className={cn(
-                "text-sm font-semibold leading-tight text-[var(--av-text)]",
+                "text-[13px] font-semibold leading-snug text-[var(--av-text)]",
                 useMarqueeTitle ? "overflow-hidden" : "truncate"
               )}
               title={session.title}
             >
               {useMarqueeTitle ? (
                 <div className="flex w-max max-w-none animate-av-title-marquee whitespace-nowrap">
-                  <span className="shrink-0 pr-10">{session.title}</span>
-                  <span className="shrink-0 pr-10">{session.title}</span>
+                  <span className="shrink-0 pr-8">{session.title}</span>
+                  <span className="shrink-0 pr-8">{session.title}</span>
                 </div>
               ) : (
                 session.title
               )}
             </div>
-            <p className="truncate text-xs text-[var(--av-muted)]">{session.episodeLine}</p>
+            <p className="truncate text-[11px] leading-tight text-[var(--av-muted)]">{session.episodeLine}</p>
+            <p className="mt-0.5 text-[10px] tabular-nums text-zinc-500 sm:hidden">
+              {formatTime(current)} · {formatTime(duration)}
+            </p>
           </div>
         </div>
 
-        {/* Transport */}
-        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+        <div className="flex shrink-0 items-center gap-0">
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-25"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200 disabled:pointer-events-none disabled:opacity-25"
             aria-label="Previous episode"
             disabled={!session.canPrev}
             onClick={() => session.onPrev?.()}
           >
-            <SkipBack className="h-5 w-5" />
+            <SkipBack className="h-4 w-4" />
           </button>
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-lg transition-transform hover:scale-105 active:scale-95"
+            className="mx-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 shadow-md transition-transform hover:scale-[1.03] active:scale-95"
             aria-label={paused ? "Play" : "Pause"}
             onClick={togglePlay}
           >
-            {paused ? <Play className="ml-0.5 h-5 w-5 fill-current" /> : <Pause className="h-5 w-5 fill-current" />}
+            {paused ? <Play className="ml-0.5 h-4 w-4 fill-current" /> : <Pause className="h-4 w-4 fill-current" />}
           </button>
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-25"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200 disabled:pointer-events-none disabled:opacity-25"
             aria-label="Next episode"
             disabled={!session.canNext}
             onClick={() => session.onNext?.()}
           >
-            <SkipForward className="h-5 w-5" />
+            <SkipForward className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="hidden min-w-[4.5rem] flex-col items-end text-[10px] tabular-nums text-zinc-500 sm:flex">
-          <span>
-            {formatTime(current)} / {formatTime(duration)}
-          </span>
+        <div className="hidden min-w-[3.5rem] text-right text-[10px] tabular-nums text-zinc-500 sm:block">
+          {formatTime(current)} / {formatTime(duration)}
         </div>
 
-        {/* More */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200"
               aria-label="More options"
             >
-              <MoreHorizontal className="h-5 w-5" />
+              <MoreHorizontal className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
@@ -246,6 +242,7 @@ export function MiniPlayerBar() {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
       </div>
     </div>
   );

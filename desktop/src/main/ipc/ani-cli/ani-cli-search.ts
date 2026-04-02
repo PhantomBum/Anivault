@@ -54,6 +54,18 @@ export async function searchAnime(
   options: { mode?: "sub" | "dub"; limit?: number } = {}
 ): Promise<AnimeSearchResult[]> {
   const mode = options.mode ?? "sub";
+  let rows = await searchAnimeInner(query, { ...options, mode });
+  if (rows.length === 0 && mode === "sub") {
+    rows = await searchAnimeInner(query, { ...options, mode: "dub" });
+  }
+  return rows;
+}
+
+async function searchAnimeInner(
+  query: string,
+  options: { mode?: "sub" | "dub"; limit?: number } = {}
+): Promise<AnimeSearchResult[]> {
+  const mode = options.mode ?? "sub";
   const limit = options.limit ?? 40;
   const searchQuery = query.trim().replace(/\s+/g, "+");
 
@@ -86,16 +98,17 @@ export async function searchAnime(
   const json = (await res.json()) as GqlShowsResponse;
   const edges = json.data?.shows?.edges ?? [];
 
-  return edges
-    .map((edge) => ({
-      id: edge._id,
-      name: (edge.name ?? "").replace(/\\"/g, '"'),
-      episodeCount: getEpisodeCount(edge, mode),
-      mode,
-      hasSub: hasEpisodes(edge, "sub"),
-      hasDub: hasEpisodes(edge, "dub"),
-    }))
-    .filter((r) => r.episodeCount > 0);
+  const mapped = edges.map((edge) => ({
+    id: edge._id,
+    name: (edge.name ?? "").replace(/\\"/g, '"'),
+    episodeCount: getEpisodeCount(edge, mode),
+    mode,
+    hasSub: hasEpisodes(edge, "sub"),
+    hasDub: hasEpisodes(edge, "dub"),
+  }));
+  /** Prefer rows with episode metadata; fall back so Discover/Home never go empty when counts lag. */
+  const playable = mapped.filter((r) => r.episodeCount > 0);
+  return playable.length > 0 ? playable : mapped.filter((r) => r.id && r.name);
 }
 
 export interface RecentAnimeResult {
@@ -138,16 +151,17 @@ export async function getRecentAnime(
   const json = (await res.json()) as GqlShowsResponse;
   const edges = json.data?.shows?.edges ?? [];
 
-  const items = edges
-    .map((edge) => ({
-      id: edge._id,
-      name: (edge.name ?? "").replace(/\\"/g, '"'),
-      episodeCount: getEpisodeCount(edge, mode),
-      mode,
-      hasSub: hasEpisodes(edge, "sub"),
-      hasDub: hasEpisodes(edge, "dub"),
-    }))
-    .filter((r) => r.episodeCount > 0);
+  const mapped = edges.map((edge) => ({
+    id: edge._id,
+    name: (edge.name ?? "").replace(/\\"/g, '"'),
+    episodeCount: getEpisodeCount(edge, mode),
+    mode,
+    hasSub: hasEpisodes(edge, "sub"),
+    hasDub: hasEpisodes(edge, "dub"),
+  }));
+  const playable = mapped.filter((r) => r.episodeCount > 0);
+  const items =
+    playable.length > 0 ? playable : mapped.filter((r) => r.id && r.name);
 
   return { items, hasMore: items.length >= limit };
 }

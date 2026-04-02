@@ -2,7 +2,7 @@
 
 Desktop anime streaming for Windows.
 
-**[Download](https://github.com/PhantomBum/Anivault/releases)** — open the latest release, download **AniVaultSetup.exe** from **Assets**, run it.
+**[Releases](https://github.com/PhantomBum/Anivault/releases)** — download **AniVaultSetup.exe** from **Assets** on a release that lists it (not only “Source code”). Example: [AniVaultSetup.exe for v1.0.0-alpha.3](https://github.com/PhantomBum/Anivault/releases/download/v1.0.0-alpha.3/AniVaultSetup.exe). Forks may show no `.exe` until Actions run there.
 
 More detail: [GET-ANIVAULT.txt](GET-ANIVAULT.txt) · [UPDATE-LOGS.txt](UPDATE-LOGS.txt)
 

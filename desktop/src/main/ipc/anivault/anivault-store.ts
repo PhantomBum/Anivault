@@ -2,7 +2,7 @@ import Store from "electron-store";
 
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 
-const defaults: AnivaultStoreSchema = {
+export const anivaultDefaults: AnivaultStoreSchema = {
   apiBaseUrl: "http://127.0.0.1:3847",
   authToken: "",
   plan: "free",
@@ -15,11 +15,13 @@ const defaults: AnivaultStoreSchema = {
   playerSeekStepSec: 5,
   defaultPlaybackSpeed: 1,
   autoPlayNextEpisode: true,
+  smoothCursor: false,
+  shellVisualEffects: false,
 };
 
 export const anivaultStore = new Store<AnivaultStoreSchema>({
   name: "anivault-config",
-  defaults,
+  defaults: anivaultDefaults,
 });
 
 export type { AnivaultStoreSchema };

@@ -1,11 +1,16 @@
-import { BookmarkPlus, Trash2 } from "lucide-react";
+import { BookmarkPlus, ListPlus, Search, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
+import { useDebouncedValue } from "@/renderer/hooks/use-debounced-value";
+import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedAniSearch } from "@/renderer/lib/ani-session-cache";
+import { cn } from "@/renderer/lib/utils";
 
 const STORAGE_KEY = "anivault-local-watchlist-v1";
+const SEARCH_WAIT_MS = 380;
 
 type ListEntry = { id: string; name: string; mode: "sub" | "dub" };
 
@@ -35,10 +40,40 @@ export function ListsPage() {
   const [draftId, setDraftId] = useState("");
   const [draftName, setDraftName] = useState("");
   const [draftMode, setDraftMode] = useState<"sub" | "dub">("sub");
+  const [lookup, setLookup] = useState("");
+  const debouncedLookup = useDebouncedValue(lookup, SEARCH_WAIT_MS);
+  const [lookupHits, setLookupHits] = useState<
+    { id: string; name: string; episodeCount: number; mode: "sub" | "dub" }[]
+  >([]);
+  const [lookupBusy, setLookupBusy] = useState(false);
 
   useEffect(() => {
     setEntries(loadList());
   }, []);
+
+  useEffect(() => {
+    const q = debouncedLookup.trim();
+    if (q.length < 2) {
+      setLookupHits([]);
+      setLookupBusy(false);
+      return;
+    }
+    let cancelled = false;
+    setLookupBusy(true);
+    void cachedAniSearch(q, () => getAniCli().search(q))
+      .then((list) => {
+        if (!cancelled) setLookupHits(list.slice(0, 12));
+      })
+      .catch(() => {
+        if (!cancelled) setLookupHits([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLookupBusy(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedLookup]);
 
   const persist = useCallback((next: ListEntry[]) => {
     setEntries(next);
@@ -55,6 +90,16 @@ export function ListsPage() {
     setDraftName("");
   }, [draftId, draftName, draftMode, entries, persist]);
 
+  const addFromHit = useCallback(
+    (hit: { id: string; name: string; mode: "sub" | "dub" }) => {
+      if (entries.some((e) => e.id === hit.id)) return;
+      persist([{ id: hit.id, name: hit.name, mode: hit.mode }, ...entries]);
+      setLookup("");
+      setLookupHits([]);
+    },
+    [entries, persist]
+  );
+
   const remove = useCallback(
     (id: string) => {
       persist(entries.filter((e) => e.id !== id));
@@ -63,21 +108,63 @@ export function ListsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 px-4 py-2 text-[var(--av-text)]">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-2 text-[var(--av-text)]">
       <header>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
           Lists
         </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">Local watchlist</h1>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">My lists</h1>
         <p className="mt-1 text-sm text-[var(--av-muted)]">
-          Saved on this device only. Add ani-cli series IDs from search, then open details to start
-          watching.
+          Saved on this device. Search the catalog to add instantly, or paste a series ID.
         </p>
       </header>
 
-      <div className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5">
+      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5 shadow-av-sm transition-[box-shadow] duration-200 hover:shadow-av-md">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
+          <p className="m-0 text-xs font-semibold uppercase tracking-wide text-[var(--av-muted)]">
+            Add from catalog
+          </p>
+        </div>
+        <div className="relative mt-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-muted)]" />
+          <Input
+            value={lookup}
+            onChange={(e) => setLookup(e.target.value)}
+            placeholder="Type a title (e.g. demon, jujutsu)…"
+            className="h-11 rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] pl-10 text-sm"
+          />
+        </div>
+        {lookupBusy && debouncedLookup.trim().length >= 2 ? (
+          <p className="mt-2 text-xs text-[var(--av-muted)]">Searching…</p>
+        ) : null}
+        {lookupHits.length > 0 ? (
+          <ul className="mt-3 max-h-64 space-y-1.5 overflow-y-auto rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg)]/50 p-2">
+            {lookupHits.map((h) => (
+              <li key={h.id}>
+                <button
+                  type="button"
+                  className={cn(
+                    "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-[background,transform] duration-200",
+                    "hover:bg-[var(--av-surface-hover)] active:scale-[0.99]"
+                  )}
+                  onClick={() => addFromHit(h)}
+                >
+                  <span className="min-w-0 flex-1 truncate font-medium">{h.name}</span>
+                  <span className="shrink-0 text-[10px] tabular-nums text-[var(--av-muted-foreground)]">
+                    {h.episodeCount} ep · {h.mode}
+                  </span>
+                  <ListPlus className="h-4 w-4 shrink-0 text-[var(--av-accent)]" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+
+      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--av-muted)]">
-          Add entry
+          Manual entry
         </p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="min-w-0 flex-1 space-y-2">
@@ -105,7 +192,7 @@ export function ListsPage() {
             </select>
             <Button
               type="button"
-              className="h-10 rounded-xl bg-[var(--av-text)] text-[var(--av-bg)] hover:opacity-90"
+              className="h-10 rounded-xl bg-[var(--av-text)] text-[var(--av-bg)] transition-transform duration-200 hover:opacity-90 active:scale-[0.98]"
               onClick={add}
             >
               <BookmarkPlus className="mr-1 h-4 w-4" />
@@ -113,7 +200,7 @@ export function ListsPage() {
             </Button>
           </div>
         </div>
-      </div>
+      </section>
 
       {entries.length === 0 ? (
         <p className="text-sm text-[var(--av-muted)]">No saved series yet.</p>

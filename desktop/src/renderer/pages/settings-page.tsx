@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { translateText } from "@/renderer/lib/translation";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import updateLogsText from "@/renderer/data/update-logs.txt?raw";
@@ -23,6 +24,7 @@ const LANGUAGES = [
 
 export function SettingsPage() {
   const { i18n } = useTranslation();
+  const { refresh } = useAnivaultConfig();
   const [cfg, setCfg] = useState<AnivaultStoreSchema | null>(null);
   const [saved, setSaved] = useState(false);
   const [translateSample, setTranslateSample] = useState<string | null>(null);
@@ -53,6 +55,7 @@ export function SettingsPage() {
     await window.anivault.setConfig(partial);
     setCfg((c) => (c ? { ...c, ...partial } : c));
     if (partial.uiDensity != null) applyUiDensityToShell(partial.uiDensity);
+    await refresh();
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
   };
@@ -168,6 +171,34 @@ export function SettingsPage() {
                   <SelectItem value="compact">Compact</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-4 border-t border-[var(--av-border)] pt-4">
+              <div>
+                <span className="text-xs font-medium text-[var(--av-muted)]">Smooth cursor</span>
+                <p className="text-[10px] text-[var(--av-muted-foreground)]">
+                  Animated pointer — uses extra CPU; leave off for lightest performance.
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
+                checked={cfg.smoothCursor}
+                onChange={(e) => void persist({ smoothCursor: e.target.checked })}
+              />
+            </div>
+            <div className="mt-4 flex items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-medium text-[var(--av-muted)]">Shell visual effects</span>
+                <p className="text-[10px] text-[var(--av-muted-foreground)]">
+                  Light blur on title bar, sidebar, and mini-player (more GPU work when on).
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border border-[var(--av-border)] accent-zinc-400"
+                checked={cfg.shellVisualEffects}
+                onChange={(e) => void persist({ shellVisualEffects: e.target.checked })}
+              />
             </div>
           </div>
 
@@ -350,11 +381,13 @@ export function SettingsPage() {
                   if (r.kind === "skipped") {
                     setUpdateMsg("Auto-update runs in installed builds only.");
                   } else if (r.kind === "ok") {
-                    setUpdateMsg(
-                      r.version
-                        ? `Checking… channel reports v${r.version} (download may be in progress).`
-                        : "Update check sent."
-                    );
+                    if (r.isUpdateAvailable && r.version) {
+                      setUpdateMsg(
+                        `Update available: v${r.version} (you have v${r.currentVersion}). Download runs in the background; restart when prompted.`
+                      );
+                    } else {
+                      setUpdateMsg(`Up to date (v${r.currentVersion}).`);
+                    }
                   } else {
                     const m = r.message;
                     if (/404|latest\.yml|Not Found/i.test(m)) {
@@ -385,6 +418,15 @@ export function SettingsPage() {
             Squirrel/electron-updater files, set <code className="font-mono">ANIVAULT_AUTO_UPDATE=1</code>{" "}
             to enable. Manual &quot;Check for updates&quot; may show a message until{" "}
             <code className="font-mono">latest.yml</code> exists. Restart still applies downloads.
+          </p>
+          <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
+            <span className="font-medium text-[var(--av-muted)]">How to test auto-update:</span> install an{" "}
+            <span className="font-medium">older</span> release from GitHub, then publish a{" "}
+            <span className="font-medium">newer</span> one (same repo) that includes{" "}
+            <code className="font-mono">latest.yml</code> and <code className="font-mono">.nupkg</code> from CI.
+            In the old build, open Settings → Check for updates. For detailed logs, launch the installed{" "}
+            <code className="font-mono">AniVault.exe</code> from a terminal with{" "}
+            <code className="font-mono">set ANIVAULT_UPDATER_DEBUG=1</code> (Windows).
           </p>
         </TabsContent>
       </Tabs>

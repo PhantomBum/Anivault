@@ -1,6 +1,6 @@
 import { cn } from "@/renderer/lib/utils";
 import React, { useEffect, useState } from "react";
-import { Maximize2, Minimize, Minimize2, Minus, Square, X } from "lucide-react";
+import { Minus, Square, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import LogoRoundedSquareLight from "@/renderer/assets/logo-rounded-square-light.svg?url";
@@ -33,12 +33,10 @@ export function WindowsTitlebar({
       .catch(() => setIsMaximized(false));
   }, [windowControls]);
 
-  const ExpandIcon = isMaximized ? Minimize2 : Maximize2;
-
   return (
     <div
       className={cn(
-        "draglayer fixed z-10 flex min-h-12 w-screen border-b border-[var(--av-border)] bg-[var(--av-bg)]/95 text-[var(--av-text)] backdrop-blur-sm",
+        "draglayer fixed z-10 flex min-h-12 w-screen border-b border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-text)]",
         className
       )}
     >
@@ -69,7 +67,8 @@ export function WindowsTitlebar({
 
         {children}
 
-        <div className="flex flex-auto justify-end items-center gap-2">
+        <div className="flex flex-auto justify-end items-center gap-1.5 pr-1">
+          <ThemePicker className="clickable h-9 w-9 shrink-0" isIconFormat />
           <div className="flex items-center gap-1">
             <Button
               type="button"

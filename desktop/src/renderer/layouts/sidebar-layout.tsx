@@ -1,3 +1,4 @@
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { BrandMark } from "@/renderer/components/brand-mark";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
 import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
@@ -90,6 +91,7 @@ function readSidebarCollapsed(): boolean {
 export default function SidebarLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { config } = useAnivaultConfig();
   const { title, sub } = useRouteHeading(location.pathname);
   const isHome = location.pathname === "/";
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -189,6 +191,7 @@ export default function SidebarLayout() {
       className="anivault-shell min-h-screen text-[var(--av-text)]"
       data-density="comfortable"
       data-sidebar={railCollapsed ? "collapsed" : "expanded"}
+      data-shell-effects={config?.shellVisualEffects ? "standard" : "minimal"}
     >
       <Titlebar className="border-0 bg-transparent">
         <div className="flex min-w-0 flex-1 items-center gap-2" />
@@ -217,7 +220,7 @@ export default function SidebarLayout() {
       <div className="flex w-full pt-12">
         <aside
           className={cn(
-            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col border-r border-[var(--av-border)] bg-gradient-to-b from-[var(--av-bg-elevated)] to-[#0a0a0c] pb-3 pt-4 shadow-[4px_0_32px_rgba(0,0,0,0.35)] backdrop-blur-md transition-[width,transform] duration-300 ease-out md:translate-x-0",
+            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col border-r border-[var(--av-border)] bg-[var(--av-bg-elevated)] pb-3 pt-4 shadow-[4px_0_24px_rgba(0,0,0,0.28)] transition-[width,transform] duration-300 ease-out md:translate-x-0",
             railCollapsed ? "px-2" : "px-4",
             mobileOpen ? "translate-x-0 shadow-av-lg" : "-translate-x-full md:translate-x-0"
           )}
@@ -287,8 +290,8 @@ export default function SidebarLayout() {
         <div className="av-shell-main flex min-h-[calc(100vh-3rem)] min-w-0 flex-1 flex-col md:ml-[var(--av-sidebar-w)]">
           <header
             className={cn(
-              "flex flex-wrap items-end gap-2 border-b border-[var(--av-border)] py-2.5 pl-14 pr-[var(--av-page-pad-x)] shadow-[0_8px_24px_rgba(0,0,0,0.25)] backdrop-blur-xl md:pl-6",
-              "bg-[var(--av-bg)]/85"
+              "av-shell-header flex flex-wrap items-center gap-2 border-b border-[var(--av-border)] py-2.5 pl-14 pr-[var(--av-page-pad-x)] shadow-[0_4px_16px_rgba(0,0,0,0.2)] md:pl-6",
+              "bg-[var(--av-bg)]"
             )}
           >
             <div className="min-w-0 flex-1">
@@ -304,7 +307,7 @@ export default function SidebarLayout() {
                 </p>
               ) : null}
             </div>
-            <div className="flex shrink-0 items-center gap-1 pb-0.5">
+            <div className="flex h-9 shrink-0 items-center gap-1">
               <button
                 type="button"
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-[var(--av-muted)] transition-all duration-200 hover:border-[var(--av-border)] hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)] hover:shadow-av-xs"
@@ -330,11 +333,11 @@ export default function SidebarLayout() {
             onScroll={onMainScroll}
             className={cn(
               "flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto py-[var(--av-page-pad-y)] pl-[var(--av-page-pad-x)] pr-[var(--av-page-pad-x)] md:px-6",
-              nowPlayingSession ? "pb-28" : "pb-6",
+              nowPlayingSession ? "pb-20" : "pb-6",
               isHome && "px-0 py-0"
             )}
           >
-            <main className="flex-1 min-h-0 w-full min-w-0">
+            <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
               <RouteErrorBoundary key={location.pathname}>
                 <Outlet />
               </RouteErrorBoundary>
@@ -350,7 +353,7 @@ export default function SidebarLayout() {
           type="button"
           className={cn(
             "fixed right-5 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] shadow-av-lg transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:shadow-av-md active:scale-95 md:right-8",
-            nowPlayingSession ? "bottom-28" : "bottom-6"
+            nowPlayingSession ? "bottom-20" : "bottom-6"
           )}
           aria-label="Back to top"
           title="Back to top"

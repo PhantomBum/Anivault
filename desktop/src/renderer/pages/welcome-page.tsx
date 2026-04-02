@@ -1,4 +1,14 @@
-import { Calendar, Compass, Filter, LayoutList, Search, Trash2 } from "lucide-react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  Filter,
+  LayoutList,
+  Search,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -22,7 +32,11 @@ import { cn } from "@/renderer/lib/utils";
 import { useDebouncedValue } from "@/renderer/hooks/use-debounced-value";
 import { useWelcomeSearch } from "@/renderer/hooks/use-welcome-search";
 import { useWelcomeRecentlyWatched } from "@/renderer/hooks/use-welcome-recently-watched";
-import { type AnimeSearchResult as AnimeSearchResultType, getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import {
+  type AnimeSearchResult as AnimeSearchResultType,
+  getAniCli,
+} from "@/renderer/lib/ani-cli-bridge";
+import { cachedAniRecent, cachedAniSearch } from "@/renderer/lib/ani-session-cache";
 import {
   UNKNOWN_SERIES_LABEL,
   mergeShowThumbnailsFromShowDetails,
@@ -69,13 +83,14 @@ export function WelcomePage() {
   const [spotlightPosterFailed, setSpotlightPosterFailed] = useState<Record<string, boolean>>({});
   const [spotlightHero, setSpotlightHero] = useState(0);
   const [progressStats, setProgressStats] = useState<{ trackedEpisodes: number } | null>(null);
+  const [freshPicks, setFreshPicks] = useState<AnimeSearchResultType[]>([]);
+  const [freshThumbs, setFreshThumbs] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
     let cancelled = false;
-    void getAniCli()
-      .search("one")
+    void cachedAniSearch("one", () => getAniCli().search("one"))
       .then((list) => {
-        if (!cancelled) setSpotlight(list.slice(0, 12));
+        if (!cancelled) setSpotlight(list.slice(0, 8));
       })
       .catch(() => {
         if (!cancelled) setSpotlight([]);
@@ -84,6 +99,34 @@ export function WelcomePage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void cachedAniRecent(1, 16, () => getAniCli().getRecent(1, 16))
+      .then((r) => {
+        if (!cancelled) setFreshPicks(r.items);
+      })
+      .catch(() => {
+        if (!cancelled) setFreshPicks([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (freshPicks.length === 0) return;
+    void mergeShowThumbnailsFromShowDetails(
+      freshPicks,
+      SHOW_DETAILS_FETCH_CONCURRENCY,
+      setFreshThumbs,
+      () => cancelled
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [freshPicks]);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,14 +141,6 @@ export function WelcomePage() {
       cancelled = true;
     };
   }, [spotlight]);
-
-  useEffect(() => {
-    if (spotlight.length <= 1) return;
-    const t = window.setInterval(() => {
-      setSpotlightHero((i) => (i + 1) % spotlight.length);
-    }, 7000);
-    return () => window.clearInterval(t);
-  }, [spotlight.length]);
 
   useEffect(() => {
     if (!window.watchProgress) return;
@@ -169,10 +204,25 @@ export function WelcomePage() {
   );
 
   const hero = spotlight[spotlightHero];
+  const spotlightLen = spotlight.length;
+
+  const goPrevSpotlight = useCallback(() => {
+    if (spotlightLen <= 1) return;
+    setSpotlightHero((i) => (i - 1 + spotlightLen) % spotlightLen);
+  }, [spotlightLen]);
+
+  const goNextSpotlight = useCallback(() => {
+    if (spotlightLen <= 1) return;
+    setSpotlightHero((i) => (i + 1) % spotlightLen);
+  }, [spotlightLen]);
 
   return (
-    <div className="min-h-[calc(100dvh-3rem)] bg-[var(--av-bg)] text-[var(--av-text)] antialiased">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-8 md:gap-12 md:px-8 md:pt-12">
+    <div className="relative min-h-[calc(100dvh-3rem)] bg-[var(--av-bg)] text-[var(--av-text)] antialiased">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(255,255,255,0.06),transparent)]"
+        aria-hidden
+      />
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-8 md:gap-12 md:px-8 md:pt-12">
         <header className="flex flex-col items-center gap-5 text-center">
           <BrandMark size="hero" className="shadow-[0_12px_40px_-8px_rgba(0,0,0,0.75)]" />
           <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--av-text)] md:text-[2rem]">
@@ -200,51 +250,23 @@ export function WelcomePage() {
         </header>
 
         {hero ? (
-          <section className="relative overflow-hidden rounded-[1.75rem] border border-[var(--av-border)] shadow-av-lg motion-safe:transition-shadow duration-300">
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-35"
-              style={{
-                backgroundImage: spotlightThumbs[hero.id]
-                  ? `url(${spotlightThumbs[hero.id]})`
-                  : undefined,
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--av-bg)] via-[var(--av-bg)]/90 to-[var(--av-bg)]/40" />
-            <div className="relative flex flex-col gap-4 p-6 md:flex-row md:items-center md:gap-10 md:p-10">
-              <div className="flex min-w-0 flex-1 flex-col gap-3 text-left">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--av-muted)]">
-                  Spotlight
-                </p>
-                <h2 className="text-2xl font-bold leading-tight tracking-tight md:text-4xl">
-                  {hero.name}
-                </h2>
-                <p className="text-sm text-[var(--av-muted)]">
-                  {hero.episodeCount} episodes · {getAvailabilityLabel(hero)}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    className="rounded-2xl"
-                    onClick={() => openSearchResult(hero)}
-                  >
-                    Open details
-                  </Button>
-                  <Button type="button" variant="outline" className="rounded-2xl border-[var(--av-border)]" asChild>
-                    <Link to="/discover">Discover</Link>
-                  </Button>
-                </div>
-              </div>
-              <div className="mx-auto aspect-[2/3] w-40 shrink-0 overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-md md:w-48">
+          <section className="relative overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-sm">
+            {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
+              <div
+                className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.14]"
+                style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
+                aria-hidden
+              />
+            ) : null}
+            <div className="relative flex flex-col gap-3 p-4 sm:flex-row sm:items-stretch sm:gap-4">
+              <div className="relative h-32 w-[5.25rem] shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] sm:h-36 sm:w-24">
                 {(() => {
-                  const thumbResolved = Object.prototype.hasOwnProperty.call(
-                    spotlightThumbs,
-                    hero.id
-                  );
+                  const thumbResolved = hero.id in spotlightThumbs;
                   const thumbUrl = spotlightThumbs[hero.id];
                   if (!thumbResolved) {
                     return (
-                      <div className="flex h-full min-h-[180px] w-full items-center justify-center px-2 text-center text-[11px] text-[var(--av-muted)]">
-                        Loading poster…
+                      <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] text-[var(--av-muted)]">
+                        …
                       </div>
                     );
                   }
@@ -265,7 +287,105 @@ export function WelcomePage() {
                   return <PosterPlaceholder title={hero.name} />;
                 })()}
               </div>
+
+              <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--av-muted)]">
+                    Spotlight
+                  </p>
+                  {spotlightLen > 1 ? (
+                    <div className="flex shrink-0 gap-0.5">
+                      <button
+                        type="button"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
+                        aria-label="Previous spotlight"
+                        onClick={goPrevSpotlight}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
+                        aria-label="Next spotlight"
+                        onClick={goNextSpotlight}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-lg font-bold leading-snug tracking-tight text-[var(--av-text)] sm:text-xl">
+                    {hero.name}
+                  </h2>
+                  <p className="mt-0.5 text-xs text-[var(--av-muted)]">
+                    {hero.episodeCount} episodes · {getAvailabilityLabel(hero)}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 rounded-lg px-3 text-xs"
+                    onClick={() => openSearchResult(hero)}
+                  >
+                    Details
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 rounded-lg border-[var(--av-border)] px-3 text-xs"
+                    asChild
+                  >
+                    <Link to="/discover">Discover</Link>
+                  </Button>
+                </div>
+                {spotlightLen > 1 ? (
+                  <div className="flex flex-wrap gap-1.5 pt-1" role="tablist" aria-label="Spotlight picks">
+                    {spotlight.map((s, i) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={i === spotlightHero}
+                        aria-label={`${s.name}`}
+                        className={cn(
+                          "h-1.5 rounded-full transition-[width,background-color] duration-200",
+                          i === spotlightHero
+                            ? "w-5 bg-[var(--av-text)]"
+                            : "w-1.5 bg-[var(--av-border)] hover:bg-[var(--av-muted)]"
+                        )}
+                        onClick={() => setSpotlightHero(i)}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </div>
+          </section>
+        ) : null}
+
+        {freshPicks.length > 0 ? (
+          <section className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
+              <h2 className="m-0 text-base font-bold tracking-tight">Fresh on the catalog</h2>
+            </div>
+            <HorizontalCarousel
+              variant="home"
+              items={freshPicks.map((anime) => ({
+                id: anime.id,
+                coverUrl: freshThumbs[anime.id] ?? null,
+                title: anime.name,
+                subtitle: `Episode ${anime.episodeCount} · ${getAvailabilityLabel(anime)}`,
+                mature: inferMatureRating(anime.name),
+                onClick: () => openSearchResult(anime),
+                onContextCopyTitle: () => void navigator.clipboard.writeText(anime.name),
+                onContextOpenDetails: () =>
+                  navigate(`/anime/${anime.id}`, { state: { anime } }),
+              }))}
+            />
           </section>
         ) : null}
 
@@ -489,15 +609,22 @@ export function WelcomePage() {
           </section>
         )}
           </div>
-          <aside className="hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)]/50 p-4 lg:block">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--av-muted)]">Spotlight</h3>
-            <ul className="mt-3 space-y-2 text-sm">
-              {spotlight.slice(0, 10).map((s) => (
+          <aside className="hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/60 p-3 lg:block">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+              Featured picks
+            </h3>
+            <ul className="mt-2 space-y-1 text-sm">
+              {spotlight.map((s, i) => (
                 <li key={s.id}>
                   <button
                     type="button"
-                    className="w-full truncate rounded-lg px-2 py-1.5 text-left text-[var(--av-text)] hover:bg-[var(--av-bg-elevated)]"
-                    onClick={() => openSearchResult(s)}
+                    className={cn(
+                      "w-full truncate rounded-md px-2 py-1.5 text-left text-[13px] transition-colors",
+                      i === spotlightHero
+                        ? "bg-[var(--av-bg-elevated)] text-[var(--av-text)]"
+                        : "text-[var(--av-muted)] hover:bg-[var(--av-bg-elevated)] hover:text-[var(--av-text)]"
+                    )}
+                    onClick={() => setSpotlightHero(i)}
                   >
                     {s.name}
                   </button>

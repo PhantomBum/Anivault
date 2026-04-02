@@ -69,7 +69,7 @@ export function WatchPlayerStage({
   }, [playUrl, streamRevision, useNativeControls, bumpControls]);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl bg-black shadow-[0_24px_80px_-20px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/10">
+    <div className="relative w-full overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-[0_12px_40px_-12px_rgba(0,0,0,0.75)] ring-1 ring-zinc-800/80">
       <div className="relative flex aspect-video w-full items-center justify-center bg-black">
         {loadingEpisode && !playUrl ? (
           <div className="flex flex-col items-center gap-3 text-zinc-500">
@@ -112,7 +112,7 @@ export function WatchPlayerStage({
                   type="button"
                   size="icon"
                   variant="secondary"
-                  className="pointer-events-auto h-9 w-9 rounded-full border border-white/10 bg-black/70 text-white shadow-lg backdrop-blur-sm hover:bg-black/85"
+                  className="pointer-events-auto h-9 w-9 rounded-full border border-zinc-700 bg-zinc-950/90 text-zinc-100 shadow-md hover:bg-zinc-900"
                   onClick={toggleFullscreen}
                   title="Fullscreen"
                 >
@@ -122,7 +122,7 @@ export function WatchPlayerStage({
                   type="button"
                   size="icon"
                   variant="secondary"
-                  className="pointer-events-auto h-9 w-9 rounded-full border border-white/10 bg-black/70 text-white shadow-lg backdrop-blur-sm hover:bg-black/85"
+                  className="pointer-events-auto h-9 w-9 rounded-full border border-zinc-700 bg-zinc-950/90 text-zinc-100 shadow-md hover:bg-zinc-900"
                   onClick={togglePictureInPicture}
                   title="Picture in picture"
                 >
@@ -159,7 +159,7 @@ export function WatchPlayerStage({
               />
             ) : null}
             {playbackError ? (
-              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-black/90 px-6 text-center backdrop-blur-sm">
+              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-black/92 px-6 text-center">
                 <p className="max-w-md text-sm leading-relaxed text-zinc-200">{playbackError}</p>
                 <Button
                   type="button"

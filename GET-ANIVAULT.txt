@@ -2,6 +2,12 @@ GET ANIVAULT (Windows)
 
 You only need the installer from the Releases page — not the full repository or Node.js.
 
-1) https://github.com/PhantomBum/Anivault/releases
-2) Download AniVaultSetup.exe (Assets on the latest release)
-3) Run the installer.
+Use this repository only (not a fork): https://github.com/PhantomBum/Anivault/releases
+
+If Assets lists only “Source code (zip/tar.gz)” and no AniVaultSetup.exe, you are on the wrong repo or a tag-only release without CI builds.
+
+Direct download (v1.0.0-alpha.3):
+https://github.com/PhantomBum/Anivault/releases/download/v1.0.0-alpha.3/AniVaultSetup.exe
+
+1) Open Releases and pick a release that shows AniVaultSetup.exe under Assets, or use the link above.
+2) Run the installer.

@@ -13,6 +13,7 @@ import { cacheThumbnail, getCachedThumbnail } from "@/renderer/lib/local-cache";
 type FetchedShowDetails = Awaited<ReturnType<ReturnType<typeof getAniCli>["getShowDetails"]>>;
 
 /** Each call hits the network; cap parallel work so grids stay responsive. */
+/** Kept modest to limit parallel network + decoded image memory. */
 export const SHOW_DETAILS_FETCH_CONCURRENCY = 4;
 
 /** Shown when `getShowDetails` fails — never use raw anime id as display name. */

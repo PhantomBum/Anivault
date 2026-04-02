@@ -20,4 +20,12 @@ export type AnivaultStoreSchema = {
   defaultPlaybackSpeed: number;
   /** After an episode ends, go to the next one automatically (with countdown). */
   autoPlayNextEpisode: boolean;
+  /**
+   * Custom animated cursor (extra CPU). Off by default for efficiency.
+   */
+  smoothCursor: boolean;
+  /**
+   * Subtle backdrop blur on titlebar, sidebar, and mini-player. Off by default.
+   */
+  shellVisualEffects: boolean;
 };

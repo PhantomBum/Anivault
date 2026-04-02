@@ -5,6 +5,7 @@ import {
   GITHUB_UPDATE_OWNER,
   GITHUB_UPDATE_REPO,
   isBackgroundAutoUpdateEnabled,
+  isUpdaterDebugEnabled,
 } from "@/main/update-config";
 
 /**
@@ -16,8 +17,16 @@ export function setupAutoUpdater(): void {
     return;
   }
 
-  /** Avoid stderr noise (e.g. missing `latest.yml`) until GitHub Releases ship updater artifacts. */
-  autoUpdater.logger = new NoOpLogger();
+  const debug = isUpdaterDebugEnabled();
+  /** Avoid stderr noise (e.g. missing `latest.yml`) unless ANIVAULT_UPDATER_DEBUG=1. */
+  autoUpdater.logger = debug
+    ? {
+        info: (...msg: unknown[]) => console.log("[anivault-updater]", ...msg),
+        warn: (...msg: unknown[]) => console.warn("[anivault-updater]", ...msg),
+        error: (...msg: unknown[]) => console.error("[anivault-updater]", ...msg),
+        debug: (m: string) => console.debug("[anivault-updater]", m),
+      }
+    : new NoOpLogger();
 
   autoUpdater.autoDownload = true;
   autoUpdater.allowPrerelease = true;
@@ -35,9 +44,22 @@ export function setupAutoUpdater(): void {
     }
   });
 
-  autoUpdater.on("error", () => {
-    /* errors are expected until releases include latest.yml; keep quiet */
+  autoUpdater.on("error", (err) => {
+    if (debug) console.error("[anivault-updater] error", err);
   });
+
+  if (debug) {
+    autoUpdater.on("checking-for-update", () => console.log("[anivault-updater] checking…"));
+    autoUpdater.on("update-available", (info) =>
+      console.log("[anivault-updater] update available", info.version)
+    );
+    autoUpdater.on("update-not-available", (info) =>
+      console.log("[anivault-updater] up to date", info.version)
+    );
+    autoUpdater.on("download-progress", (p) =>
+      console.log("[anivault-updater] download", `${Math.round(p.percent)}%`)
+    );
+  }
 
   if (isBackgroundAutoUpdateEnabled()) {
     void autoUpdater.checkForUpdates();

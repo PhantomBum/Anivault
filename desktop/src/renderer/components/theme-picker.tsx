@@ -33,7 +33,7 @@ export function ThemePicker({ isIconFormat = false, className }: ThemePickerProp
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {isIconFormat ? (
-          <Button variant="ghost" size="icon" className={cn("h-7 w-7", className)}>
+          <Button variant="ghost" size="icon" className={cn("h-9 w-9", className)}>
             <Palette className="h-[1.2rem] w-[1.2rem]" />
             <span className="sr-only">Change theme</span>
           </Button>

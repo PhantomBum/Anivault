@@ -5,6 +5,8 @@ import {
   mergeShowThumbnailsFromShowDetails,
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
+import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedAniRecent, cachedAniSearch } from "@/renderer/lib/ani-session-cache";
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { cn } from "@/renderer/lib/utils";
 import { Compass } from "lucide-react";
@@ -12,7 +14,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const TABS: { id: string; label: string; query: string; hint: string }[] = [
-  { id: "popular", label: "Popular", query: "one", hint: "Broad ani-cli query" },
+  {
+    id: "fresh",
+    label: "Fresh",
+    query: "__fresh__",
+    hint: "Recently updated picks (cached locally for instant return visits)",
+  },
+  { id: "popular", label: "Popular", query: "one", hint: "Broad catalog probe" },
   { id: "trending", label: "Trending", query: "a", hint: "High-volume letter" },
   { id: "top", label: "Top", query: "naruto", hint: "Well-known title" },
   { id: "month", label: "This month", query: "2024", hint: "Numeric probe" },
@@ -32,21 +40,27 @@ export function DiscoverPage() {
     let cancelled = false;
     setLoading(true);
     setErr(null);
-    void window.aniCli
-      .search(active.query)
-      .then((list) => {
+    const aniCli = getAniCli();
+    void (async () => {
+      try {
+        let list: AnimeSearchResult[];
+        if (active.id === "fresh") {
+          const r = await cachedAniRecent(1, 48, () => aniCli.getRecent(1, 48));
+          list = r.items;
+        } else {
+          list = await cachedAniSearch(active.query, () => aniCli.search(active.query));
+        }
         if (!cancelled) setRows(list);
-      })
-      .catch((e) => {
+      } catch (e) {
         if (!cancelled) setErr(e instanceof Error ? e.message : "Failed");
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [active.query]);
+  }, [active.id, active.query]);
 
   const sig = useMemo(() => `${tab}:${rows.map((r) => r.id).join("\u0001")}`, [tab, rows]);
   const enrichMap = useAnilistEnrichment(rows, sig);
@@ -75,7 +89,7 @@ export function DiscoverPage() {
   const quickPlay = useCallback(
     async (anime: AnimeSearchResult) => {
       try {
-        const episodes = await window.aniCli.getEpisodes(anime.id, anime.mode);
+        const episodes = await getAniCli().getEpisodes(anime.id, anime.mode);
         if (episodes.length === 0) return;
         navigate("/watch", {
           state: {
@@ -101,7 +115,7 @@ export function DiscoverPage() {
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Discover</h2>
             <p className="text-sm text-[var(--av-muted)]">
-              Tabs use simple ani-cli probes — open Search for precise queries.
+              Fresh pulls the live catalog; other tabs use quick probes — open Search for exact titles.
             </p>
           </div>
         </div>

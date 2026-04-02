@@ -28,3 +28,8 @@ export const GITHUB_REPO_SLUG = `${GITHUB_UPDATE_OWNER}/${GITHUB_UPDATE_REPO}` a
 export function isBackgroundAutoUpdateEnabled(): boolean {
   return process.env.ANIVAULT_AUTO_UPDATE === "1";
 }
+
+/** Log updater checks, downloads, and errors to stderr (packaged builds: run from a console with this set). */
+export function isUpdaterDebugEnabled(): boolean {
+  return process.env.ANIVAULT_UPDATER_DEBUG === "1";
+}

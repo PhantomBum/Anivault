@@ -5,13 +5,13 @@ import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { initI18n } from "@/renderer/helpers/i18n/i18n";
 import { updateAppLanguage } from "@/renderer/helpers/i18n/language-helpers";
-import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
 import { syncThemeWithLocal } from "@/renderer/helpers/theme/theme-helper";
 import { AvLoadingBar } from "@/renderer/components/av-loading-bar";
 import { AppGate } from "@/renderer/components/app-gate";
 import { AvToastHost } from "@/renderer/components/av-toast-host";
-import { SmoothCursor } from "@/renderer/components/smooth-cursor";
+import { SmoothCursorHost } from "@/renderer/components/smooth-cursor-host";
 import { UpdateAvailableDialog } from "@/renderer/components/update-available-dialog";
+import { AnivaultConfigProvider } from "@/renderer/context/anivault-config-context";
 import { NowPlayingProvider } from "@/renderer/context/now-playing-context";
 import SidebarLayout from "@/renderer/layouts/sidebar-layout";
 
@@ -69,16 +69,9 @@ export default function App() {
     void updateAppLanguage(i18n);
   }, [i18n]);
 
-  useEffect(() => {
-    if (!window.anivault) return;
-    void window.anivault.getAllConfig().then((c) => {
-      applyUiDensityToShell(c.uiDensity);
-    });
-  }, []);
-
   return (
-    <>
-      <SmoothCursor />
+    <AnivaultConfigProvider>
+      <SmoothCursorHost />
       <AvToastHost />
       <AppGate>
       <HashRouter>
@@ -114,7 +107,7 @@ export default function App() {
         </Suspense>
       </HashRouter>
       </AppGate>
-    </>
+    </AnivaultConfigProvider>
   );
 }
 
