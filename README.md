@@ -1,5 +1,7 @@
 # AniVault
 
+Watch anime anytime, anywhere — straight from your desktop.
+
 Monorepo layout:
 
 | Path | Description |
