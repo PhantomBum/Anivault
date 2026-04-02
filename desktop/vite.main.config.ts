@@ -13,7 +13,8 @@ export default defineConfig((env) => {
   const define = {
     ...getBuildDefine(forgeEnv),
     __ANIVAULT_GH_OWNER__: JSON.stringify(process.env.ANIVAULT_GITHUB_OWNER ?? gh.owner),
-    __ANIVAULT_GH_REPO__: JSON.stringify(process.env.ANIVAULT_GITHUB_REPO ?? gh.repo),
+    /** Must be repo *name* (see `GithubRepo` in scripts/github-repo.ts); `gh.repo` was always undefined. */
+    __ANIVAULT_GH_REPO__: JSON.stringify(process.env.ANIVAULT_GITHUB_REPO ?? gh.name),
   };
   const config: UserConfig = {
     build: {

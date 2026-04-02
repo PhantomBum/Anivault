@@ -41,6 +41,10 @@ export function forgePostMakeLatestYml(
       ].join("\n");
       const out = join(dir, "latest.yml");
       writeFileSync(out, yml, "utf8");
+      // Publisher only uploads paths listed in `artifacts`; without this, latest.yml never reaches GitHub Releases.
+      if (!result.artifacts.includes(out)) {
+        result.artifacts.push(out);
+      }
       // eslint-disable-next-line no-console
       console.info(`[forge-post-make] wrote ${out} for ${nupkgName}`);
     }
