@@ -82,6 +82,8 @@ const config: ForgeConfig = {
           owner: gh.owner,
           name: gh.name,
         },
+        /** Default is draft; drafts are hidden from public Releases until published. */
+        draft: false,
         prerelease: true,
       },
     },
