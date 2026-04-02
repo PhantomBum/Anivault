@@ -1,0 +1,8 @@
+---
+description: After committing AniVault repo changes, push to GitHub immediately
+alwaysApply: true
+---
+
+# Git push for AniVault
+
+When you finish a logical change in this repository (commit created or ready to ship), **run `git push`** to `origin` on the current branch (usually `main`) so GitHub stays up to date. If you created a commit, push right after; resolve any auth or network errors and retry.

@@ -1,36 +1,23 @@
 # AniVault
 
-Watch anime anytime, anywhere — straight from your desktop.
+Desktop anime streaming (Windows).
 
-## Download the Windows app
+## Install (Windows)
 
-Installers are **not** checked into this repo (build output is in `.gitignore`). Get the latest **AniVaultSetup.exe** and update files from **[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)**.
+1. Open **[Releases](https://github.com/PhantomBum/Anivault/releases)**.
+2. Under **Assets**, download **`AniVaultSetup.exe`** (latest release).
+3. Run the installer and start **AniVault** from the Start menu or desktop shortcut.
 
-Monorepo layout:
+Updates: use **Settings → Check for updates** in the app, or install a newer release from the same Releases page.
 
-| Path | Description |
-|------|-------------|
-| [`desktop/`](desktop/) | **Electron desktop app** (AniVault). See its [README](desktop/README.md) for dev, build, and **GitHub auto-update** setup. |
-| [`landing/`](landing/) | Optional Next.js marketing site (points at this repo’s releases). |
-| [`server/`](server/) | Optional Fastify API (auth, gallery, billing). See [server/README.md](server/README.md). |
+---
 
-## Desktop: releases and auto-update
+## Repository layout
 
-GitHub Actions workflow: [`.github/workflows/release-desktop.yml`](.github/workflows/release-desktop.yml)  
-Full instructions: [desktop/README.md](desktop/README.md).
+| Folder | What it is |
+|--------|------------|
+| [`desktop/`](desktop/) | Windows app (Electron). Build from source: [desktop/README.md](desktop/README.md) |
+| [`landing/`](landing/) | Optional marketing site |
+| [`server/`](server/) | Optional API |
 
-## Auto-push after each commit (optional)
-
-This repo includes a **post-commit** hook that runs `git push origin <current-branch>` so changes reach GitHub immediately after you commit.
-
-**One-time setup** (per clone):
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/setup-git-hooks.ps1
-```
-
-Or manually: `git config core.hooksPath .githooks`
-
-To turn it off: `git config --unset core.hooksPath`
-
-If a push fails (offline, auth), fix the issue and run `git push` yourself; your commit is already saved locally.
+Maintainers: releases are built by [GitHub Actions](.github/workflows/release-desktop.yml) when a version tag is pushed. Details live in [desktop/README.md](desktop/README.md).
