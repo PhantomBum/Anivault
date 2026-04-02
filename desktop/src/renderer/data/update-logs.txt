@@ -1,5 +1,8 @@
 AniVault — changelog
 
+1.0.0-alpha.11
+- CI: Windows release workflow now uploads AniVaultSetup.exe + latest.yml via GitHub Release assets (forge publish dry-run was failing; no binaries were attached on alpha.10)
+
 1.0.0-alpha.10
 - Windows installer is now NSIS: real setup wizard, AniVault icon on installer/uninstaller, choose install folder before install
 - Auto-update uses GitHub Releases `latest.yml` + `AniVaultSetup.exe` (Squirrel/nupkg no longer used on Windows)

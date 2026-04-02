@@ -90,7 +90,8 @@ const config: ForgeConfig = {
 
           productName: "AniVault",
 
-          copyright: "Copyright © AniVault",
+          // ASCII-only: special chars in NSIS scripts have broken some CI runners
+          copyright: "Copyright (c) AniVault",
 
           executableName: "anivault",
 
@@ -123,10 +124,6 @@ const config: ForgeConfig = {
             createStartMenuShortcut: true,
 
             shortcutName: "AniVault",
-
-            menuCategory: false,
-
-            displayLanguageSelector: false,
 
           },
 

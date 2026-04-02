@@ -1,17 +1,9 @@
-# Build and publish the Electron desktop app to GitHub Releases.
-# Produces NSIS AniVaultSetup.exe + latest.yml (Felix NSIS maker + electron-updater-yaml) for electron-updater.
+# Build Windows NSIS installer and attach binaries to the GitHub Release for this tag.
 #
-# Prerequisites:
-# - App lives under `desktop/` (monorepo root = anivault).
+# Note: `electron-forge publish --dry-run` / `--from-dry-run` has been unreliable in CI;
+# we run `npm run make` then upload artifacts with softprops/action-gh-release.
 #
-# Release from your PC (easiest):  .\scripts\release-desktop.ps1 1.0.0-alpha.5
-# That bumps desktop/package.json, commits, tags v1.0.0-alpha.5, pushes — this workflow runs on the tag.
-#
-# Manual run on GitHub: Actions → Release desktop (Windows) → Run workflow → branch main.
-#   Uses whatever version is in desktop/package.json on that branch (no tag required).
-#
-# If Assets show only "Source code (zip/tar.gz)" and no AniVaultSetup.exe:
-#   The job failed before upload — open Actions → failed run → expand "Build (dry-run)" or "Upload to GitHub Release".
+# Release from PC: .\scripts\release-desktop.ps1 1.0.0-alpha.11  (bumps version, commits, tags, pushes)
 
 name: Release desktop (Windows)
 
@@ -51,26 +43,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Print package version (must match tag vX when releasing from a tag)
+      - name: Print package version
         run: node -e "console.log('desktop/package.json version:', require('./package.json').version)"
 
-      # Dry-run runs `make` and saves artifact paths; no GitHub upload yet.
-      - name: Build installers (dry-run)
-        run: npm run publish -- --dry-run
+      - name: Build Windows installer (NSIS)
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: npm run make
 
-      - name: List Windows artifacts (expect AniVaultSetup.exe, latest.yml under out/make/nsis/x64)
+      - name: List build output
         shell: pwsh
         run: |
-          Write-Host "---- out/make (recursive) ----"
-          if (Test-Path "out/make") {
-            Get-ChildItem -Path "out/make" -Recurse -File | ForEach-Object { $_.FullName }
-          } else {
-            Write-Host "ERROR: out/make missing — build failed."
+          Write-Host "---- out/make/nsis/x64 ----"
+          if (-not (Test-Path "out/make/nsis/x64")) {
+            Write-Host "ERROR: out/make/nsis/x64 missing — build did not produce NSIS output."
             exit 1
           }
+          Get-ChildItem -Path "out/make/nsis/x64" -File | ForEach-Object { Write-Host $_.FullName $_.Length }
 
-      # Upload only; uses saved dry-run state (no second full compile).
-      - name: Upload to GitHub Release
+      - name: Upload installer and updater metadata to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            desktop/out/make/nsis/x64/AniVaultSetup.exe
+            desktop/out/make/nsis/x64/latest.yml
+            desktop/out/make/nsis/x64/AniVaultSetup.exe.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish -- --from-dry-run
+
+      - name: Upload build artifacts (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-nsis-${{ github.sha }}
+          path: desktop/out/make/nsis/x64/
