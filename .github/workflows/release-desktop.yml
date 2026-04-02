@@ -2,14 +2,16 @@
 # Produces Squirrel artifacts + latest.yml (see scripts/forge-post-make-latest-yml.ts) for electron-updater.
 #
 # Prerequisites:
-# - Repository layout: desktop app lives at `desktop/` (monorepo root = anivault).
-#   If your repo is ONLY the desktop app at root, change `working-directory` to `.` in both places below.
+# - App lives under `desktop/` (monorepo root = anivault).
 #
-# Trigger: push a version tag, e.g. `git tag v1.0.1 && git push origin v1.0.1`
-# Bump `desktop/package.json` version to match the tag first (Forge publishes that version).
+# Release from your PC (easiest):  .\scripts\release-desktop.ps1 1.0.0-alpha.5
+# That bumps desktop/package.json, commits, tags v1.0.0-alpha.5, pushes — this workflow runs on the tag.
 #
-# If a release shows only "Source code (zip/tar.gz)" and no AniVaultSetup.exe / nupkg / latest.yml,
-# this workflow did not finish: open the repo → Actions → this workflow → failed run → logs.
+# Manual run on GitHub: Actions → Release desktop (Windows) → Run workflow → branch main.
+#   Uses whatever version is in desktop/package.json on that branch (no tag required).
+#
+# If Assets show only "Source code (zip/tar.gz)" and no AniVaultSetup.exe:
+#   The job failed before upload — open Actions → failed run → expand "Build (dry-run)" or "Upload to GitHub Release".
 
 name: Release desktop (Windows)
 
@@ -17,11 +19,14 @@ on:
   push:
     tags:
       - "v*"
-  # Re-run a Windows build + upload without a new tag (uses the branch you select in the UI).
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-desktop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -34,20 +39,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Tag pushes already point at the tagged commit; manual runs use the default branch you pick.
           fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: desktop/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish to GitHub Releases
+      - name: Print package version (must match tag vX when releasing from a tag)
+        run: node -e "console.log('desktop/package.json version:', require('./package.json').version)"
+
+      # Dry-run runs `make` and saves artifact paths; no GitHub upload yet.
+      - name: Build installers (dry-run)
+        run: npm run publish -- --dry-run
+
+      - name: List Windows artifacts (expect AniVaultSetup.exe, nupkg, RELEASES, latest.yml)
+        shell: pwsh
+        run: |
+          Write-Host "---- out/make (recursive) ----"
+          if (Test-Path "out/make") {
+            Get-ChildItem -Path "out/make" -Recurse -File | ForEach-Object { $_.FullName }
+          } else {
+            Write-Host "ERROR: out/make missing — build failed."
+            exit 1
+          }
+
+      # Upload only; uses saved dry-run state (no second full compile).
+      - name: Upload to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish
+        run: npm run publish -- --from-dry-run

@@ -1,13 +1,64 @@
 GET ANIVAULT (Windows)
+========================
 
-You only need the installer from the Releases page — not the full repository or Node.js.
+DOWNLOAD THE INSTALLER
+----------------------
+Official repo (use this URL, not a fork):
+  https://github.com/PhantomBum/Anivault/releases
 
-Use this repository only (not a fork): https://github.com/PhantomBum/Anivault/releases
+Under "Assets" you want:
+  - AniVaultSetup.exe   ← main Windows installer
+  - *.nupkg, RELEASES, latest.yml  ← needed for in-app auto-update
 
-If Assets lists only “Source code (zip/tar.gz)” and no AniVaultSetup.exe, you are on the wrong repo or a tag-only release without CI builds.
+If you only see "Source code (zip)" and "Source code (tar.gz)", that release did NOT finish
+building on GitHub Actions — there is no installer yet. Pick another release or wait for CI
+(see "Release a new version" below).
 
-Direct download (v1.0.0-alpha.3):
-https://github.com/PhantomBum/Anivault/releases/download/v1.0.0-alpha.3/AniVaultSetup.exe
 
-1) Open Releases and pick a release that shows AniVaultSetup.exe under Assets, or use the link above.
-2) Run the installer.
+RELEASE A NEW VERSION (puts AniVaultSetup.exe on GitHub for everyone)
+-----------------------------------------------------------------------
+On your PC, in PowerShell, from the anivault repo folder:
+
+  cd C:\Users\rdw16\anivault
+  .\scripts\release-desktop.ps1 1.0.0-alpha.5
+
+(Change the version number each time; it must be higher than the last release for updates.)
+
+Then:
+  1) Open https://github.com/PhantomBum/Anivault/actions
+  2) Wait until "Release desktop (Windows)" is GREEN (checkmark), not red.
+  3) Open https://github.com/PhantomBum/Anivault/releases — your new tag should list the .exe.
+
+If the workflow is RED: open the failed run → read the error in the step
+"Build installers (dry-run)" or "Upload to GitHub Release". Fix the error, then either:
+  - push a new tag with a higher version, or
+  - GitHub → Actions → "Release desktop (Windows)" → "Run workflow" on main (rebuilds from
+    current desktop/package.json version).
+
+
+MANUAL RUN ON GITHUB (no new tag)
+---------------------------------
+GitHub → Actions → "Release desktop (Windows)" → "Run workflow" → Branch: main → Run.
+Uses whatever version is already in desktop/package.json on main.
+
+
+TEST AUTO-UPDATE ON YOUR PC
+---------------------------
+1) Install an OLD release from GitHub (e.g. v1.0.0-alpha.3) using AniVaultSetup.exe.
+2) Publish a NEWER release with CI green (higher version in package.json + assets on that release).
+3) Open the OLD app → Settings → Updates → "Check for updates".
+4) Optional: run the installed app from cmd with logging:
+     set ANIVAULT_UPDATER_DEBUG=1
+     "C:\Users\<you>\AppData\Local\AniVault\AniVault.exe"
+   (path may vary; use Start menu shortcut → right-click → open file location.)
+
+
+THERE IS NO "PATH" TO TYPE IN GITHUB FOR UPDATES
+------------------------------------------------
+Pushing code to the "main" branch only updates the source code. Installers appear when the
+"Release desktop (Windows)" action succeeds — usually after you push a version tag (the script
+above does that for you).
+
+
+Older direct link example (replace tag if needed):
+  https://github.com/PhantomBum/Anivault/releases/download/v1.0.0-alpha.3/AniVaultSetup.exe

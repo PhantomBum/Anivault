@@ -85,6 +85,8 @@ const config: ForgeConfig = {
         /** Default is draft; drafts are hidden from public Releases until published. */
         draft: false,
         prerelease: true,
+        /** Re-upload assets if a previous run failed after creating the release (set GITHUB_PUBLISH_FORCE=1 in CI). */
+        force: process.env.GITHUB_PUBLISH_FORCE === "1",
       },
     },
   ],

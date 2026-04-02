@@ -17,6 +17,8 @@
     "make": "electron-forge make",
     "make:clean": "npm run clean && npm run make",
     "publish": "electron-forge publish",
+    "publish:dry": "electron-forge publish --dry-run",
+    "publish:upload": "electron-forge publish --from-dry-run",
     "lint": "eslint --ext .ts,.tsx .",
     "format": "prettier . --write"
   },
