@@ -1,6 +1,7 @@
 # AniVault
 
 Watch anime anytime, anywhere — straight from your desktop.
+Open sourced from open anime.
 
 Monorepo layout:
 
