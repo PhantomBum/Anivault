@@ -1,13 +1,8 @@
-=== PATHS (one place to look) ===
-
-DOWNLOAD — public release (recommended):
+Download (public release):
   https://github.com/PhantomBum/Anivault/releases
-  File to grab: AniVaultSetup.exe  (only file you need; standalone installer)
+  AniVaultSetup.exe
 
-LOCAL BUILD — installer after you run npm run make (developers):
+Local build output (after npm run make in desktop/):
   desktop\out\make\squirrel.windows\x64\AniVaultSetup.exe
 
-CHANGELOG:
-  UPDATE-LOGS.txt  (repo root — same text is in the app under Settings → Updates)
-
-See GET-ANIVAULT.txt if you only want the 3-step download instructions.
+Changelog: UPDATE-LOGS.txt (also shown in Settings → Updates)

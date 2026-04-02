@@ -1,48 +1,42 @@
 # AniVault (desktop)
 
-Electron app + **ani-cli** for streaming.
+Electron app using **ani-cli** for playback.
 
-## Install (most people)
+## Install
 
-**Only** the installer from GitHub Releases — see repo root **[GET-ANIVAULT.txt](../GET-ANIVAULT.txt)** (three steps).
+**[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)** → **AniVaultSetup.exe** → run. No clone or Node required for installs.
 
-1. **[Releases](https://github.com/PhantomBum/Anivault/releases)** → **`AniVaultSetup.exe`** → run it. No Node, no clone.
-
-**Updates:** *Settings → Check for updates*, or a newer `AniVaultSetup.exe`. Changelog: repo **[UPDATE-LOGS.txt](../UPDATE-LOGS.txt)** (mirror: `src/renderer/data/update-logs.txt` in this folder for the in-app copy).
+Changelog: [UPDATE-LOGS.txt](../UPDATE-LOGS.txt) (bundled copy in Settings → Updates).
 
 ---
 
-## Build from source (developers)
+## Development
 
-**Needs:** Node.js 20+, npm, Windows (for the Squirrel installer).
+Node.js 20+, npm, Windows (for Squirrel installers).
 
 ```bash
 cd desktop
 npm install
-npm start          # development
-npm run make       # installer → desktop/out/make/squirrel.windows/x64/AniVaultSetup.exe
+npm start
+npm run make   # → out/make/squirrel.windows/x64/AniVaultSetup.exe
 ```
 
-If `make` fails with **EPERM** on `anivault.exe`, quit AniVault (and close Explorer on `out\`), then:
-
-```bash
-npm run make:clean
-```
+If `make` fails with **EPERM** on `anivault.exe`, quit the app, then `npm run make:clean`.
 
 ---
 
-## Publish a new release (maintainers)
+## Release (maintainers)
 
-1. Bump **`version`** in `package.json` (must match the tag, e.g. `1.0.0-alpha.2`).
-2. Commit and push to `main`.
-3. Tag and push (CI builds Windows artifacts and uploads to Releases):
+1. Bump **`version`** in `package.json` (must match the Git tag).
+2. Commit and push `main`.
+3. Tag and push:
 
 ```bash
-git tag v1.0.0-alpha.2
-git push origin v1.0.0-alpha.2
+git tag v1.0.0-alpha.1
+git push origin v1.0.0-alpha.1
 ```
 
-Tag = `v` + the same version string as in `package.json`. Workflow: [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
+See [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
 
 ---
 
@@ -52,6 +46,6 @@ Tag = `v` + the same version string as in `package.json`. Workflow: [`.github/wo
 |---------|---------|
 | `npm start` | Dev |
 | `npm run make` | Build installer |
-| `npm run clean` | Delete `out/` |
+| `npm run clean` | Remove `out/` |
 | `npm run make:clean` | `clean` then `make` |
-| `npm run publish` | Build + upload to GitHub (needs `GITHUB_TOKEN` locally; CI uses the repo token) |
+| `npm run publish` | Build + upload (local `GITHUB_TOKEN`; CI uses the repo token) |

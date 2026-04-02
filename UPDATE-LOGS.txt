@@ -1,16 +1,12 @@
-AniVault — update logs
-======================
-(Mirror for the app: desktop/src/renderer/data/update-logs.txt — keep both in sync when you edit.)
+AniVault — changelog
 
 1.0.0-alpha.3
-- Releases: published builds are no longer GitHub “drafts” (visible on public Releases page)
+- Windows build and GitHub Releases publishing
 
 1.0.0-alpha.2
-- CI: fix npm install on GitHub Actions (legacy-peer-deps) so Releases publish correctly
+- Dependency install reliability for automated builds
 
 1.0.0-alpha.1
-- Windows installer: AniVaultSetup.exe (Electron; no extra installs required)
-- Mini player bar on Watch while browsing episodes
-- Install docs simplified; changelog in app (Settings → Updates) and this file
-
-(Add new versions above this line when you ship updates.)
+- Windows installer (AniVaultSetup.exe)
+- Watch page mini player (progress, transport)
+- Settings: update logs

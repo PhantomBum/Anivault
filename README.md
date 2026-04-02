@@ -1,21 +1,19 @@
 # AniVault
 
-**[Download AniVault for Windows](https://github.com/PhantomBum/Anivault/releases)** → get **`AniVaultSetup.exe`** under **Assets** → run it. Nothing else is required (no Node, no cloning this repo).
+Desktop anime streaming for Windows.
 
-- **Quick steps:** [GET-ANIVAULT.txt](GET-ANIVAULT.txt)
-- **Paths & build output:** [START-ANIVAULT.txt](START-ANIVAULT.txt)
-- **What changed each version:** [UPDATE-LOGS.txt](UPDATE-LOGS.txt)
+**[Download](https://github.com/PhantomBum/Anivault/releases)** — open the latest release, download **AniVaultSetup.exe** from **Assets**, run it.
 
-The rest of this repository is **source code** for developers. If you only want to use the app, use **Releases** only.
+More detail: [GET-ANIVAULT.txt](GET-ANIVAULT.txt) · [UPDATE-LOGS.txt](UPDATE-LOGS.txt)
+
+This repository is source code. End users only need the **Releases** page.
 
 ---
 
-## Repository layout (for contributors)
-
-| Folder | Purpose |
-|--------|---------|
-| [desktop/](desktop/) | Windows app source |
+| Folder | Contents |
+|--------|----------|
+| [desktop/](desktop/) | Windows app |
 | [landing/](landing/) | Optional site |
 | [server/](server/) | Optional API |
 
-Releases are built in CI when a version tag is pushed ([workflow](.github/workflows/release-desktop.yml)).
+Releases are produced by [GitHub Actions](.github/workflows/release-desktop.yml) when a version tag is pushed.

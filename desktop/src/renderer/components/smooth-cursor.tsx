@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-/**
- * Uses `public/cursor-pointer.png` (your Icons8-style arrow) so the on-screen cursor
- * matches the asset. Inverted to **white** with a dark outline so it stays visible on
- * black UI; falls back to a simple white SVG if the file is missing.
- *
- * Hotspot at the arrow tip (Icons8 24×24 “select” cursors typically use ~22,12).
- */
+/** Custom pointer image (`public/cursor-pointer.png`) with white SVG fallback. Hotspot ~22,12. */
 const CURSOR_PNG = `${import.meta.env.BASE_URL}cursor-pointer.png`;
 const VIEW_W = 24;
 const VIEW_H = 24;
