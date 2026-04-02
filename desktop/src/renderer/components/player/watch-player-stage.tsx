@@ -12,6 +12,8 @@ type WatchPlayerStageProps = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   loadingEpisode: boolean;
   error: string | null;
+  /** Shown under load failure (e.g. try another episode). */
+  recoveryHint?: string | null;
   playbackError: string | null;
   useNativeControls: boolean;
   defaultPlaybackSpeed: number;
@@ -34,6 +36,7 @@ export function WatchPlayerStage({
   videoRef,
   loadingEpisode,
   error,
+  recoveryHint,
   playbackError,
   useNativeControls,
   defaultPlaybackSpeed,
@@ -79,6 +82,9 @@ export function WatchPlayerStage({
         ) : error && !playUrl ? (
           <div className="flex flex-col items-center gap-4 px-6 text-center">
             <p className="max-w-sm text-sm text-red-400/95">{error}</p>
+            {recoveryHint ? (
+              <p className="max-w-md text-xs leading-relaxed text-zinc-500">{recoveryHint}</p>
+            ) : null}
             <Button
               type="button"
               variant="secondary"

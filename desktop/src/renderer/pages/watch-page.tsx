@@ -303,6 +303,18 @@ export function WatchPage() {
     return () => clearTimeout(id);
   }, [upNext, loadStream]);
 
+  const streamRecoveryHint = useMemo(() => {
+    if (!error) return null;
+    const i = sortedEpisodes.indexOf(currentEpisode);
+    if (i >= 0 && i < sortedEpisodes.length - 1) {
+      return `If this keeps failing, try “${sortedEpisodes[i + 1]}” or pick another episode below.`;
+    }
+    if (sortedEpisodes.length > 1) {
+      return "Some episodes may not have a playable stream from current sources — try another episode.";
+    }
+    return null;
+  }, [error, sortedEpisodes, currentEpisode]);
+
   const episodeNav = useMemo(() => {
     const i = sortedEpisodes.indexOf(currentEpisode);
     const onNext =
@@ -609,6 +621,7 @@ export function WatchPage() {
               videoRef={videoRef}
               loadingEpisode={loadingEpisode}
               error={error}
+              recoveryHint={streamRecoveryHint}
               playbackError={playbackError}
               useNativeControls={useNativeVideoControls}
               defaultPlaybackSpeed={defaultPlaybackSpeed}

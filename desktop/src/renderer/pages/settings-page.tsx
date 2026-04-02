@@ -409,7 +409,7 @@ export function SettingsPage() {
           ) : null}
           <div className="space-y-2">
             <span className="text-xs font-medium text-[var(--av-muted)]">Update logs</span>
-            <pre className="max-h-48 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-3 text-[10px] leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
+            <pre className="max-h-72 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-3 text-[10px] leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
               {updateLogsText.trim()}
             </pre>
           </div>

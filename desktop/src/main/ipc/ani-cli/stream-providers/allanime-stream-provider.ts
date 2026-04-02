@@ -2,6 +2,7 @@
  * The following provider is a typescript port of the original allanime stream provider from pystardust/ani-cli.
  * See https://github.com/pystardust/ani-cli (allanime stream provider).
  */
+import { fetchWithTimeout } from "../http-fetch";
 import { StreamProvider, StreamUrlResult } from "./stream-provider";
 
 const ALLANIME_REFERER = "https://allmanga.to";
@@ -159,12 +160,13 @@ function logStep(label: string, startedAt: number, extra?: string): void {
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, {
+  const res = await fetchWithTimeout(url, {
     method: "GET",
     headers: {
       Referer: ALLANIME_REFERER,
       "User-Agent": USER_AGENT,
     },
+    timeoutMs: 28000,
   });
 
   if (!res.ok) {
@@ -239,12 +241,13 @@ async function expandMasterM3u8(
   masterUrl: string,
   referer: string
 ): Promise<{ url: string; quality: number } | null> {
-  const res = await fetch(masterUrl, {
+  const res = await fetchWithTimeout(masterUrl, {
     method: "GET",
     headers: {
       Referer: referer,
       "User-Agent": USER_AGENT,
     },
+    timeoutMs: 32000,
   });
   if (!res.ok) return null;
   if (!res.body) return null;
@@ -354,12 +357,13 @@ async function resolveSourceToCandidates(
   }
 
   const providerFetchStartedAt = Date.now();
-  const providerRes = await fetch(providerUrl, {
+  const providerRes = await fetchWithTimeout(providerUrl, {
     method: "GET",
     headers: {
       Referer: ALLANIME_REFERER,
       "User-Agent": USER_AGENT,
     },
+    timeoutMs: 32000,
   });
   if (!providerRes.ok) {
     logStep("provider fetch failed", providerFetchStartedAt, `status=${providerRes.status}`);

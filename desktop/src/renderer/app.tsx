@@ -10,6 +10,7 @@ import { AvLoadingBar } from "@/renderer/components/av-loading-bar";
 import { AppGate } from "@/renderer/components/app-gate";
 import { AvToastHost } from "@/renderer/components/av-toast-host";
 import { SmoothCursorHost } from "@/renderer/components/smooth-cursor-host";
+import { RendererErrorBoundary } from "@/renderer/components/renderer-error-boundary";
 import { UpdateAvailableDialog } from "@/renderer/components/update-available-dialog";
 import { AnivaultConfigProvider } from "@/renderer/context/anivault-config-context";
 import { NowPlayingProvider } from "@/renderer/context/now-playing-context";
@@ -74,38 +75,40 @@ export default function App() {
       <SmoothCursorHost />
       <AvToastHost />
       <AppGate>
-      <HashRouter>
-        <UpdateAvailableDialog />
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route
-              element={
-                <NowPlayingProvider>
-                  <SidebarLayout />
-                </NowPlayingProvider>
-              }
-            >
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/discover" element={<DiscoverPage />} />
-              <Route path="/browse" element={<Navigate to="/discover" replace />} />
-              <Route path="/explore" element={<Navigate to="/discover" replace />} />
-              <Route path="/schedule" element={<SchedulePage />} />
-              <Route path="/request-series" element={<RequestSeriesPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/anime/:id" element={<AnimeDetailsPage />} />
-              <Route path="/anime" element={<AnimeSearchPage />} />
-              <Route path="/watch" element={<WatchPage />} />
-              <Route path="/player" element={<PlayerPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/community" element={<Navigate to="/" replace />} />
-              <Route path="/gallery" element={<Navigate to="/" replace />} />
-              <Route path="/clips" element={<Navigate to="/" replace />} />
-              <Route path="/lists" element={<ListsPage />} />
-              <Route path="/account" element={<AccountPage />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </HashRouter>
+        <RendererErrorBoundary>
+          <HashRouter>
+            <UpdateAvailableDialog />
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route
+                  element={
+                    <NowPlayingProvider>
+                      <SidebarLayout />
+                    </NowPlayingProvider>
+                  }
+                >
+                  <Route path="/" element={<WelcomePage />} />
+                  <Route path="/discover" element={<DiscoverPage />} />
+                  <Route path="/browse" element={<Navigate to="/discover" replace />} />
+                  <Route path="/explore" element={<Navigate to="/discover" replace />} />
+                  <Route path="/schedule" element={<SchedulePage />} />
+                  <Route path="/request-series" element={<RequestSeriesPage />} />
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/anime/:id" element={<AnimeDetailsPage />} />
+                  <Route path="/anime" element={<AnimeSearchPage />} />
+                  <Route path="/watch" element={<WatchPage />} />
+                  <Route path="/player" element={<PlayerPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/community" element={<Navigate to="/" replace />} />
+                  <Route path="/gallery" element={<Navigate to="/" replace />} />
+                  <Route path="/clips" element={<Navigate to="/" replace />} />
+                  <Route path="/lists" element={<ListsPage />} />
+                  <Route path="/account" element={<AccountPage />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </HashRouter>
+        </RendererErrorBoundary>
       </AppGate>
     </AnivaultConfigProvider>
   );

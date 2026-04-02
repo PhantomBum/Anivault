@@ -1,5 +1,15 @@
 AniVault — changelog
 
+1.0.0-alpha.7
+- Stream resolution: retries on transient failures, 90s overall cap, HTTP timeouts on AllAnime fetches
+- Clearer load errors on the watch page; recovery hints when another episode may work
+- Main process logs uncaught errors / unhandled rejections; logs renderer/gpu child exits
+- React error boundary with reload if the UI crashes
+- IPC failsafe timeout for stream URL resolution
+- Auto-update: correct GitHub repo baked into builds; latest.yml included in published release assets
+- Known: some titles/episodes may still fail when upstream sources have no playable stream
+- Known: rare freezes or crashes may still occur; report steps if reproducible
+
 1.0.0-alpha.3
 - Windows build and GitHub Releases publishing
 

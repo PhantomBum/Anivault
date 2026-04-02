@@ -2,9 +2,12 @@ import { BrowserWindow, app, nativeImage } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 
+import { registerMainCrashGuards } from "@/main/crash-guards";
 import { setupAutoUpdater } from "@/main/auto-updater-setup";
 import { registerListeners, unregisterListeners } from "@/main/ipc/listeners";
 import { startStreamProxy } from "@/main/stream-proxy";
+
+registerMainCrashGuards();
 
 const PRODUCT_NAME = "AniVault";
 
