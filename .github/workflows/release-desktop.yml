@@ -6,7 +6,10 @@
 #   If your repo is ONLY the desktop app at root, change `working-directory` to `.` in both places below.
 #
 # Trigger: push a version tag, e.g. `git tag v1.0.1 && git push origin v1.0.1`
-# Bump `desktop/package.json` version to match the tag first.
+# Bump `desktop/package.json` version to match the tag first (Forge publishes that version).
+#
+# If a release shows only "Source code (zip/tar.gz)" and no AniVaultSetup.exe / nupkg / latest.yml,
+# this workflow did not finish: open the repo → Actions → this workflow → failed run → logs.
 
 name: Release desktop (Windows)
 
@@ -14,6 +17,8 @@ on:
   push:
     tags:
       - "v*"
+  # Re-run a Windows build + upload without a new tag (uses the branch you select in the UI).
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -28,6 +33,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Tag pushes already point at the tagged commit; manual runs use the default branch you pick.
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
