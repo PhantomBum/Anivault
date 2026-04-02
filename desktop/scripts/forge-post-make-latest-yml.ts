@@ -1,7 +1,7 @@
 /**
- * electron-updater's GitHub provider expects a channel file (e.g. `latest.yml`) on the release.
- * Electron Forge + Squirrel ships `RELEASES` + `*.nupkg` but not `latest.yml` (electron-builder does).
- * This hook writes a minimal `latest.yml` next to each `*-full.nupkg` so `npm run publish` uploads it.
+ * Legacy hook: Squirrel produced `*-full.nupkg` without `latest.yml`; this wrote one next to the nupkg.
+ * Windows now uses NSIS (`@felixrieseberg/electron-forge-maker-nsis`), which emits `latest.yml` itself.
+ * This hook stays as a no-op unless a future target ships nupkg again.
  */
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";

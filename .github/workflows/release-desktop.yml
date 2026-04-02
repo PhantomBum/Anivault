@@ -1,5 +1,5 @@
 # Build and publish the Electron desktop app to GitHub Releases.
-# Produces Squirrel artifacts + latest.yml (see scripts/forge-post-make-latest-yml.ts) for electron-updater.
+# Produces NSIS AniVaultSetup.exe + latest.yml (Felix NSIS maker + electron-updater-yaml) for electron-updater.
 #
 # Prerequisites:
 # - App lives under `desktop/` (monorepo root = anivault).
@@ -58,7 +58,7 @@ jobs:
       - name: Build installers (dry-run)
         run: npm run publish -- --dry-run
 
-      - name: List Windows artifacts (expect AniVaultSetup.exe, nupkg, RELEASES, latest.yml)
+      - name: List Windows artifacts (expect AniVaultSetup.exe, latest.yml under out/make/nsis/x64)
         shell: pwsh
         run: |
           Write-Host "---- out/make (recursive) ----"

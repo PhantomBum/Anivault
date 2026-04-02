@@ -3,6 +3,6 @@ Download (public release):
   AniVaultSetup.exe
 
 Local build output (after npm run make in desktop/):
-  desktop\out\make\squirrel.windows\x64\AniVaultSetup.exe
+  desktop\out\make\nsis\x64\AniVaultSetup.exe
 
 Changelog: UPDATE-LOGS.txt (also shown in Settings → Updates)

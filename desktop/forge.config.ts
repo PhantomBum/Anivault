@@ -1,95 +1,238 @@
 import { MakerDeb } from "@electron-forge/maker-deb";
+
 import { MakerRpm } from "@electron-forge/maker-rpm";
-import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+
 import { MakerZIP } from "@electron-forge/maker-zip";
+
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
+
 import { VitePlugin } from "@electron-forge/plugin-vite";
+
 import type { ForgeConfig } from "@electron-forge/shared-types";
+
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
+import path from "node:path";
+
 import { forgePostMakeLatestYml } from "./scripts/forge-post-make-latest-yml";
+
 import { resolveGithubRepoForPublish } from "./scripts/github-repo";
 
 const gh = resolveGithubRepoForPublish();
 
+/** Generic updater base; electron-updater also uses `setFeedURL({ provider: "github" })` at runtime. */
+
+const releaseDownloadBase = `https://github.com/${gh.owner}/${gh.name}/releases/latest/download`;
+
+/** `npm run make` / Forge use `desktop/` as cwd. */
+
+const windowsIconIco = path.resolve(process.cwd(), "public", "icon-rounded.ico");
+
+
+
 const config: ForgeConfig = {
+
   hooks: {
+
+    /** Legacy: Squirrel nupkg hook (no-op with NSIS). NSIS maker emits `latest.yml` via electron-updater-yaml. */
+
     postMake: forgePostMakeLatestYml,
+
   },
+
   packagerConfig: {
+
     asar: true,
+
     icon: "./public/icon-rounded",
-    // Must match `package.json` `name` — MakerDeb looks up the binary by that name.
+
     executableName: "anivault",
+
     win32metadata: {
+
       CompanyName: "AniVault",
+
       FileDescription: "AniVault",
+
       OriginalFilename: "anivault.exe",
+
       ProductName: "AniVault",
+
       InternalName: "anivault",
+
     },
+
   },
+
   rebuildConfig: {},
+
   makers: [
-    new MakerSquirrel({
-      name: "AniVault",
-      setupExe: "AniVaultSetup.exe",
-    }),
-    // Zip only for macOS; Windows uses Squirrel (AniVaultSetup.exe) — avoids a second huge artifact on Windows builds.
-    new MakerZIP({}, ["darwin"]),
-    new MakerRpm({}),
-    new MakerDeb({}),
-  ],
-  plugins: [
-    new VitePlugin({
-      // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
-      // If you are familiar with Vite configuration, it will look really familiar.
-      build: [
-        {
-          // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
-          entry: "src/main/main.ts",
-          config: "vite.main.config.ts",
-        },
-        {
-          entry: "src/main/preload.ts",
-          config: "vite.preload.config.ts",
-        },
-      ],
-      renderer: [
-        {
-          name: "main_window",
-          config: "vite.renderer.config.ts",
-        },
-      ],
-    }),
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
-  ],
-  publishers: [
+
     {
-      name: "@electron-forge/publisher-github",
+
+      name: "@felixrieseberg/electron-forge-maker-nsis",
+
       config: {
-        repository: {
-          owner: gh.owner,
-          name: gh.name,
+
+        updater: {
+
+          url: releaseDownloadBase,
+
+          channel: "latest",
+
+          updaterCacheDirName: "anivault-updater",
+
         },
-        /** Default is draft; drafts are hidden from public Releases until published. */
-        draft: false,
-        prerelease: true,
-        /** Re-upload assets if a previous run failed after creating the release (set GITHUB_PUBLISH_FORCE=1 in CI). */
-        force: process.env.GITHUB_PUBLISH_FORCE === "1",
+
+        getAppBuilderConfig: async () => ({
+
+          appId: "com.anivault.desktop",
+
+          productName: "AniVault",
+
+          copyright: "Copyright © AniVault",
+
+          executableName: "anivault",
+
+          win: {
+
+            icon: windowsIconIco,
+
+            artifactName: "AniVaultSetup.${ext}",
+
+            executableName: "anivault",
+
+          },
+
+          nsis: {
+
+            oneClick: false,
+
+            allowToChangeInstallationDirectory: true,
+
+            allowElevation: true,
+
+            installerIcon: windowsIconIco,
+
+            uninstallerIcon: windowsIconIco,
+
+            installerHeaderIcon: windowsIconIco,
+
+            createDesktopShortcut: true,
+
+            createStartMenuShortcut: true,
+
+            shortcutName: "AniVault",
+
+            menuCategory: false,
+
+            displayLanguageSelector: false,
+
+          },
+
+        }),
+
       },
+
     },
+
+    new MakerZIP({}, ["darwin"]),
+
+    new MakerRpm({}),
+
+    new MakerDeb({}),
+
   ],
+
+  plugins: [
+
+    new VitePlugin({
+
+      build: [
+
+        {
+
+          entry: "src/main/main.ts",
+
+          config: "vite.main.config.ts",
+
+        },
+
+        {
+
+          entry: "src/main/preload.ts",
+
+          config: "vite.preload.config.ts",
+
+        },
+
+      ],
+
+      renderer: [
+
+        {
+
+          name: "main_window",
+
+          config: "vite.renderer.config.ts",
+
+        },
+
+      ],
+
+    }),
+
+    new FusesPlugin({
+
+      version: FuseVersion.V1,
+
+      [FuseV1Options.RunAsNode]: false,
+
+      [FuseV1Options.EnableCookieEncryption]: true,
+
+      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+
+      [FuseV1Options.EnableNodeCliInspectArguments]: false,
+
+      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+
+      [FuseV1Options.OnlyLoadAppFromAsar]: true,
+
+    }),
+
+  ],
+
+  publishers: [
+
+    {
+
+      name: "@electron-forge/publisher-github",
+
+      config: {
+
+        repository: {
+
+          owner: gh.owner,
+
+          name: gh.name,
+
+        },
+
+        draft: false,
+
+        prerelease: true,
+
+        force: process.env.GITHUB_PUBLISH_FORCE === "1",
+
+      },
+
+    },
+
+  ],
+
 };
 
+
+
 export default config;
+

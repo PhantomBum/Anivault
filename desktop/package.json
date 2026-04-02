@@ -1,7 +1,7 @@
 {
   "name": "anivault",
   "productName": "AniVault",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-alpha.10",
   "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
   "repository": {
     "type": "git",
@@ -26,13 +26,13 @@
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
     "@electron-forge/maker-zip": "^7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@felixrieseberg/electron-forge-maker-nsis": "^7.2.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.14.12",
     "@types/react": "^18.3.3",

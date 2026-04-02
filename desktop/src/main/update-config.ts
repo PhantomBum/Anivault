@@ -1,6 +1,6 @@
 /**
  * GitHub org/repo used for:
- * - `electron-updater` (needs `latest.yml` + nupkg in GitHub Releases when you ship)
+ * - `electron-updater` (needs `latest.yml` + `AniVaultSetup.exe` on GitHub Releases when you ship)
  * - `checkGitHubReleaseVsCurrent` (API compare for “new version” banner)
  *
  * Defaults come from `package.json` → `repository.url` at build time (`__ANIVAULT_GH_*__`).

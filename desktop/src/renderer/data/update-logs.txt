@@ -1,5 +1,11 @@
 AniVault — changelog
 
+1.0.0-alpha.10
+- Windows installer is now NSIS: real setup wizard, AniVault icon on installer/uninstaller, choose install folder before install
+- Auto-update uses GitHub Releases `latest.yml` + `AniVaultSetup.exe` (Squirrel/nupkg no longer used on Windows)
+- Settings: tab bar layout fixed (list height vs triggers — no clipped/ghosted pills)
+- If you installed an older Squirrel build, run this setup once to migrate
+
 1.0.0-alpha.8
 - Settings: larger tabs and panels; new Appearance tab (UI density); smooth cursor + shell effects always on (documented)
 - Welcome spotlight: glass-style blurred poster background (Nexus-inspired)

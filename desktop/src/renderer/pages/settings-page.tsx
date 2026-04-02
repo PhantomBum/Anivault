@@ -23,6 +23,9 @@ const LANGUAGES = [
   { value: "pt-BR", label: "Português (BR)" },
 ];
 
+const settingsTabTriggerClassName =
+  "flex min-h-[2.75rem] w-full items-center justify-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-[var(--av-muted)] transition-colors data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-none data-[state=inactive]:hover:bg-[var(--av-surface-hover)]";
+
 export function SettingsPage() {
   const { i18n } = useTranslation();
   const { refresh } = useAnivaultConfig();
@@ -79,36 +82,21 @@ export function SettingsPage() {
       </div>
 
       <Tabs defaultValue="playback" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 gap-2 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-2 sm:grid-cols-3 lg:grid-cols-5">
-          <TabsTrigger
-            value="playback"
-            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
-          >
+        <TabsList className="grid h-auto w-full grid-cols-2 items-stretch gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1.5 sm:grid-cols-3 lg:grid-cols-5">
+          <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
           </TabsTrigger>
-          <TabsTrigger
-            value="appearance"
-            className="flex min-h-[3rem] items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
-          >
-            <Palette className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+          <TabsTrigger value="appearance" className={settingsTabTriggerClassName}>
+            <Palette className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
             Appearance
           </TabsTrigger>
-          <TabsTrigger
-            value="language"
-            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
-          >
+          <TabsTrigger value="language" className={settingsTabTriggerClassName}>
             Language
           </TabsTrigger>
-          <TabsTrigger
-            value="translation"
-            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
-          >
+          <TabsTrigger value="translation" className={settingsTabTriggerClassName}>
             Translation
           </TabsTrigger>
-          <TabsTrigger
-            value="updates"
-            className="min-h-[3rem] rounded-xl px-3 py-3 text-sm font-medium transition-all data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-md"
-          >
+          <TabsTrigger value="updates" className={settingsTabTriggerClassName}>
             Updates
           </TabsTrigger>
         </TabsList>
@@ -427,7 +415,7 @@ export function SettingsPage() {
           </div>
           <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
             Background update polling is off by default. After you publish GitHub Releases with
-            Squirrel/electron-updater files, set <code className="font-mono">ANIVAULT_AUTO_UPDATE=1</code>{" "}
+            NSIS/electron-updater assets, set <code className="font-mono">ANIVAULT_AUTO_UPDATE=1</code>{" "}
             to enable. Manual &quot;Check for updates&quot; may show a message until{" "}
             <code className="font-mono">latest.yml</code> exists. Restart still applies downloads.
           </p>
@@ -435,7 +423,7 @@ export function SettingsPage() {
             <span className="font-medium text-[var(--av-muted)]">How to test auto-update:</span> install an{" "}
             <span className="font-medium">older</span> release from GitHub, then publish a{" "}
             <span className="font-medium">newer</span> one (same repo) that includes{" "}
-            <code className="font-mono">latest.yml</code> and <code className="font-mono">.nupkg</code> from CI.
+            <code className="font-mono">latest.yml</code> and <code className="font-mono">AniVaultSetup.exe</code> from CI.
             In the old build, open Settings → Check for updates. For detailed logs, launch the installed{" "}
             <code className="font-mono">AniVault.exe</code> from a terminal with{" "}
             <code className="font-mono">set ANIVAULT_UPDATER_DEBUG=1</code> (Windows).

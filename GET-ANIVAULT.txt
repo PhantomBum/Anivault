@@ -8,7 +8,7 @@ Official repo (use this URL, not a fork):
 
 Under "Assets" you want:
   - AniVaultSetup.exe   ← main Windows installer
-  - *.nupkg, RELEASES, latest.yml  ← needed for in-app auto-update
+  - AniVaultSetup.exe, latest.yml  ← needed for in-app auto-update (NSIS)
 
 If you only see "Source code (zip)" and "Source code (tar.gz)", that release did NOT finish
 building on GitHub Actions — there is no installer yet. Pick another release or wait for CI

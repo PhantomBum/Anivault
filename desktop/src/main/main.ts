@@ -91,9 +91,8 @@ const createWindow = () => {
 app.on("ready", () => {
   app.setName(PRODUCT_NAME);
   if (process.platform === "win32") {
-    // Match Squirrel NuGet `name` in forge (MakerSquirrel) so the taskbar groups with
-    // the installed app instead of a generic "Electron" entry.
-    app.setAppUserModelId("com.squirrel.AniVault.AniVault");
+    // Match NSIS / electron-builder `appId` in forge.config.ts (taskbar + jump list).
+    app.setAppUserModelId("com.anivault.desktop");
   }
   if (process.platform === "darwin" && app.dock) {
     const dockIcon = resolveWindowIcon();

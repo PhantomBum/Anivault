@@ -12,13 +12,13 @@ Changelog: [UPDATE-LOGS.txt](../UPDATE-LOGS.txt) (bundled copy in Settings → U
 
 ## Development
 
-Node.js 20+, npm, Windows (for Squirrel installers).
+Node.js 20+, npm, Windows (for NSIS `npm run make`).
 
 ```bash
 cd desktop
 npm install
 npm start
-npm run make   # → out/make/squirrel.windows/x64/AniVaultSetup.exe
+npm run make   # → out/make/nsis/x64/AniVaultSetup.exe (+ latest.yml)
 ```
 
 If `make` fails with **EPERM** on `anivault.exe`, quit the app, then `npm run make:clean`.
