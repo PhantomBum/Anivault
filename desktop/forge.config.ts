@@ -35,7 +35,8 @@ const config: ForgeConfig = {
       name: "AniVault",
       setupExe: "AniVaultSetup.exe",
     }),
-    new MakerZIP({}, ["darwin", "win32"]),
+    // Zip only for macOS; Windows uses Squirrel (AniVaultSetup.exe) — avoids a second huge artifact on Windows builds.
+    new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),
   ],

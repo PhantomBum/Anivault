@@ -10,6 +10,8 @@ Desktop anime streaming (Windows).
 
 Updates: use **Settings → Check for updates** in the app, or install a newer release from the same Releases page.
 
+**About file size:** The installer is usually **~120–150 MB**. That’s normal for Electron (it ships a full Chromium browser). [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) allows large assets (up to **2 GB** per file), so you can attach `AniVaultSetup.exe` without a problem.
+
 ---
 
 ## Repository layout
