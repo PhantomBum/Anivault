@@ -18,3 +18,19 @@ Monorepo layout:
 
 GitHub Actions workflow: [`.github/workflows/release-desktop.yml`](.github/workflows/release-desktop.yml)  
 Full instructions: [desktop/README.md](desktop/README.md).
+
+## Auto-push after each commit (optional)
+
+This repo includes a **post-commit** hook that runs `git push origin <current-branch>` so changes reach GitHub immediately after you commit.
+
+**One-time setup** (per clone):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/setup-git-hooks.ps1
+```
+
+Or manually: `git config core.hooksPath .githooks`
+
+To turn it off: `git config --unset core.hooksPath`
+
+If a push fails (offline, auth), fix the issue and run `git push` yourself; your commit is already saved locally.
