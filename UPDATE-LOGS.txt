@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.2
+- **Windows installer:** Branded Squirrel build (`electron-squirrel-startup`, setup icon & loading GIF, Forge metadata). Tag **v1.2.2**.
+
 1.2.1
 - **Hotfix:** Black screen on launch — missing `getWindowControls` import in config context (ReferenceError). Tag **v1.2.1**.
 

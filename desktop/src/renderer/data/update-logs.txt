@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.2.2
+- **Windows installer:** Branded Squirrel setup — `electron-squirrel-startup` (install/update/uninstall lifecycle), Forge `setupIcon` / `loadingGif` / metadata, generated `installer/installing.gif`. Tag **v1.2.2** → **AniVaultUnvaultedSetup.exe** on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
+
 1.2.1
 - **Fix:** App could show a **black screen** on startup — `AnivaultConfigProvider` called `getWindowControls()` without importing it, throwing `ReferenceError` after config loaded.
 
