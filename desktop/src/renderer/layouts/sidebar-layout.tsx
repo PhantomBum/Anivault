@@ -1,13 +1,15 @@
 import { BrandMark } from "@/renderer/components/brand-mark";
+import { Input } from "@/renderer/components/ui/input";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
 import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
 import { useNowPlaying } from "@/renderer/context/now-playing-context";
 import { KeyboardShortcutsDialog } from "@/renderer/components/keyboard-shortcuts-dialog";
 import { SidebarProfileFooter } from "@/renderer/components/sidebar-profile-footer";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
 import { cn } from "@/renderer/lib/utils";
-import { ChevronLeft, ChevronRight, ChevronUp, Keyboard, Menu, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, Keyboard, Menu, Search, Settings } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -88,6 +90,7 @@ function readSidebarCollapsed(): boolean {
  * Collapsible sidebar shell (shadcn-style pattern).
  */
 export default function SidebarLayout() {
+  const { config: avConfig } = useAnivaultConfig();
   const location = useLocation();
   const navigate = useNavigate();
   const { title, sub } = useRouteHeading(location.pathname);
@@ -99,6 +102,7 @@ export default function SidebarLayout() {
   );
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [showBackTop, setShowBackTop] = useState(false);
+  const [quickSearch, setQuickSearch] = useState("");
   const mainScrollRef = useRef<HTMLDivElement>(null);
   const { session: nowPlayingSession } = useNowPlaying();
 
@@ -190,6 +194,8 @@ export default function SidebarLayout() {
       data-density="comfortable"
       data-sidebar={railCollapsed ? "collapsed" : "expanded"}
       data-shell-effects="standard"
+      data-chroma={avConfig?.chromaticEmphasis ?? "full"}
+      data-shell-preset={avConfig?.shellPreset ?? "midnight"}
     >
       <Titlebar className="border-0 bg-transparent">
         <div className="flex min-w-0 flex-1 items-center gap-2" />
@@ -305,7 +311,44 @@ export default function SidebarLayout() {
                 </p>
               ) : null}
             </div>
+            <form
+              className="mr-1 hidden min-w-0 max-w-[min(100%,14rem)] flex-1 md:flex"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const q = quickSearch.trim();
+                navigate(
+                  { pathname: "/anime", search: q ? `?q=${encodeURIComponent(q)}` : "" },
+                  { state: { focusSearch: true } }
+                );
+                closeMobile();
+                setQuickSearch("");
+              }}
+            >
+              <div className="relative flex w-full items-center">
+                <Search
+                  className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--av-muted)]"
+                  aria-hidden
+                />
+                <Input
+                  value={quickSearch}
+                  onChange={(e) => setQuickSearch(e.target.value)}
+                  placeholder="Search…"
+                  className="h-9 rounded-xl border-[var(--av-border)] bg-[var(--av-surface)] py-0 pl-8 pr-2 text-xs text-[var(--av-text)] placeholder:text-[var(--av-muted)]"
+                  aria-label="Quick search"
+                />
+              </div>
+            </form>
             <div className="flex h-9 shrink-0 items-center gap-1">
+              <Link
+                to="/anime"
+                state={{ focusSearch: true }}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-[var(--av-muted)] transition-all duration-200 hover:border-[var(--av-border)] hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)] hover:shadow-av-xs md:hidden"
+                title="Search"
+                aria-label="Open search"
+                onClick={closeMobile}
+              >
+                <Search className="h-5 w-5" strokeWidth={2} />
+              </Link>
               <button
                 type="button"
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-[var(--av-muted)] transition-all duration-200 hover:border-[var(--av-border)] hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)] hover:shadow-av-xs"
@@ -337,7 +380,12 @@ export default function SidebarLayout() {
           >
             <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
               <RouteErrorBoundary key={location.pathname}>
-                <Outlet />
+                <div
+                  key={location.pathname}
+                  className="motion-safe:animate-av-route-in flex min-h-0 w-full min-w-0 flex-1 flex-col"
+                >
+                  <Outlet />
+                </div>
               </RouteErrorBoundary>
             </main>
           </div>

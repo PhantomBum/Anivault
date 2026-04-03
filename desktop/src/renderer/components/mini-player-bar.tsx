@@ -19,7 +19,7 @@ import {
   SquareArrowUpRight,
   Volume2,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 function formatTime(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return "0:00";
@@ -35,17 +35,21 @@ export function MiniPlayerBar() {
   const useMarqueeTitle = (session?.title.length ?? 0) > 42;
 
   const video = session?.getVideo() ?? null;
+  const isDetached = Boolean(session?.detached && session?.resumeWatch);
   const current = video && Number.isFinite(video.currentTime) ? video.currentTime : 0;
   const duration =
     video && Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
   const paused = video ? video.paused : true;
-  const progress = duration > 0 ? Math.min(1, current / duration) : 0;
+  const progress = useMemo(() => {
+    if (isDetached) return 0;
+    return duration > 0 ? Math.min(1, current / duration) : 0;
+  }, [isDetached, duration, current]);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session || isDetached) return;
     const id = window.setInterval(() => setTick((t) => t + 1), 400);
     return () => clearInterval(id);
-  }, [session]);
+  }, [session, isDetached]);
 
   useEffect(() => {
     if (video && typeof video.volume === "number") {
@@ -54,8 +58,16 @@ export function MiniPlayerBar() {
   }, [video, tick]);
 
   const togglePlay = useCallback(() => {
-    const v = session?.getVideo();
-    if (!v) return;
+    if (!session) return;
+    if (session.detached && session.resumeWatch) {
+      session.resumeWatch();
+      return;
+    }
+    const v = session.getVideo();
+    if (!v) {
+      session.resumeWatch?.();
+      return;
+    }
     if (v.paused) {
       void v.play().catch(() => {
         /* ignore */
@@ -69,25 +81,25 @@ export function MiniPlayerBar() {
   const onBarPointer = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       const v = session?.getVideo();
-      if (!v || !Number.isFinite(v.duration) || v.duration <= 0) return;
+      if (isDetached || !v || !Number.isFinite(v.duration) || v.duration <= 0) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
       v.currentTime = ratio * v.duration;
       setTick((t) => t + 1);
     },
-    [session]
+    [session, isDetached]
   );
 
   const setVol = useCallback(
     (next: number) => {
       const v = session?.getVideo();
-      if (!v) return;
+      if (isDetached || !v) return;
       const clamped = Math.min(1, Math.max(0, next));
       v.volume = clamped;
       setVolume(clamped);
       setTick((t) => t + 1);
     },
-    [session]
+    [session, isDetached]
   );
 
   if (!session) return null;
@@ -105,13 +117,17 @@ export function MiniPlayerBar() {
         aria-label="Now playing"
       >
       <div
-        className="group relative h-0.5 w-full cursor-pointer bg-zinc-800/80"
+        className={cn(
+          "group relative h-0.5 w-full bg-zinc-800/80",
+          isDetached ? "cursor-default opacity-60" : "cursor-pointer"
+        )}
         onPointerDown={(e) => {
+          if (isDetached) return;
           e.currentTarget.setPointerCapture(e.pointerId);
           onBarPointer(e);
         }}
         onPointerMove={(e) => {
-          if (e.buttons !== 1) return;
+          if (isDetached || e.buttons !== 1) return;
           onBarPointer(e);
         }}
       >
@@ -154,7 +170,9 @@ export function MiniPlayerBar() {
                 session.title
               )}
             </div>
-            <p className="truncate text-[11px] leading-tight text-[var(--av-muted)]">{session.episodeLine}</p>
+            <p className="truncate text-[11px] leading-tight text-[var(--av-muted)]">
+              {isDetached ? "Paused · leave to browse — tap play to resume" : session.episodeLine}
+            </p>
             <p className="mt-0.5 text-[10px] tabular-nums text-zinc-500 sm:hidden">
               {formatTime(current)} · {formatTime(duration)}
             </p>
@@ -166,7 +184,7 @@ export function MiniPlayerBar() {
             type="button"
             className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200 disabled:pointer-events-none disabled:opacity-25"
             aria-label="Previous episode"
-            disabled={!session.canPrev}
+            disabled={isDetached || !session.canPrev}
             onClick={() => session.onPrev?.()}
           >
             <SkipBack className="h-4 w-4" />
@@ -174,16 +192,20 @@ export function MiniPlayerBar() {
           <button
             type="button"
             className="mx-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 shadow-md transition-transform hover:scale-[1.03] active:scale-95"
-            aria-label={paused ? "Play" : "Pause"}
+            aria-label={isDetached ? "Resume in player" : paused ? "Play" : "Pause"}
             onClick={togglePlay}
           >
-            {paused ? <Play className="ml-0.5 h-4 w-4 fill-current" /> : <Pause className="h-4 w-4 fill-current" />}
+            {isDetached || paused ? (
+              <Play className="ml-0.5 h-4 w-4 fill-current" />
+            ) : (
+              <Pause className="h-4 w-4 fill-current" />
+            )}
           </button>
           <button
             type="button"
             className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-200 disabled:pointer-events-none disabled:opacity-25"
             aria-label="Next episode"
-            disabled={!session.canNext}
+            disabled={isDetached || !session.canNext}
             onClick={() => session.onNext?.()}
           >
             <SkipForward className="h-4 w-4" />

@@ -1,6 +1,6 @@
 import { ArrowLeft, MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { WatchPlayerStage } from "@/renderer/components/player/watch-player-stage";
 import { useNowPlaying } from "@/renderer/context/now-playing-context";
@@ -76,6 +76,7 @@ interface WatchState {
 
 export function WatchPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as WatchState | null;
 
   const [playUrl, setPlayUrl] = useState<string>("");
@@ -128,6 +129,14 @@ export function WatchPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerSectionRef = useRef<HTMLDivElement | null>(null);
   const { setSession: setNowPlayingSession } = useNowPlaying();
+  /** Snapshot for unmount — keep mini-player when browsing other routes. */
+  const miniSnapshotRef = useRef<{
+    playUrl: string;
+    anime: WatchState["anime"];
+    episodes: string[];
+    currentEpisode: string;
+    details: ShowDetails | null;
+  } | null>(null);
   /** Seconds to seek to after the next successful load (set before reload). */
   const resumeAfterLoadRef = useRef<number | null>(null);
   /** Last known position when playback failed (for manual retry after overlay). */
@@ -358,8 +367,19 @@ export function WatchPage() {
   }, []);
 
   useEffect(() => {
+    if (anime) {
+      miniSnapshotRef.current = {
+        playUrl,
+        anime,
+        episodes,
+        currentEpisode,
+        details,
+      };
+    }
+  }, [playUrl, anime, episodes, currentEpisode, details]);
+
+  useEffect(() => {
     if (!playUrl || !anime) {
-      setNowPlayingSession(null);
       return;
     }
     const displayName = details?.name ?? anime.name;
@@ -376,8 +396,9 @@ export function WatchPage() {
       onFullscreen: toggleFullscreen,
       scrollToPlayer: () =>
         playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
+      detached: false,
+      resumeWatch: undefined,
     });
-    return () => setNowPlayingSession(null);
   }, [
     playUrl,
     anime,
@@ -389,6 +410,37 @@ export function WatchPage() {
     togglePictureInPicture,
     toggleFullscreen,
   ]);
+
+  useEffect(() => {
+    return () => {
+      const snap = miniSnapshotRef.current;
+      if (!snap?.playUrl || !snap.anime) return;
+      const displayName = snap.details?.name ?? snap.anime.name;
+      setNowPlayingSession({
+        title: displayName,
+        episodeLine: `${snap.currentEpisode} · ${snap.anime.mode === "dub" ? "English dub" : "Japanese sub"}`,
+        posterUrl: snap.details?.thumbnail ?? null,
+        getVideo: () => null,
+        onPrev: undefined,
+        onNext: undefined,
+        canPrev: false,
+        canNext: false,
+        onPictureInPicture: undefined,
+        onFullscreen: undefined,
+        scrollToPlayer: undefined,
+        detached: true,
+        resumeWatch: () =>
+          navigate("/watch", {
+            replace: false,
+            state: {
+              anime: snap.anime,
+              episodes: snap.episodes,
+              currentEpisode: snap.currentEpisode,
+            } as WatchState,
+          }),
+      });
+    };
+  }, [navigate, setNowPlayingSession]);
 
   const persistVolume = useCallback(() => {
     const v = videoRef.current;

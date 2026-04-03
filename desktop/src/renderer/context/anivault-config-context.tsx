@@ -1,3 +1,4 @@
+import { applyShellAppearance } from "@/renderer/helpers/shell-appearance";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import React, {
@@ -24,6 +25,10 @@ export function AnivaultConfigProvider({ children }: { children: React.ReactNode
     const c = await window.anivault.getAllConfig();
     setConfig(c);
     applyUiDensityToShell(c.uiDensity);
+    applyShellAppearance({
+      chromaticEmphasis: c.chromaticEmphasis,
+      shellPreset: c.shellPreset,
+    });
   }, []);
 
   useEffect(() => {

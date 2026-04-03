@@ -277,3 +277,32 @@
   backdrop-filter: blur(14px);
   background-color: rgba(12, 12, 14, 0.93);
 }
+
+/* Appearance presets (Settings → shell preset) */
+.anivault-shell[data-shell-preset="charcoal"] {
+  --av-bg: #070708;
+  --av-bg-elevated: #0b0b0d;
+  --av-surface: #121214;
+  --av-border: #27272c;
+}
+
+.anivault-shell[data-shell-preset="slate"] {
+  --av-bg: #0a0b10;
+  --av-bg-elevated: #0e1016;
+  --av-surface: #151821;
+  --av-border: #2a2f3a;
+  --av-accent-dim: #94a3b8;
+}
+
+.anivault-shell[data-shell-preset="paper"] {
+  --av-bg: #050506;
+  --av-bg-elevated: #09090b;
+  --av-surface: #101012;
+  --av-muted: #9ca3af;
+}
+
+/* Monochrome emphasis — thumbnails & decorative art only (video stays full color in watch). */
+.anivault-shell[data-chroma="mono"] .av-shell-main img,
+.anivault-shell[data-chroma="mono"] aside .rounded-2xl img {
+  filter: grayscale(1) contrast(1.02);
+}

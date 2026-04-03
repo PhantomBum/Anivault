@@ -106,46 +106,55 @@ export function DiscoverPage() {
   );
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-4 text-[var(--av-text)]">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]">
-            <Compass className="h-6 w-6 text-[var(--av-accent)]" aria-hidden />
+    <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-3 text-[var(--av-text)] md:px-5 md:py-5">
+      <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)]/35 p-4 shadow-av-sm md:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.06),transparent_55%)]" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-xs">
+              <Compass className="h-6 w-6 text-zinc-200" aria-hidden />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Discover</h2>
+              <p className="mt-0.5 max-w-xl text-sm text-[var(--av-muted)]">
+                Curated rows from the catalog. Use the header search or{" "}
+                <Link className="text-[var(--av-text)] underline underline-offset-2" to="/anime">
+                  Find shows
+                </Link>{" "}
+                for exact titles.
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight">Discover</h2>
-            <p className="text-sm text-[var(--av-muted)]">
-              Fresh pulls the live catalog; other tabs use quick probes — open Search for exact titles.
-            </p>
-          </div>
-        </div>
-        <Button
-          asChild
-          variant="outline"
-          className="w-fit rounded-xl border-[var(--av-border)]"
-        >
-          <Link to="/anime">Find shows</Link>
-        </Button>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={cn(
-              "rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors",
-              tab === t.id
-                ? "border-[var(--av-text)] bg-white/10 text-[var(--av-text)]"
-                : "border-[var(--av-border)] bg-[var(--av-surface)]/50 text-[var(--av-muted)] hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
-            )}
-            onClick={() => setTab(t.id)}
+          <Button
+            asChild
+            variant="outline"
+            className="h-10 shrink-0 rounded-2xl border-[var(--av-border)] px-5"
           >
-            {t.label}
-          </button>
-        ))}
+            <Link to="/anime">Browse all</Link>
+          </Button>
+        </div>
+
+        <div className="relative mt-5 flex flex-wrap gap-2 border-t border-[var(--av-border)]/80 pt-4">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={cn(
+                "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200",
+                tab === t.id
+                  ? "border-zinc-400/40 bg-zinc-100/10 text-zinc-50 shadow-av-xs"
+                  : "border-transparent bg-[var(--av-bg)]/40 text-[var(--av-muted)] hover:border-[var(--av-border)] hover:text-[var(--av-text)]"
+              )}
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="relative mt-2 text-[11px] leading-snug text-[var(--av-muted-foreground)]">
+          {active.hint}
+        </p>
       </div>
-      <p className="text-[10px] text-[var(--av-muted-foreground)]">{active.hint}</p>
 
       {err ? (
         <p className="text-sm text-amber-400" role="status">
@@ -154,7 +163,14 @@ export function DiscoverPage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-[var(--av-muted)]">Loading…</p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="aspect-[2/3] animate-pulse rounded-2xl border border-[var(--av-border)]/60 bg-zinc-900/50"
+            />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {rows.map((r) => {

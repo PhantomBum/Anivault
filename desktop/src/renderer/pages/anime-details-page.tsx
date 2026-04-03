@@ -32,6 +32,7 @@ import {
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { showToast } from "@/renderer/lib/av-toast";
 import { pickSynopsis } from "@/renderer/lib/synopsis";
+import { cn } from "@/renderer/lib/utils";
 
 type EpisodesState =
   | { status: "idle" }
@@ -71,6 +72,7 @@ export function AnimeDetailsPage() {
   const [comments, setComments] = useState<ShowCommentRow[]>([]);
   const [commentBody, setCommentBody] = useState("");
   const [engageMsg, setEngageMsg] = useState<string | null>(null);
+  const [completedEpisodes, setCompletedEpisodes] = useState<Set<string>>(new Set());
 
   const anime =
     state?.anime ?? (id ? { id, name: "", episodeCount: 0, mode: "sub" as const } : null);
@@ -393,7 +395,7 @@ export function AnimeDetailsPage() {
           </Button>
         </div>
 
-        <div className="container mx-auto flex max-w-5xl flex-col gap-8 p-4 pb-10 md:p-8">
+        <div className="container mx-auto flex max-w-5xl flex-col gap-4 p-3 pb-10 md:gap-5 md:p-6">
           {openedWithoutSearchState && details ? (
             <p
               className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-xs text-[var(--av-muted)]"
@@ -419,7 +421,7 @@ export function AnimeDetailsPage() {
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--av-bg)] via-[var(--av-bg)]/85 to-[var(--av-bg)]/40" />
-            <div className="relative flex flex-col gap-6 p-5 sm:flex-row sm:items-end sm:gap-10 sm:p-8">
+            <div className="relative flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:gap-8 sm:p-6">
               {tile?.coverUrl || details?.thumbnail ? (
                 <img
                   src={tile?.coverUrl ?? details?.thumbnail ?? undefined}
@@ -523,16 +525,22 @@ export function AnimeDetailsPage() {
                 ) : (
                   filteredEpisodes.map((ep) => {
                     const isPlaying = playingEpisode === ep;
+                    const done = completedEpisodes.has(ep);
                     return (
                       <li key={ep}>
                         <Button
                           type="button"
                           variant="outline"
-                          className="rounded-xl border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:border-[var(--av-accent-dim)] hover:bg-[var(--av-surface-hover)]"
+                          className={cn(
+                            "rounded-xl border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:border-[var(--av-accent-dim)] hover:bg-[var(--av-surface-hover)]",
+                            done &&
+                              "border-zinc-600/80 bg-zinc-900/50 text-zinc-400 grayscale hover:grayscale-0"
+                          )}
                           onClick={() => playEpisode(ep, episodes, activeMode)}
                           disabled={isPlaying}
+                          title={done ? "Watched" : ep}
                         >
-                          {ep}
+                          {done ? `${ep} ✓` : ep}
                         </Button>
                       </li>
                     );

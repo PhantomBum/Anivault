@@ -55,9 +55,16 @@ const ListsPage = lazy(() =>
 
 function RouteFallback() {
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-5 bg-[var(--av-bg)] px-6 text-[var(--av-muted)] motion-safe:animate-av-fade-in">
-      <AvLoadingBar className="max-w-[200px] motion-safe:animate-av-soft-pulse" />
-      <span className="text-[var(--av-text)] motion-safe:animate-av-fade-up">Loading…</span>
+    <div className="flex min-h-[calc(100vh-3rem)] flex-col items-center justify-center gap-6 bg-[var(--av-bg)] px-6 text-[var(--av-muted)] motion-safe:animate-av-fade-in">
+      <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] shadow-av-md motion-safe:animate-av-soft-pulse">
+        <div className="absolute inset-2 rounded-xl bg-gradient-to-br from-zinc-600/30 to-transparent" />
+        <span className="relative text-sm font-bold tracking-tight text-zinc-100">AV</span>
+      </div>
+      <AvLoadingBar className="max-w-[220px] motion-safe:animate-av-soft-pulse" />
+      <div className="text-center motion-safe:animate-av-fade-up">
+        <p className="text-sm font-medium text-[var(--av-text)]">Loading view</p>
+        <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">Preparing layout and scripts…</p>
+      </div>
     </div>
   );
 }

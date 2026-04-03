@@ -12,6 +12,10 @@ export type NowPlayingSession = {
   onPictureInPicture?: () => void;
   onFullscreen?: () => void;
   scrollToPlayer?: () => void;
+  /** Left the watch page — video element is gone; use resumeWatch to return. */
+  detached?: boolean;
+  /** Opens the watch page with the last session (same anime/episode). */
+  resumeWatch?: () => void;
 };
 
 type NowPlayingContextValue = {

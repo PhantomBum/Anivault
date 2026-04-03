@@ -12,6 +12,7 @@ import { Palette } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { applyShellAppearance } from "@/renderer/helpers/shell-appearance";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { translateText } from "@/renderer/lib/translation";
@@ -57,7 +58,16 @@ export function SettingsPage() {
   const persist = async (partial: Partial<AnivaultStoreSchema>) => {
     if (!window.anivault) return;
     await window.anivault.setConfig(partial);
-    setCfg((c) => (c ? { ...c, ...partial } : c));
+    setCfg((c) => {
+      const next = c ? { ...c, ...partial } : c;
+      if (next && (partial.chromaticEmphasis != null || partial.shellPreset != null)) {
+        applyShellAppearance({
+          chromaticEmphasis: next.chromaticEmphasis,
+          shellPreset: next.shellPreset,
+        });
+      }
+      return next;
+    });
     if (partial.uiDensity != null) applyUiDensityToShell(partial.uiDensity);
     await refresh();
     setSaved(true);
@@ -81,7 +91,7 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="playback" className="w-full">
+      <Tabs defaultValue="playback" className="w-full min-h-[40rem]">
         <TabsList className="grid h-auto w-full grid-cols-2 items-stretch gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1.5 sm:grid-cols-3 lg:grid-cols-5">
           <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
@@ -103,7 +113,7 @@ export function SettingsPage() {
 
         <TabsContent
           value="playback"
-          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
+          className="mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div>
@@ -223,8 +233,53 @@ export function SettingsPage() {
 
         <TabsContent
           value="appearance"
-          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
+          className="mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-shadow md:p-8"
         >
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">Color emphasis</span>
+            <p className="text-xs text-[var(--av-muted-foreground)]">
+              Full keeps poster colors; Monochrome uses grayscale on thumbnails and cards (not the video
+              player).
+            </p>
+            <Select
+              value={cfg.chromaticEmphasis}
+              onValueChange={(v) =>
+                void persist({ chromaticEmphasis: v as AnivaultStoreSchema["chromaticEmphasis"] })
+              }
+            >
+              <SelectTrigger className="h-12 w-full max-w-md rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full">Full color</SelectItem>
+                <SelectItem value="mono">Monochrome UI</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-sm font-medium text-[var(--av-muted)]">Shell theme</span>
+            <p className="text-xs text-[var(--av-muted-foreground)]">
+              Background and surface balance. Light/dark still follows the title bar theme toggle.
+            </p>
+            <Select
+              value={cfg.shellPreset}
+              onValueChange={(v) =>
+                void persist({ shellPreset: v as AnivaultStoreSchema["shellPreset"] })
+              }
+            >
+              <SelectTrigger className="h-12 w-full max-w-md rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="midnight">Midnight (default)</SelectItem>
+                <SelectItem value="charcoal">Charcoal</SelectItem>
+                <SelectItem value="slate">Slate</SelectItem>
+                <SelectItem value="paper">Ink</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-3">
             <span className="text-sm font-medium text-[var(--av-muted)]">UI density</span>
             <p className="text-xs text-[var(--av-muted-foreground)]">
@@ -274,7 +329,7 @@ export function SettingsPage() {
 
         <TabsContent
           value="language"
-          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
+          className="mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
         >
           <div className="space-y-3">
             <span className="text-sm font-medium text-[var(--av-muted)]">App language</span>
@@ -301,7 +356,7 @@ export function SettingsPage() {
 
         <TabsContent
           value="translation"
-          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
+          className="mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
         >
           <div className="space-y-3">
             <span className="text-sm font-medium text-[var(--av-muted)]">Provider</span>
@@ -364,7 +419,7 @@ export function SettingsPage() {
 
         <TabsContent
           value="updates"
-          className="mt-8 space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
+          className="mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm md:p-8"
         >
           <div className="space-y-2">
             <span className="text-sm font-medium text-[var(--av-muted)]">App version</span>

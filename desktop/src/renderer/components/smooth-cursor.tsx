@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 
 /** Custom pointer (`public/cursor-pointer.png`) — white via CSS filter. Hotspot at arrow tip (right wedge ~24px asset). */
 const CURSOR_PNG = `${import.meta.env.BASE_URL}cursor-pointer.png`;
-const VIEW_W = 24;
-const VIEW_H = 24;
-/** Tip of the pointer in image space — aligns visual tip with the real cursor position (same idea as OS arrow hotspot). */
-const HOTSPOT_X = 21;
-const HOTSPOT_Y = 11;
-const POINTER_STIFFNESS = 18;
+const VIEW_W = 30;
+const VIEW_H = 30;
+/** Tip of the pointer in image space — nudged left/up so the wedge feels aligned with the OS hit point. */
+const HOTSPOT_X = 24;
+const HOTSPOT_Y = 9;
+/** Follow lag (higher = snappier). */
+const POINTER_STIFFNESS = 14;
+const POSITION_STIFFNESS = 22;
 const INTERACTIVE_SELECTOR =
   'a[href], button, [role="button"], input:not([type="hidden"]), textarea, select, label, summary, [data-cursor="pointer"]';
 
@@ -23,6 +25,7 @@ export function SmoothCursor() {
   const rootEl = useRef<HTMLDivElement | null>(null);
 
   const targetRef = useRef({ x: -100, y: -100 });
+  const renderRef = useRef({ x: -100, y: -100 });
   const visibleRef = useRef(false);
   const interactiveRef = useRef(false);
   const pressedRef = useRef(false);
@@ -46,6 +49,7 @@ export function SmoothCursor() {
       el.style.opacity = String(opacity);
       el.style.transform = `translate3d(${x - HOTSPOT_X}px, ${y - HOTSPOT_Y}px, 0) scale(${scale})`;
     };
+    renderRef.current = { x: -100, y: -100 };
 
     const onMove = (e: MouseEvent) => {
       targetRef.current = { x: e.clientX, y: e.clientY };
@@ -94,12 +98,15 @@ export function SmoothCursor() {
       const tx = targetRef.current.x;
       const ty = targetRef.current.y;
 
+      const rx = smoothToward(renderRef.current.x, tx, dt, POSITION_STIFFNESS);
+      const ry = smoothToward(renderRef.current.y, ty, dt, POSITION_STIFFNESS);
+      renderRef.current = { x: rx, y: ry };
+
       const vis = visibleRef.current ? 1 : 0;
       const scaleTarget = pressedRef.current ? 0.88 : interactiveRef.current ? 0.92 : 1;
-      // Tip uses clientX/Y (same hit-testing as the OS cursor); scale eases for feedback.
       scaleRef.current = smoothToward(scaleRef.current, scaleTarget, dt, POINTER_STIFFNESS * 1.25);
 
-      apply(tx, ty, vis, scaleRef.current);
+      apply(rx, ry, vis, scaleRef.current);
 
       rafRef.current = requestAnimationFrame(loop);
     };
@@ -137,7 +144,7 @@ export function SmoothCursor() {
           height={VIEW_H}
           alt=""
           draggable={false}
-          className="block h-6 w-6 object-contain"
+          className="block h-[30px] w-[30px] object-contain"
           style={{
             // Black PNG → white arrow; drop-shadow keeps edge on dark backgrounds
             filter:

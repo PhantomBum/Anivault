@@ -28,4 +28,8 @@ export type AnivaultStoreSchema = {
    * Subtle backdrop blur on titlebar, sidebar, and mini-player. Off by default.
    */
   shellVisualEffects: boolean;
+  /** Strip color from thumbnails/cards (not video). */
+  chromaticEmphasis: "full" | "mono";
+  /** Background + contrast preset (dark/light still from system theme). */
+  shellPreset: "midnight" | "charcoal" | "slate" | "paper";
 };

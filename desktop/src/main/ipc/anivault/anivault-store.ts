@@ -17,6 +17,8 @@ export const anivaultDefaults: AnivaultStoreSchema = {
   autoPlayNextEpisode: true,
   smoothCursor: true,
   shellVisualEffects: true,
+  chromaticEmphasis: "full",
+  shellPreset: "midnight",
 };
 
 export const anivaultStore = new Store<AnivaultStoreSchema>({
