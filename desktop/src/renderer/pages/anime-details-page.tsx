@@ -79,8 +79,16 @@ export function AnimeDetailsPage() {
   const [engageMsg, setEngageMsg] = useState<string | null>(null);
   const [completedEpisodes, setCompletedEpisodes] = useState<Set<string>>(new Set());
 
-  const anime =
-    state?.anime ?? (id ? { id, name: "", episodeCount: 0, mode: "sub" as const } : null);
+  /**
+   * When opening from URL alone (Find shows / Discover), `location.state` is empty. The fallback
+   * object must be memoized — a fresh object every render made the data-loading effect depend on
+   * `[id, anime]` re-run forever and never finish loading.
+   */
+  const anime = useMemo((): AnimeSearchResult | null => {
+    if (state?.anime) return state.anime;
+    if (!id) return null;
+    return { id, name: "", episodeCount: 0, mode: "sub" as const };
+  }, [state?.anime, id]);
 
   useEffect(() => {
     setActiveMode(anime?.mode ?? "sub");

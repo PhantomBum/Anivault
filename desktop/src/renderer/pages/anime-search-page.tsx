@@ -530,7 +530,7 @@ export function AnimeSearchPage() {
 
   const openDetail = useCallback(
     (anime: AnimeSearchResult) => {
-      navigate(`/anime/${encodeURIComponent(anime.id)}`);
+      navigate(`/anime/${encodeURIComponent(anime.id)}`, { state: { anime } });
     },
     [navigate]
   );
