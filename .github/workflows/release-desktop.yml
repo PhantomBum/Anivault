@@ -1,9 +1,6 @@
 # Build Windows NSIS installer and attach binaries to the GitHub Release for this tag.
 #
-# Note: `electron-forge publish --dry-run` / `--from-dry-run` has been unreliable in CI;
-# we run `npm run make` then upload artifacts with softprops/action-gh-release.
-#
-# Release from PC: .\scripts\release-desktop.ps1 1.0.0-alpha.11  (bumps version, commits, tags, pushes)
+# Release: .\scripts\release-desktop.ps1 1.0.0-alpha.13
 
 name: Release desktop (Windows)
 
@@ -47,35 +44,31 @@ jobs:
         run: node -e "console.log('desktop/package.json version:', require('./package.json').version)"
 
       - name: Build Windows installer (NSIS)
+        id: make
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: npm run make
 
       - name: List build output
+        if: success() || failure()
         shell: pwsh
         run: |
-          Write-Host "---- out/make/nsis/x64 ----"
-          if (-not (Test-Path "out/make/nsis/x64")) {
-            Write-Host "ERROR: out/make/nsis/x64 missing — build did not produce NSIS output."
-            exit 1
+          Write-Host "---- desktop/out (recursive) ----"
+          if (Test-Path "out") {
+            Get-ChildItem -Path "out" -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+          } else {
+            Write-Host "no out/"
           }
-          Get-ChildItem -Path "out/make/nsis/x64" -File | ForEach-Object { Write-Host $_.FullName $_.Length }
+          Write-Host "---- expect nsis x64 ----"
+          $p = "out/make/nsis/x64"
+          if (Test-Path $p) { Get-ChildItem $p -File | ForEach-Object { $_.Name, $_.Length } }
 
-      - name: Upload installer and updater metadata to Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+      - name: Upload NSIS assets to release
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          files: |
-            desktop/out/make/nsis/x64/AniVaultSetup.exe
-            desktop/out/make/nsis/x64/latest.yml
-            desktop/out/make/nsis/x64/AniVaultSetup.exe.blockmap
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload build artifacts (manual runs only)
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-nsis-${{ github.sha }}
-          path: desktop/out/make/nsis/x64/
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          file: ${{ github.workspace }}/desktop/out/make/nsis/x64/*
+          file_glob: true
+          overwrite: true

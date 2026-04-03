@@ -1,5 +1,9 @@
 AniVault — changelog
 
+1.0.0-alpha.13
+- CI: simplified package.json `build.nsis` (removed language flags that broke `npm run make` on GitHub Actions)
+- CI: upload release assets with svenstaro/upload-release-action + `${{ github.workspace }}` glob for reliable Windows paths
+
 1.0.0-alpha.12
 - Windows NSIS: assisted installer + folder picker now forced via package.json `build.nsis` (electron-builder defaults `oneClick` to true when the flag is missing — that was hiding the directory page). Use Next after “install for me / all users” to reach “Choose install location”.
 

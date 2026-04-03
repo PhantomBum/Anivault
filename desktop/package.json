@@ -1,7 +1,7 @@
 {
   "name": "anivault",
   "productName": "AniVault",
-  "version": "1.0.0-alpha.12",
+  "version": "1.0.0-alpha.13",
   "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
   "repository": {
     "type": "git",
@@ -12,11 +12,7 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "allowElevation": true,
-      "perMachine": false,
-      "selectPerMachineByDefault": false,
-      "installerLanguages": ["en_US"],
-      "multiLanguageInstaller": false
+      "allowElevation": true
     }
   },
   "scripts": {
