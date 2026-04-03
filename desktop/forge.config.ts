@@ -60,7 +60,8 @@ const config: ForgeConfig = {
 
     new MakerSquirrel({
 
-      name: "AniVault Unvaulted",
+      /** NuGet package ID: no spaces (Squirrel/nuget_pack rejects `AniVault Unvaulted`). Display name stays in package.json `productName`. */
+      name: "AniVaultUnvaulted",
 
       setupExe: "AniVaultUnvaultedSetup.exe",
 

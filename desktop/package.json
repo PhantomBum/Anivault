@@ -1,7 +1,7 @@
 {
   "name": "anivault",
   "productName": "AniVault Unvaulted",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AniVault Unvaulted — desktop streaming powered by pystardust/ani-cli (stable release).",
   "repository": {
     "type": "git",
