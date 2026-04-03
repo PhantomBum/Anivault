@@ -23,23 +23,19 @@ import {
   prefetchThumbnailCache,
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
+import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
 import { inferMatureRating } from "@/renderer/lib/mature-content";
 import { seriesFingerprint } from "@/renderer/lib/series-fingerprint";
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { ChevronDown, ChevronRight, Filter, LayoutGrid, List, Play, Search } from "lucide-react";
-import React, {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
 
-const SEARCH_DEBOUNCE_MS = 400;
+/** Low latency — results are cached in `ani-session-cache` for repeat queries. */
+const SEARCH_DEBOUNCE_MS = 95;
 const VIRTUAL_THRESHOLD = 24;
 
 const SEARCH_PREFS_KEY = "anivault-find-shows-prefs";
@@ -221,7 +217,6 @@ export function AnimeSearchPage() {
 
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
-  const deferredQuery = useDeferredValue(debouncedQuery);
   const [apiResults, setApiResults] = useState<AnimeSearchResult[]>([]);
   const [filterMode, setFilterMode] = useState<"all" | "sub" | "dub">(
     () => loadSearchPrefs().filterMode ?? "all"
@@ -406,8 +401,8 @@ export function AnimeSearchPage() {
     setError(null);
     setExpandedId(null);
     setEpisodesByShowId({});
-    window.aniCli
-      .search(q)
+    const aniCli = getAniCli();
+    void cachedAniSearch(q, () => aniCli.search(q))
       .then((list) => {
         if (cancelled || gen !== searchGen.current) return;
         setApiResults(list);
@@ -427,17 +422,17 @@ export function AnimeSearchPage() {
 
   useEffect(() => {
     if (apiResults.length === 0 || loading) return;
-    const ids = apiResults.slice(0, 8).map((a) => a.id);
+    const ids = apiResults.slice(0, 28).map((a) => a.id);
     let cancelled = false;
     const run = () => {
-      void prefetchThumbnailCache(ids, 2, () => cancelled);
+      void prefetchThumbnailCache(ids, 6, () => cancelled);
     };
     let idleHandle: number | undefined;
     let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
     if (typeof window.requestIdleCallback === "function") {
-      idleHandle = window.requestIdleCallback(run, { timeout: 2500 });
+      idleHandle = window.requestIdleCallback(run, { timeout: 450 });
     } else {
-      timeoutHandle = window.setTimeout(run, 400);
+      timeoutHandle = window.setTimeout(run, 80);
     }
     return () => {
       cancelled = true;
@@ -466,7 +461,9 @@ export function AnimeSearchPage() {
   const loadEpisodes = useCallback(async (anime: AnimeSearchResult) => {
     setEpisodesByShowId((prev) => ({ ...prev, [anime.id]: { status: "loading" } }));
     try {
-      const episodes = await window.aniCli.getEpisodes(anime.id, anime.mode);
+      const episodes = await cachedGetEpisodes(anime.id, anime.mode, () =>
+        getAniCli().getEpisodes(anime.id, anime.mode)
+      );
       setEpisodesByShowId((prev) => ({
         ...prev,
         [anime.id]: { status: "loaded", episodes },
@@ -521,7 +518,9 @@ export function AnimeSearchPage() {
   const quickPlay = useCallback(
     async (anime: AnimeSearchResult) => {
       try {
-        const episodes = await window.aniCli.getEpisodes(anime.id, anime.mode);
+        const episodes = await cachedGetEpisodes(anime.id, anime.mode, () =>
+          getAniCli().getEpisodes(anime.id, anime.mode)
+        );
         if (episodes.length === 0) return;
         navigate("/watch", {
           state: {
@@ -899,7 +898,7 @@ export function AnimeSearchPage() {
         </ul>
       ) : null}
 
-      {!loading && results.length === 0 && deferredQuery.trim() && !error && (
+      {!loading && results.length === 0 && debouncedQuery.trim() && !error && (
         <p className="text-sm text-[var(--av-muted)]">No results found.</p>
       )}
     </div>

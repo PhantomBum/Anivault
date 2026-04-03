@@ -31,7 +31,7 @@ export function useAnilistEnrichment(
     const slice =
       limit != null && limit < shows.length ? shows.slice(0, limit) : shows;
     void (async () => {
-      await forEachWithConcurrency(slice, 5, async (a) => {
+      await forEachWithConcurrency(slice, 12, async (a) => {
         if (cancelled || gen !== genRef.current) return;
         if (startedRef.current.has(a.id)) return;
         startedRef.current.add(a.id);

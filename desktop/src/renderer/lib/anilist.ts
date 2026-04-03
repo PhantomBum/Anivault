@@ -45,7 +45,7 @@ async function anilistGraphql<T>(body: object): Promise<T | null> {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(body),
       },
-      { timeoutMs: 22_000, maxRetries: 2, retryDelayBaseMs: 500 }
+      { timeoutMs: 14_000, maxRetries: 2, retryDelayBaseMs: 320 }
     );
     if (!res.ok) return null;
     return (await res.json()) as T;

@@ -7,9 +7,10 @@ import type { StreamUrlResult } from "./stream-providers/stream-provider";
 
 const provider = new AllAnimeStreamProvider();
 
-const STREAM_TOTAL_MS = 90_000;
-const MAX_ATTEMPTS = 3;
-const BACKOFF_BASE_MS = 500;
+/** Fail faster on stalls; AllAnime usually responds in a few seconds when healthy. */
+const STREAM_TOTAL_MS = 42_000;
+const MAX_ATTEMPTS = 2;
+const BACKOFF_BASE_MS = 180;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -56,7 +56,7 @@ export async function fetchAniListAiringSchedule(): Promise<AniListScheduleEntry
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ query: QUERY }),
       },
-      { timeoutMs: 22_000, maxRetries: 2, retryDelayBaseMs: 400 }
+      { timeoutMs: 14_000, maxRetries: 2, retryDelayBaseMs: 320 }
     );
     if (!res.ok) return null;
     const json = (await res.json()) as GqlResponse;

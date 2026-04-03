@@ -1,6 +1,6 @@
 /** Shared resilient fetch for flaky networks (Electron, public Wi‑Fi, etc.). */
 
-const DEFAULT_TIMEOUT_MS = 22_000;
+const DEFAULT_TIMEOUT_MS = 14_000;
 const DEFAULT_RETRIES = 2;
 
 function sleep(ms: number): Promise<void> {

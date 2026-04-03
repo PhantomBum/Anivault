@@ -16,6 +16,7 @@ import {
   type ShowEngagementResponse,
 } from "@/renderer/lib/anivault-api";
 import { type ShowDetails, getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedGetEpisodes, cachedGetShowDetails } from "@/renderer/lib/ani-session-cache";
 import { cn } from "@/renderer/lib/utils";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { getRecentlyWatched } from "@/renderer/lib/recently-watched-bridge";
@@ -214,9 +215,11 @@ export function WatchPage() {
     const aniCli = getAniCli();
     const initialEpisodes = state.episodes ?? [];
     void Promise.all([
-      aniCli.getShowDetails(state.anime.id),
+      cachedGetShowDetails(state.anime.id, () => aniCli.getShowDetails(state.anime.id)),
       initialEpisodes.length === 0
-        ? aniCli.getEpisodes(state.anime.id, state.anime.mode)
+        ? cachedGetEpisodes(state.anime.id, state.anime.mode, () =>
+            aniCli.getEpisodes(state.anime.id, state.anime.mode)
+          )
         : Promise.resolve(initialEpisodes),
     ])
       .then(async ([d, epList]) => {

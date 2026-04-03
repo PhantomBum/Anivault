@@ -10,7 +10,7 @@ import { cachedAniSearch } from "@/renderer/lib/ani-session-cache";
 import { cn } from "@/renderer/lib/utils";
 
 const STORAGE_KEY = "anivault-local-watchlist-v1";
-const SEARCH_WAIT_MS = 380;
+const SEARCH_WAIT_MS = 100;
 
 type ListEntry = { id: string; name: string; mode: "sub" | "dub" };
 

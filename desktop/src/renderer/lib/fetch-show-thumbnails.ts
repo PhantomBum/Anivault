@@ -6,15 +6,15 @@
 import type { Dispatch, SetStateAction } from "react";
 
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedGetShowDetails } from "@/renderer/lib/ani-session-cache";
 import { fetchWithRetry } from "@/renderer/lib/fetch-with-retry";
 import { forEachWithConcurrency } from "@/renderer/lib/for-each-with-concurrency";
 import { cacheThumbnail, getCachedThumbnail } from "@/renderer/lib/local-cache";
 
 type FetchedShowDetails = Awaited<ReturnType<ReturnType<typeof getAniCli>["getShowDetails"]>>;
 
-/** Each call hits the network; cap parallel work so grids stay responsive. */
-/** Kept modest to limit parallel network + decoded image memory. */
-export const SHOW_DETAILS_FETCH_CONCURRENCY = 4;
+/** Parallel `getShowDetails` calls while merging poster grids (cached per id after first load). */
+export const SHOW_DETAILS_FETCH_CONCURRENCY = 10;
 
 /** Shown when `getShowDetails` fails — never use raw anime id as display name. */
 export const UNKNOWN_SERIES_LABEL = "Unknown series";
@@ -34,7 +34,7 @@ async function resolveThumbnailDisplayUrl(
     const res = await fetchWithRetry(remoteUrl, {
       credentials: "omit",
       referrerPolicy: "no-referrer",
-    }, { timeoutMs: 25_000, maxRetries: 2 });
+    }, { timeoutMs: 14_000, maxRetries: 2 });
     if (!res.ok) throw new Error(String(res.status));
     const blob = await res.blob();
     await cacheThumbnail(animeId, blob);
@@ -59,14 +59,14 @@ export async function prefetchThumbnailCache(
     try {
       const existing = await getCachedThumbnail(animeId);
       if (existing) return;
-      const details = await aniCli.getShowDetails(animeId);
+      const details = await cachedGetShowDetails(animeId, () => aniCli.getShowDetails(animeId));
       if (cancelled()) return;
       const url = details.thumbnail;
       if (!url) return;
       const res = await fetchWithRetry(
         url,
         { credentials: "omit", referrerPolicy: "no-referrer" },
-        { timeoutMs: 25_000, maxRetries: 1 }
+        { timeoutMs: 14_000, maxRetries: 1 }
       );
       if (!res.ok) return;
       const blob = await res.blob();
@@ -102,13 +102,13 @@ export async function mergeShowThumbnailsFromShowDetails<T extends { id: string 
       }
       let details: FetchedShowDetails;
       try {
-        details = await aniCli.getShowDetails(anime.id);
+        details = await cachedGetShowDetails(anime.id, () => aniCli.getShowDetails(anime.id));
       } catch {
         if (cancelled()) return;
-        await new Promise((r) => setTimeout(r, 400));
+        await new Promise((r) => setTimeout(r, 120));
         if (cancelled()) return;
         try {
-          details = await aniCli.getShowDetails(anime.id);
+          details = await cachedGetShowDetails(anime.id, () => aniCli.getShowDetails(anime.id));
         } catch {
           if (cancelled()) return;
           setMap((prev) =>
@@ -147,12 +147,12 @@ export async function mergeShowDetailsByAnimeId(
     try {
       let details: FetchedShowDetails;
       try {
-        details = await aniCli.getShowDetails(animeId);
+        details = await cachedGetShowDetails(animeId, () => aniCli.getShowDetails(animeId));
       } catch {
         if (cancelled()) return;
-        await new Promise((r) => setTimeout(r, 400));
+        await new Promise((r) => setTimeout(r, 120));
         if (cancelled()) return;
-        details = await aniCli.getShowDetails(animeId);
+        details = await cachedGetShowDetails(animeId, () => aniCli.getShowDetails(animeId));
       }
       if (cancelled()) return;
       const thumb = await resolveThumbnailDisplayUrl(animeId, details.thumbnail ?? null);

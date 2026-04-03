@@ -1,15 +1,24 @@
 /**
- * Small in-memory cache for ani-cli IPC — bounded to keep RAM flat on long sessions.
+ * In-memory cache for ani-cli IPC — fewer round-trips when browsing back/forth.
+ * TTLs are long enough to feel instant on repeat views without unbounded growth.
  */
 
-import type { AnimeSearchResult } from "@/renderer/lib/ani-cli-bridge";
+import type { AnimeSearchResult, ShowDetails } from "@/renderer/lib/ani-cli-bridge";
 
-const DEFAULT_TTL_MS = 45_000;
-const MAX_SEARCH_ENTRIES = 28;
-const MAX_RECENT_ENTRIES = 6;
+/** Search / discover lists — refresh after this unless user is idle on same query. */
+const DEFAULT_TTL_MS = 8 * 60 * 1000;
+const EPISODE_TTL_MS = 12 * 60 * 1000;
+const DETAILS_TTL_MS = 12 * 60 * 1000;
+
+const MAX_SEARCH_ENTRIES = 56;
+const MAX_RECENT_ENTRIES = 12;
+const MAX_EPISODE_ENTRIES = 80;
+const MAX_DETAILS_ENTRIES = 64;
 
 const searchCache = new Map<string, { at: number; data: AnimeSearchResult[] }>();
 const recentCache = new Map<string, { at: number; data: { items: AnimeSearchResult[]; hasMore: boolean } }>();
+const episodesCache = new Map<string, { at: number; data: string[] }>();
+const detailsCache = new Map<string, { at: number; data: ShowDetails }>();
 
 function cacheKeySearch(q: string): string {
   return q.trim().toLowerCase();
@@ -65,6 +74,52 @@ export async function cachedAniRecent(
   return data;
 }
 
+function episodeKey(showId: string, mode: "sub" | "dub"): string {
+  return `${showId}\u0000${mode}`;
+}
+
+/**
+ * Caches episode lists per show + sub/dub (speeds up details, watch, discover quick-play).
+ */
+export async function cachedGetEpisodes(
+  showId: string,
+  mode: "sub" | "dub",
+  fetcher: () => Promise<string[]>,
+  ttlMs = EPISODE_TTL_MS
+): Promise<string[]> {
+  const k = episodeKey(showId, mode);
+  const hit = episodesCache.get(k);
+  const now = Date.now();
+  if (hit && now - hit.at < ttlMs) return hit.data;
+  const data = await fetcher();
+  episodesCache.set(k, { at: now, data });
+  evictOldest(episodesCache, MAX_EPISODE_ENTRIES);
+  return data;
+}
+
+/**
+ * Caches `getShowDetails` for poster/title/description (thumbnails + details page).
+ */
+export async function cachedGetShowDetails(
+  showId: string,
+  fetcher: () => Promise<ShowDetails>,
+  ttlMs = DETAILS_TTL_MS
+): Promise<ShowDetails> {
+  const hit = detailsCache.get(showId);
+  const now = Date.now();
+  if (hit && now - hit.at < ttlMs) return hit.data;
+  const data = await fetcher();
+  detailsCache.set(showId, { at: now, data });
+  evictOldest(detailsCache, MAX_DETAILS_ENTRIES);
+  return data;
+}
+
 export function invalidateAniSearchCache(): void {
   searchCache.clear();
+}
+
+export function invalidateShowCachesForId(showId: string): void {
+  detailsCache.delete(showId);
+  episodesCache.delete(episodeKey(showId, "sub"));
+  episodesCache.delete(episodeKey(showId, "dub"));
 }

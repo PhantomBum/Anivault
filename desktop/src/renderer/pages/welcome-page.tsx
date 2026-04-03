@@ -46,7 +46,7 @@ import {
 import { inferMatureRating } from "@/renderer/lib/mature-content";
 import { type RecentlyWatchedEntry } from "@/renderer/lib/recently-watched-bridge";
 
-const SEARCH_DEBOUNCE_MS = 400;
+const SEARCH_DEBOUNCE_MS = 95;
 
 function recentCardTitle(
   entry: RecentlyWatchedEntry,

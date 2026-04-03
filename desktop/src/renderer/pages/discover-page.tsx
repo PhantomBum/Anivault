@@ -6,6 +6,7 @@ import {
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
 import { cachedAniRecent, cachedAniSearch } from "@/renderer/lib/ani-session-cache";
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { cn } from "@/renderer/lib/utils";
@@ -89,7 +90,9 @@ export function DiscoverPage() {
   const quickPlay = useCallback(
     async (anime: AnimeSearchResult) => {
       try {
-        const episodes = await getAniCli().getEpisodes(anime.id, anime.mode);
+        const episodes = await cachedGetEpisodes(anime.id, anime.mode, () =>
+          getAniCli().getEpisodes(anime.id, anime.mode)
+        );
         if (episodes.length === 0) return;
         navigate("/watch", {
           state: {

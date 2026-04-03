@@ -1,5 +1,9 @@
 AniVault — changelog
 
+1.0.0-alpha.16
+- Performance: much longer ani-cli memory cache (search + episode lists + show details); faster search debounce; higher parallel poster + AniList enrichment; quicker network timeouts and stream resolution retries
+- Thumbnails: faster retries; search prefetches more posters sooner
+
 1.0.0-alpha.15
 - Header quick search; route transitions; richer lazy-route loading screen
 - Mini player stays visible when you leave Watch (resume from bar); smoother custom cursor
