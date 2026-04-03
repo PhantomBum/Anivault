@@ -26,3 +26,6 @@ coverage/
 # Local server database (regenerated on run)
 server/data/*.sqlite
 server/data/*.sqlite-journal
+
+desktop/tmp-pack/
+
