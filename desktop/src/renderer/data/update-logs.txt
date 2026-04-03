@@ -1,5 +1,11 @@
 AniVault — changelog
 
+1.0.0-alpha.15
+- Header quick search; route transitions; richer lazy-route loading screen
+- Mini player stays visible when you leave Watch (resume from bar); smoother custom cursor
+- Appearance: monochrome thumbnails option + shell presets (Midnight / Charcoal / Slate / Ink); steadier Settings tab panel height
+- Discover layout refresh; series page: tighter layout, watched episodes styled; watch progress ≥90% counts as done
+
 1.0.0-alpha.14
 - Windows installer is Squirrel again (NSIS `npm run make` was failing on GitHub Actions since alpha.10, so releases had no binaries). You get `AniVaultSetup.exe`, `*-full.nupkg`, `RELEASES`, and `latest.yml` again.
 

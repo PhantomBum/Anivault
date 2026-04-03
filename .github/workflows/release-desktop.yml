@@ -1,6 +1,6 @@
 # Build Windows Squirrel installer and attach binaries to the GitHub Release for this tag.
 #
-# Release: .\scripts\release-desktop.ps1 1.0.0-alpha.14
+# Release: .\scripts\release-desktop.ps1 1.0.0-alpha.15
 
 name: Release desktop (Windows)
 
