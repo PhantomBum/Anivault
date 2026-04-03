@@ -21,15 +21,20 @@ import type { AniListSearchTile } from "@/renderer/lib/anilist";
 import {
   mergeShowThumbnailsFromShowDetails,
   prefetchThumbnailCache,
+  prefetchThumbnailForShowId,
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
 import { cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
-import { inferMatureRating } from "@/renderer/lib/mature-content";
+import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
+import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
+import { showToast } from "@/renderer/lib/av-toast";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { seriesFingerprint } from "@/renderer/lib/series-fingerprint";
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { ChevronDown, ChevronRight, Filter, LayoutGrid, List, Play, Search } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import type { ListChildComponentProps } from "react-window";
 import { VariableSizeList } from "react-window";
@@ -210,6 +215,7 @@ function pickPrimaryShow(group: AnimeSearchResult[], enrich: Record<string, AniL
 }
 
 export function AnimeSearchPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -238,6 +244,8 @@ export function AnimeSearchPage() {
   const [yearMin, setYearMin] = useState<number | null>(null);
   const [maturityFilter, setMaturityFilter] = useState<"all" | "none" | "ecchi" | "explicit">("all");
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
+  const { config } = useAnivaultConfig();
+  const allowMatureGlobal = config?.allowMatureContent ?? false;
 
   const searchGen = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -308,6 +316,16 @@ export function AnimeSearchPage() {
     return list;
   }, [apiResults, filterMode, sortMode]);
 
+  const needsAniMeta = useMemo(() => {
+    return (
+      selectedGenres.length > 0 ||
+      formatFilter !== "all" ||
+      minScore > 0 ||
+      yearMin != null ||
+      maturityFilter !== "all"
+    );
+  }, [selectedGenres.length, formatFilter, minScore, yearMin, maturityFilter]);
+
   useEffect(() => {
     setThumbById({});
   }, [debouncedQuery]);
@@ -326,21 +344,13 @@ export function AnimeSearchPage() {
     };
   }, [audioSorted]);
 
-  const enrichMap = useAnilistEnrichment(audioSorted, debouncedQuery);
-
-  const needsAniMeta = useMemo(() => {
-    return (
-      selectedGenres.length > 0 ||
-      formatFilter !== "all" ||
-      minScore > 0 ||
-      yearMin != null ||
-      maturityFilter !== "all"
-    );
-  }, [selectedGenres.length, formatFilter, minScore, yearMin, maturityFilter]);
+  const enrichMap = useAnilistEnrichment(audioSorted, debouncedQuery, needsAniMeta ? 96 : 32);
 
   const results = useMemo(() => {
     return audioSorted.filter((a) => {
       const t = enrichMap[a.id];
+      const rating = inferMatureRating(a.name, t?.genres);
+      if (isMatureContentBlocked(allowMatureGlobal, rating)) return false;
       if (!needsAniMeta) return true;
       if (t === undefined) return true;
       if (t === null) return false;
@@ -368,7 +378,17 @@ export function AnimeSearchPage() {
       }
       return true;
     });
-  }, [audioSorted, enrichMap, needsAniMeta, selectedGenres, formatFilter, minScore, yearMin, maturityFilter]);
+  }, [
+    audioSorted,
+    enrichMap,
+    needsAniMeta,
+    allowMatureGlobal,
+    selectedGenres,
+    formatFilter,
+    minScore,
+    yearMin,
+    maturityFilter,
+  ]);
 
   const displayGroups = useMemo(() => {
     if (!groupBySeries) {
@@ -422,7 +442,7 @@ export function AnimeSearchPage() {
 
   useEffect(() => {
     if (apiResults.length === 0 || loading) return;
-    const ids = apiResults.slice(0, 28).map((a) => a.id);
+    const ids = apiResults.slice(0, 16).map((a) => a.id);
     let cancelled = false;
     const run = () => {
       void prefetchThumbnailCache(ids, 6, () => cancelled);
@@ -534,6 +554,15 @@ export function AnimeSearchPage() {
       }
     },
     [navigate]
+  );
+
+  const addToMyLists = useCallback(
+    (r: AnimeSearchResult, tile?: AniListSearchTile | null) => {
+      const name = tile?.titleEnglish ?? tile?.titleRomaji ?? r.name;
+      const { added } = addLocalWatchlistEntry({ id: r.id, name, mode: r.mode });
+      showToast(added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists"));
+    },
+    [t]
   );
 
   const listData = useMemo<SearchRowData>(
@@ -790,15 +819,19 @@ export function AnimeSearchPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {displayGroups.map((g) => {
             const primary = pickPrimaryShow(g.items, enrichMap);
-            const t = enrichMap[primary.id];
+            const enriched = enrichMap[primary.id];
             return (
               <AnimeTitleCard
                 key={g.key}
                 result={primary}
-                tile={t === undefined ? undefined : t}
+                tile={enriched === undefined ? undefined : enriched}
                 fallbackPosterUrl={thumbById[primary.id]}
                 onOpenDetail={() => openDetail(primary)}
                 onQuickPlay={() => void quickPlay(primary)}
+                onAddToMyLists={() => addToMyLists(primary, enriched)}
+                onPrefetch={() => {
+                  void prefetchThumbnailForShowId(primary.id, () => false);
+                }}
               />
             );
           })}

@@ -4,13 +4,14 @@ import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
 import { cn } from "@/renderer/lib/utils";
 import { anivaultFetch } from "@/renderer/lib/anivault-api";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 const REQUEST_EMAIL = "ilikebagels1612@gmail.com";
 
 function buildMailto(title: string, note: string): string {
-  const subject = encodeURIComponent(`[AniVault] Series request: ${title}`);
+  const subject = encodeURIComponent(`[${APP_DISPLAY_NAME}] Series request: ${title}`);
   const body = encodeURIComponent(
-    `Requested title: ${title}\n\nNotes:\n${note || "(none)"}\n\n— Sent from AniVault`
+    `Requested title: ${title}\n\nNotes:\n${note || "(none)"}\n\n— Sent from ${APP_DISPLAY_NAME}`
   );
   return `mailto:${REQUEST_EMAIL}?subject=${subject}&body=${body}`;
 }
@@ -68,7 +69,7 @@ export function RequestSeriesPage() {
       <p className="text-sm leading-relaxed text-[var(--av-muted)]">
         Suggest a series for the catalog. Requests are sent to{" "}
         <span className="text-[var(--av-text)]">{REQUEST_EMAIL}</span> via your mail app, and mirrored
-        to the AniVault server when it&apos;s online.
+        to the companion server when it&apos;s online.
       </p>
       <div className="space-y-2">
         <label className="text-xs font-medium text-[var(--av-muted)]">Title</label>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Button } from "@/renderer/components/ui/button";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import {
   Dialog,
   DialogClose,
@@ -72,7 +73,7 @@ export function UpdateAvailableDialog() {
           <DialogHeader>
             <DialogTitle>Update downloaded</DialogTitle>
             <DialogDescription>
-              Restart AniVault to install the new version. Your session will reload after the update.
+              Restart {APP_DISPLAY_NAME} to install the new version. Your session will reload after the update.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">

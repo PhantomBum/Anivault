@@ -28,12 +28,20 @@ export type AniListSearchTile = {
   coverUrl: string | null;
 };
 
-const searchTileCache = new Map<string, AniListSearchTile | null>();
-const mediaExtraCache = new Map<string, AniListMediaExtra | null>();
+/** Single map for tile + extra; bounded so AniList data cannot grow without limit. */
 const bundleCache = new Map<string, { extra: AniListMediaExtra | null; tile: AniListSearchTile | null }>();
+const MAX_BUNDLE_ENTRIES = 48;
 
 function cacheKey(search: string) {
   return search.trim().toLowerCase();
+}
+
+function evictOldestBundleEntries(): void {
+  while (bundleCache.size > MAX_BUNDLE_ENTRIES) {
+    const first = bundleCache.keys().next().value as string | undefined;
+    if (first === undefined) break;
+    bundleCache.delete(first);
+  }
 }
 
 async function anilistGraphql<T>(body: object): Promise<T | null> {
@@ -55,12 +63,6 @@ async function anilistGraphql<T>(body: object): Promise<T | null> {
 }
 
 export async function fetchAniListByTitle(search: string): Promise<AniListMediaExtra | null> {
-  const q = search.trim();
-  if (q.length < 2) return null;
-  const key = cacheKey(q);
-  if (mediaExtraCache.has(key)) {
-    return mediaExtraCache.get(key) ?? null;
-  }
   const bundle = await fetchAniListBundleByTitle(search);
   return bundle.extra;
 }
@@ -213,15 +215,17 @@ export async function fetchAniListBundleByTitle(search: string): Promise<{
     return { extra: null, tile: null };
   }
   const key = cacheKey(q);
-  const cachedBundle = bundleCache.get(key);
-  if (cachedBundle) {
-    return cachedBundle;
+  if (bundleCache.has(key)) {
+    const hit = bundleCache.get(key)!;
+    bundleCache.delete(key);
+    bundleCache.set(key, hit);
+    evictOldestBundleEntries();
+    return hit;
   }
 
   const out = await resolveBundleWithFallbacks(q);
   bundleCache.set(key, out);
-  searchTileCache.set(key, out.tile);
-  mediaExtraCache.set(key, out.extra);
+  evictOldestBundleEntries();
   return out;
 }
 
@@ -229,12 +233,6 @@ export async function fetchAniListBundleByTitle(search: string): Promise<{
  * One match per search string (with multi-candidate + normalized fallback). Call with concurrency limits from the UI layer.
  */
 export async function fetchAniListSearchTile(search: string): Promise<AniListSearchTile | null> {
-  const q = search.trim();
-  if (q.length < 2) return null;
-  const key = cacheKey(q);
-  if (searchTileCache.has(key)) {
-    return searchTileCache.get(key) ?? null;
-  }
   const bundle = await fetchAniListBundleByTitle(search);
   return bundle.tile;
 }

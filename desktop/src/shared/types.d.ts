@@ -1,5 +1,10 @@
 import type { AnivaultStoreSchema as AnivaultStoreSchemaShared } from "./anivault-types";
-import type { WatchProgressRecord } from "./watch-progress-types";
+import type {
+  OfflineDownloadAddPayload,
+  OfflineDownloadAddResult,
+  OfflineDownloadItem,
+} from "./offline-downloads-types";
+import type { WatchProgressContinueItem, WatchProgressRecord } from "./watch-progress-types";
 import { AppUpdateCheckResult } from "./app-update-types";
 
 interface ThemeContext {
@@ -53,6 +58,7 @@ interface WatchProgressContext {
   ) => Promise<WatchProgressRecord | null>;
   clearSeries: (animeId: string) => Promise<void>;
   stats: () => Promise<{ trackedEpisodes: number }>;
+  listContinue: (limit?: number) => Promise<WatchProgressContinueItem[]>;
 }
 
 interface AppContext {
@@ -75,6 +81,8 @@ interface AppContext {
     | { kind: "error"; message: string }
   >;
   onUpdateDownloaded: (cb: () => void) => () => void;
+  /** Native folder picker for offline downloads path. */
+  pickDownloadsFolder: () => Promise<string | null>;
 }
 
 interface SecurityContext {
@@ -106,6 +114,15 @@ interface AniCliContext {
   }>;
 }
 
+interface OfflineDownloadsContext {
+  list: () => Promise<OfflineDownloadItem[]>;
+  add: (payload: OfflineDownloadAddPayload) => Promise<OfflineDownloadAddResult>;
+  remove: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+  clearCompleted: () => Promise<void>;
+  retry: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+  reveal: (localPath: string) => Promise<boolean>;
+}
+
 declare global {
   interface Window {
     app: AppContext;
@@ -115,5 +132,6 @@ declare global {
     urlOpener: UrlOpenerContext;
     anivault: AnivaultContext;
     watchProgress: WatchProgressContext;
+    offlineDownloads: OfflineDownloadsContext;
   }
 }

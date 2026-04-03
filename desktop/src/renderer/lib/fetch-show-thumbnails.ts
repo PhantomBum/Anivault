@@ -14,7 +14,45 @@ import { cacheThumbnail, getCachedThumbnail } from "@/renderer/lib/local-cache";
 type FetchedShowDetails = Awaited<ReturnType<ReturnType<typeof getAniCli>["getShowDetails"]>>;
 
 /** Parallel `getShowDetails` calls while merging poster grids (cached per id after first load). */
-export const SHOW_DETAILS_FETCH_CONCURRENCY = 10;
+export const SHOW_DETAILS_FETCH_CONCURRENCY = 4;
+
+/** Tracks blob: URLs per anime so we revoke before replacing (avoids unbounded RAM in long sessions). */
+const blobUrlsByAnimeId = new Map<string, string>();
+
+function replaceThumbnailUrlForId(animeId: string, next: string | null): string | null {
+  const prev = blobUrlsByAnimeId.get(animeId);
+  if (prev?.startsWith("blob:")) {
+    try {
+      URL.revokeObjectURL(prev);
+    } catch {
+      /* ignore */
+    }
+  }
+  if (!next) {
+    blobUrlsByAnimeId.delete(animeId);
+    return null;
+  }
+  if (next.startsWith("blob:")) {
+    blobUrlsByAnimeId.set(animeId, next);
+  } else {
+    blobUrlsByAnimeId.delete(animeId);
+  }
+  return next;
+}
+
+/** Clears tracked blob URLs (e.g. before hot reload or full navigation reset). */
+export function revokeAllThumbnailBlobUrls(): void {
+  for (const u of blobUrlsByAnimeId.values()) {
+    if (u.startsWith("blob:")) {
+      try {
+        URL.revokeObjectURL(u);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  blobUrlsByAnimeId.clear();
+}
 
 /** Shown when `getShowDetails` fails — never use raw anime id as display name. */
 export const UNKNOWN_SERIES_LABEL = "Unknown series";
@@ -27,7 +65,8 @@ async function resolveThumbnailDisplayUrl(
 ): Promise<string | null> {
   const cached = await getCachedThumbnail(animeId);
   if (cached) {
-    return URL.createObjectURL(cached);
+    const u = URL.createObjectURL(cached);
+    return replaceThumbnailUrlForId(animeId, u);
   }
   if (!remoteUrl) return null;
   try {
@@ -38,9 +77,10 @@ async function resolveThumbnailDisplayUrl(
     if (!res.ok) throw new Error(String(res.status));
     const blob = await res.blob();
     await cacheThumbnail(animeId, blob);
-    return URL.createObjectURL(blob);
+    // Prefer HTTPS for display: one decode path; IDB holds bytes for next session.
+    return replaceThumbnailUrlForId(animeId, remoteUrl);
   } catch {
-    return remoteUrl;
+    return replaceThumbnailUrlForId(animeId, remoteUrl);
   }
 }
 
@@ -77,6 +117,14 @@ export async function prefetchThumbnailCache(
   });
 }
 
+/** Prefetch a single show poster when the user hovers a card (bounded work). */
+export async function prefetchThumbnailForShowId(
+  animeId: string,
+  cancelled: () => boolean
+): Promise<void> {
+  await prefetchThumbnailCache([animeId], 1, cancelled);
+}
+
 /**
  * Fetches `getShowDetails` for each item and merges `thumbnail` into a map keyed by `id`.
  */
@@ -94,7 +142,7 @@ export async function mergeShowThumbnailsFromShowDetails<T extends { id: string 
       const cachedBlob = await getCachedThumbnail(anime.id);
       if (cancelled()) return;
       if (cachedBlob) {
-        const url = URL.createObjectURL(cachedBlob);
+        const url = replaceThumbnailUrlForId(anime.id, URL.createObjectURL(cachedBlob));
         setMap((prev) =>
           prev[anime.id] !== undefined ? prev : { ...prev, [anime.id]: url }
         );

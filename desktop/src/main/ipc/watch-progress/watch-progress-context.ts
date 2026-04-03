@@ -1,9 +1,10 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-import type { WatchProgressRecord } from "@/shared/watch-progress-types";
+import type { WatchProgressContinueItem, WatchProgressRecord } from "@/shared/watch-progress-types";
 import {
   WATCH_PROGRESS_CLEAR_SERIES,
   WATCH_PROGRESS_GET,
+  WATCH_PROGRESS_LIST_CONTINUE,
   WATCH_PROGRESS_SAVE,
   WATCH_PROGRESS_STATS,
 } from "./watch-progress-channels";
@@ -25,5 +26,9 @@ export function exposeWatchProgressContext() {
       ipcRenderer.invoke(WATCH_PROGRESS_CLEAR_SERIES, animeId) as Promise<void>,
     stats: () =>
       ipcRenderer.invoke(WATCH_PROGRESS_STATS) as Promise<{ trackedEpisodes: number }>,
+    listContinue: (limit?: number) =>
+      ipcRenderer.invoke(WATCH_PROGRESS_LIST_CONTINUE, limit ?? 12) as Promise<
+        WatchProgressContinueItem[]
+      >,
   });
 }

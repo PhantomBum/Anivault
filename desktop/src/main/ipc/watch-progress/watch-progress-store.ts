@@ -1,6 +1,6 @@
 import Store from "electron-store";
 
-import type { WatchProgressRecord } from "@/shared/watch-progress-types";
+import type { WatchProgressContinueItem, WatchProgressRecord } from "@/shared/watch-progress-types";
 export type { WatchProgressRecord };
 
 type Schema = {
@@ -60,4 +60,32 @@ export function clearWatchProgressForAnime(animeId: string): void {
 
 export function watchProgressStats(): { trackedEpisodes: number } {
   return { trackedEpisodes: Object.keys(store.get("entries")).length };
+}
+
+/**
+ * Recent progress rows, newest first, then one entry per anime (latest touched episode).
+ */
+export function listContinueWatching(limit: number): WatchProgressContinueItem[] {
+  const entries = store.get("entries");
+  const rows: WatchProgressContinueItem[] = [];
+  for (const [key, rec] of Object.entries(entries)) {
+    const parts = key.split("\u0001");
+    if (parts.length !== 3) continue;
+    const [animeId, episode, mode] = parts;
+    if (mode !== "sub" && mode !== "dub") continue;
+    rows.push({
+      animeId,
+      episode,
+      mode,
+      positionSec: rec.positionSec,
+      durationSec: rec.durationSec,
+      updatedAt: rec.updatedAt,
+    });
+  }
+  rows.sort((a, b) => b.updatedAt - a.updatedAt);
+  const byAnime = new Map<string, WatchProgressContinueItem>();
+  for (const r of rows) {
+    if (!byAnime.has(r.animeId)) byAnime.set(r.animeId, r);
+  }
+  return [...byAnime.values()].slice(0, Math.max(0, limit));
 }

@@ -17,6 +17,11 @@ import {
 } from "./ani-cli-channels";
 import { getStreamUrl } from "./ani-cli-stream";
 
+/**
+ * One IPC handler per request from the renderer. Heavy grids batch work in the renderer layer
+ * (`for-each-with-concurrency`, session cache) so the main process stays responsive.
+ */
+
 /** Failsafe if inner resolution hangs (stream-resolver already caps work, but IPC must not hang forever). */
 const IPC_STREAM_URL_TIMEOUT_MS = 120_000;
 

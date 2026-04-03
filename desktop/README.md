@@ -1,10 +1,12 @@
-# AniVault (desktop)
+# AniVault Unvaulted (desktop)
 
-Electron app using **ani-cli** for playback.
+Electron app using **ani-cli** for playback — **stable (1.0.0+)** line, branded **AniVault Unvaulted** (formerly alpha “AniVault” builds).
+
+**Positioning:** AniVault Unvaulted is a **desktop client** for titles resolved through ani-cli sources—local watchlists, optional companion AniVault server features (account, social), calendar, and a focused watch UI. It is **not** a licensed subscription service; availability depends on upstream providers.
 
 ## Install
 
-**[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)** → **AniVaultSetup.exe** → run. No clone or Node required for installs.
+**[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)** → **AniVaultUnvaultedSetup.exe** → run. No clone or Node required for installs.
 
 Changelog: [UPDATE-LOGS.txt](../UPDATE-LOGS.txt) (bundled copy in Settings → Updates).
 
@@ -12,16 +14,16 @@ Changelog: [UPDATE-LOGS.txt](../UPDATE-LOGS.txt) (bundled copy in Settings → U
 
 ## Development
 
-Node.js 20+, npm, Windows (for NSIS `npm run make`).
+Node.js 20+, npm, Windows (for Squirrel `npm run make`).
 
 ```bash
 cd desktop
 npm install
 npm start
-npm run make   # → out/make/nsis/x64/AniVaultSetup.exe (+ latest.yml)
+npm run make   # → out/make/squirrel.windows/x64/AniVaultUnvaultedSetup.exe (+ latest.yml)
 ```
 
-If `make` fails with **EPERM** on `anivault.exe`, quit the app, then `npm run make:clean`.
+If `make` fails with **EPERM** on `anivault-unvaulted.exe`, quit the app, then `npm run make:clean`.
 
 ---
 
@@ -32,8 +34,8 @@ If `make` fails with **EPERM** on `anivault.exe`, quit the app, then `npm run ma
 3. Tag and push:
 
 ```bash
-git tag v1.0.0-alpha.1
-git push origin v1.0.0-alpha.1
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 See [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
@@ -45,6 +47,7 @@ See [`.github/workflows/release-desktop.yml`](../.github/workflows/release-deskt
 | Command | Purpose |
 |---------|---------|
 | `npm start` | Dev |
+| `npm test` | Unit tests (Vitest) |
 | `npm run make` | Build installer |
 | `npm run clean` | Remove `out/` |
 | `npm run make:clean` | `clean` then `make` |

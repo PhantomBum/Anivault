@@ -1,4 +1,5 @@
 import { cn } from "@/renderer/lib/utils";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import React, { useEffect, useState } from "react";
 import { Minus, Square, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -60,7 +61,7 @@ export function WindowsTitlebar({
               draggable={false}
             />
             <span className="text-[0.8rem] font-semibold tracking-tight text-[var(--av-text)]">
-              AniVault
+              {APP_DISPLAY_NAME}
             </span>
           </button>
         )}
@@ -73,14 +74,14 @@ export function WindowsTitlebar({
             src={LogoRoundedSquare}
             alt=""
             draggable={false}
-            title="AniVault"
+            title={APP_DISPLAY_NAME}
           />
           <img
             className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 hidden dark:block select-none pointer-events-none"
             src={LogoRoundedSquareLight}
             alt=""
             draggable={false}
-            title="AniVault"
+            title={APP_DISPLAY_NAME}
           />
           <ThemePicker className="clickable h-9 w-9 shrink-0" isIconFormat />
           <div className="flex items-center gap-1">

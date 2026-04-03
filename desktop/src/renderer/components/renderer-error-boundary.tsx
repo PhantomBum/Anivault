@@ -2,6 +2,7 @@ import { AlertTriangle } from "lucide-react";
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 
 import { Button } from "@/renderer/components/ui/button";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 type Props = { children: ReactNode };
 
@@ -39,11 +40,11 @@ export class RendererErrorBoundary extends Component<Props, State> {
               {this.state.message}
             </p>
             <p className="text-xs text-[var(--av-muted)]">
-              Reloading usually fixes transient UI errors. If this keeps happening, try restarting AniVault.
+              {`Reloading usually fixes transient UI errors. If this keeps happening, try restarting ${APP_DISPLAY_NAME}.`}
             </p>
           </div>
           <Button type="button" className="rounded-xl" onClick={this.reload}>
-            Reload AniVault
+            {`Reload ${APP_DISPLAY_NAME}`}
           </Button>
         </div>
       );

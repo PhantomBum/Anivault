@@ -125,7 +125,7 @@ export function GalleryPage() {
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Community art & clips</h1>
           <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
-            Moderated uploads from the AniVault server. Images and player clips share the same review
+            Moderated uploads from the companion server. Images and player clips share the same review
             queue.
           </p>
         </div>

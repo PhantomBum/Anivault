@@ -6,7 +6,7 @@ const DB_NAME = "anivault-cache";
 const STORE = "thumbnails";
 const DB_VERSION = 1;
 const ORDER_LS = "anivault-thumb-order-v1";
-const MAX_THUMBNAILS = 56;
+const MAX_THUMBNAILS = 32;
 
 function readOrder(): string[] {
   try {

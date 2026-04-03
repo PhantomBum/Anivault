@@ -1,8 +1,8 @@
 {
   "name": "anivault",
-  "productName": "AniVault",
-  "version": "1.0.0-alpha.16",
-  "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
+  "productName": "AniVault Unvaulted",
+  "version": "1.0.0",
+  "description": "AniVault Unvaulted — desktop streaming powered by pystardust/ani-cli (stable release).",
   "repository": {
     "type": "git",
     "url": "https://github.com/PhantomBum/Anivault.git"
@@ -20,14 +20,15 @@
     "publish:dry": "electron-forge publish --dry-run",
     "publish:upload": "electron-forge publish --from-dry-run",
     "lint": "eslint --ext .ts,.tsx .",
+    "test": "vitest run",
     "format": "prettier . --write"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
     "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
@@ -53,10 +54,11 @@
     "tailwindcss": "^3.4.7",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
-    "vite": "^8.0.3"
+    "vite": "^8.0.3",
+    "vitest": "^2.1.9"
   },
   "keywords": [],
-  "author": "AniVault",
+  "author": "AniVault Unvaulted",
   "license": "MIT",
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.2.8",

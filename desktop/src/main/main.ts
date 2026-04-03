@@ -6,10 +6,11 @@ import { registerMainCrashGuards } from "@/main/crash-guards";
 import { setupAutoUpdater } from "@/main/auto-updater-setup";
 import { registerListeners, unregisterListeners } from "@/main/ipc/listeners";
 import { startStreamProxy } from "@/main/stream-proxy";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 registerMainCrashGuards();
 
-const PRODUCT_NAME = "AniVault";
+const PRODUCT_NAME = APP_DISPLAY_NAME;
 
 /**
  * Taskbar / window icon. Packaged: `public` is inside `app.asar`.
@@ -92,7 +93,7 @@ app.on("ready", () => {
   app.setName(PRODUCT_NAME);
   if (process.platform === "win32") {
     // Match NSIS / electron-builder `appId` in forge.config.ts (taskbar + jump list).
-    app.setAppUserModelId("com.anivault.desktop");
+    app.setAppUserModelId("com.anivault.unvaulted");
   }
   if (process.platform === "darwin" && app.dock) {
     const dockIcon = resolveWindowIcon();

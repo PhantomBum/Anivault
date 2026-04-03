@@ -9,6 +9,7 @@ import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
 import { cn } from "@/renderer/lib/utils";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import { ChevronLeft, ChevronRight, ChevronUp, Keyboard, Menu, Search, Settings } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -61,7 +62,7 @@ function useRouteHeading(pathname: string): { title: string; sub: string } {
     return { title: "Gallery", sub: "Art" };
   }
   if (pathname === "/schedule") {
-    return { title: "Calendar", sub: "Coming to AniVault" };
+    return { title: "Calendar", sub: `Coming to ${APP_DISPLAY_NAME}` };
   }
   if (pathname === "/request-series") {
     return { title: "Request a show", sub: "Suggest a title" };
@@ -72,7 +73,7 @@ function useRouteHeading(pathname: string): { title: string; sub: string } {
   if (pathname === "/account" || pathname === "/login") {
     return { title: "Account", sub: "Sign in" };
   }
-  return { title: "AniVault", sub: "" };
+  return { title: APP_DISPLAY_NAME, sub: "" };
 }
 
 const SIDEBAR_COLLAPSED_LS = "anivault-sidebar-collapsed";
@@ -110,7 +111,7 @@ export default function SidebarLayout() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   useEffect(() => {
-    document.title = `${title} · AniVault`;
+    document.title = `${title} · ${APP_DISPLAY_NAME}`;
   }, [title]);
 
   useEffect(() => {
@@ -248,10 +249,10 @@ export default function SidebarLayout() {
               <BrandMark size="sidebar" />
               <div className="min-w-0 flex-1">
                 <h1 className="m-0 text-[1.05rem] font-bold leading-tight tracking-tight">
-                  AniVault
+                  {APP_DISPLAY_NAME}
                 </h1>
                 <span className="mt-0.5 block text-[0.72rem] leading-snug text-[var(--av-muted-foreground)]">
-                  Desktop · ani-cli
+                  Unvaulted · ani-cli
                 </span>
               </div>
               <button

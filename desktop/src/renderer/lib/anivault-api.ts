@@ -118,3 +118,30 @@ export async function postShowComment(animeId: string, body: string) {
     body: JSON.stringify({ body }),
   });
 }
+
+/**
+ * Quick reachability check for Settings / Data (phase 19). Does not validate full API surface.
+ */
+export async function testAnivaultServerConnection(): Promise<{ ok: boolean; message: string }> {
+  const base = await getBaseUrl();
+  const url = `${base.replace(/\/$/, "")}/api/me`;
+  try {
+    const headers = await authHeaders();
+    const res = await fetch(url, { method: "GET", headers });
+    if (res.ok) {
+      return { ok: true, message: "Connected — API responded successfully." };
+    }
+    if (res.status === 401 || res.status === 403) {
+      return {
+        ok: true,
+        message: "Server reachable (sign in if your server requires authentication).",
+      };
+    }
+    return { ok: false, message: `Server returned HTTP ${res.status}.` };
+  } catch (e) {
+    return {
+      ok: false,
+      message: e instanceof Error ? e.message : "Network error — check URL and firewall.",
+    };
+  }
+}

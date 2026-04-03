@@ -2,6 +2,7 @@ import { app } from "electron";
 import { coerce, gt, valid } from "semver";
 
 import { GITHUB_REPO_SLUG } from "@/main/update-config";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import type { AppUpdateCheckResult } from "@/shared/app-update-types";
 
 function parseLatestReleaseJson(raw: unknown): { tag_name?: string; html_url?: string } | null {
@@ -26,7 +27,7 @@ export async function checkGitHubReleaseVsCurrent(): Promise<AppUpdateCheckResul
     const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO_SLUG}/releases/latest`, {
       headers: {
         Accept: "application/vnd.github+json",
-        "User-Agent": `AniVault/${currentVersion}`,
+        "User-Agent": `${APP_DISPLAY_NAME.replace(/\s+/g, "-")}/${currentVersion}`,
       },
     });
 

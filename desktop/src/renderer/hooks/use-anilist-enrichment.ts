@@ -3,15 +3,18 @@ import { forEachWithConcurrency } from "@/renderer/lib/for-each-with-concurrency
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+const DEFAULT_ENRICH_LIMIT = 32;
+const DEFAULT_ENRICH_CONCURRENCY = 6;
+
 /**
- * Fetches AniList poster/metadata for each show in the list (concurrency-limited).
- * Pass `limit` only if you must cap API volume; default enriches every row.
+ * Fetches AniList poster/metadata for each show (concurrency-limited, capped by default for RAM).
  * Clears when `resetKey` changes (e.g. new search query).
  */
 export function useAnilistEnrichment(
   shows: readonly AnimeSearchResult[],
   resetKey: string,
-  limit?: number
+  limit: number = DEFAULT_ENRICH_LIMIT,
+  concurrency: number = DEFAULT_ENRICH_CONCURRENCY
 ): Record<string, AniListSearchTile | null | undefined> {
   const [enrichMap, setEnrichMap] = useState<Record<string, AniListSearchTile | null | undefined>>({});
   const startedRef = useRef(new Set<string>());
@@ -43,7 +46,7 @@ export function useAnilistEnrichment(
     return () => {
       cancelled = true;
     };
-  }, [shows, limit, sig, resetKey]);
+  }, [shows, limit, concurrency, sig, resetKey]);
 
   return enrichMap;
 }

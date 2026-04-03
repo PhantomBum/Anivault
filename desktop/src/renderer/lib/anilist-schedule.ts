@@ -7,7 +7,10 @@ import { fetchWithRetry } from "@/renderer/lib/fetch-with-retry";
 export type AniListScheduleEntry = {
   id: string;
   title: string;
+  /** YYYY-MM-DD for grouping */
   air_date: string;
+  /** Full ISO timestamp for sort / local time display */
+  air_at_iso: string;
   note: string | null;
   episode: number | null;
 };
@@ -79,9 +82,10 @@ export async function fetchAniListAiringSchedule(): Promise<AniListScheduleEntry
       const title =
         (t?.english?.trim() || t?.romaji?.trim() || t?.userPreferred?.trim() || "Unknown").trim();
       const airDate = new Date(row.airingAt * 1000);
-      const air_date = Number.isNaN(airDate.getTime())
-        ? new Date().toISOString().slice(0, 10)
-        : airDate.toISOString().slice(0, 10);
+      const air_at_iso = Number.isNaN(airDate.getTime())
+        ? new Date().toISOString()
+        : airDate.toISOString();
+      const air_date = air_at_iso.slice(0, 10);
 
       const noteParts: string[] = ["AniList"];
       if (media.format) noteParts.push(media.format);
@@ -91,12 +95,13 @@ export async function fetchAniListAiringSchedule(): Promise<AniListScheduleEntry
         id,
         title,
         air_date,
+        air_at_iso,
         note: noteParts.join(" · "),
         episode: row.episode ?? null,
       });
     }
 
-    out.sort((a, b) => a.air_date.localeCompare(b.air_date));
+    out.sort((a, b) => a.air_at_iso.localeCompare(b.air_at_iso));
     return out;
   } catch {
     return null;

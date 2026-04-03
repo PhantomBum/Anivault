@@ -1,7 +1,7 @@
-# Release AniVault desktop to GitHub (triggers CI that uploads AniVaultSetup.exe + updater files).
+# Release AniVault Unvaulted desktop to GitHub (triggers CI that uploads AniVaultUnvaultedSetup.exe + updater files).
 #
 # Usage (from repo root, PowerShell):
-#   .\scripts\release-desktop.ps1 1.0.0-alpha.16
+#   .\scripts\release-desktop.ps1 1.0.0
 #
 # This script:
 #   1) Sets desktop/package.json "version" to the argument
@@ -9,7 +9,7 @@
 #   3) Creates tag v<version> and pushes the tag (starts "Release desktop (Windows)" on GitHub)
 
 param(
-  [Parameter(Mandatory = $true, HelpMessage = "Semver, e.g. 1.0.0-alpha.5")]
+  [Parameter(Mandatory = $true, HelpMessage = "Semver, e.g. 1.0.1")]
   [string]$Version
 )
 

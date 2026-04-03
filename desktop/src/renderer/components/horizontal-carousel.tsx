@@ -6,8 +6,10 @@ import {
 } from "@/renderer/components/ui/context-menu";
 import type { MatureRating } from "@/renderer/lib/mature-content";
 import { cn } from "@/renderer/lib/utils";
-import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { APP_SHORT_BADGE } from "@/shared/app-brand";
+import { BookmarkPlus, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type HorizontalCarouselItem = {
   id: string;
@@ -21,6 +23,7 @@ export type HorizontalCarouselItem = {
   /** Optional context menu (home / discovery). */
   onContextCopyTitle?: () => void;
   onContextOpenDetails?: () => void;
+  onContextAddToMyLists?: () => void;
   /** Mature content hint (badges on poster). */
   mature?: MatureRating;
 };
@@ -41,7 +44,7 @@ export function PosterPlaceholder({ title }: { title: string }) {
     <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-[#0a0c10] px-1">
       <span className="text-lg font-bold text-[var(--av-muted)]">{label}</span>
       <span className="text-[8px] uppercase tracking-[0.2em] text-[var(--av-muted-foreground)]">
-        AniVault
+        {APP_SHORT_BADGE}
       </span>
     </div>
   );
@@ -62,11 +65,14 @@ function HorizontalCarouselCard({
   item: HorizontalCarouselItem;
   variant?: CarouselVariant;
 }) {
+  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
 
   const showFallback = failed || !item.coverUrl;
   const isHome = variant === "home";
-  const hasMenu = Boolean(item.onContextCopyTitle || item.onContextOpenDetails);
+  const hasMenu = Boolean(
+    item.onContextCopyTitle || item.onContextOpenDetails || item.onContextAddToMyLists
+  );
 
   const mature = item.mature ?? "none";
 
@@ -183,6 +189,16 @@ function HorizontalCarouselCard({
             }}
           >
             Open details
+          </ContextMenuItem>
+        ) : null}
+        {item.onContextAddToMyLists ? (
+          <ContextMenuItem
+            onSelect={() => {
+              item.onContextAddToMyLists?.();
+            }}
+          >
+            <BookmarkPlus className="mr-2 h-3.5 w-3.5 opacity-90" />
+            {t("contextMenu.addToMyLists")}
           </ContextMenuItem>
         ) : null}
       </ContextMenuContent>

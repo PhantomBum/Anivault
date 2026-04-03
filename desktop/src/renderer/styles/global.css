@@ -255,6 +255,14 @@
   html.av-custom-cursor-active canvas {
     cursor: none !important;
   }
+
+  html.av-custom-cursor-active .av-watch-controls,
+  html.av-custom-cursor-active .av-watch-controls button,
+  html.av-custom-cursor-active .av-watch-controls input,
+  html.av-custom-cursor-active .av-watch-controls select,
+  html.av-custom-cursor-active .av-watch-controls label {
+    cursor: none !important;
+  }
 }
 
 /* Optional shell polish (Settings → Shell visual effects) — uses GPU blur when enabled. */
@@ -301,8 +309,90 @@
   --av-muted: #9ca3af;
 }
 
+.anivault-shell[data-shell-preset="ember"] {
+  --av-bg: #0c0808;
+  --av-bg-elevated: #140c0c;
+  --av-surface: #1c1414;
+  --av-border: #3f2a2a;
+  --av-accent-dim: #f87171;
+  --av-nav-active-edge: #fca5a5;
+}
+
+.anivault-shell[data-shell-preset="ocean"] {
+  --av-bg: #070a10;
+  --av-bg-elevated: #0a1018;
+  --av-surface: #101822;
+  --av-border: #243044;
+  --av-accent-dim: #38bdf8;
+  --av-nav-active-edge: #7dd3fc;
+}
+
+/* Optional View Transitions API (Chromium): smoother SPA route feel when supported */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 /* Monochrome emphasis — thumbnails & decorative art only (video stays full color in watch). */
 .anivault-shell[data-chroma="mono"] .av-shell-main img,
 .anivault-shell[data-chroma="mono"] aside .rounded-2xl img {
   filter: grayscale(1) contrast(1.02);
+}
+
+/* Accessibility: keyboard focus and reduced motion */
+.anivault-shell :where(button, a[href], input:not([type="hidden"]), select, textarea, summary):focus-visible {
+  outline: 2px solid var(--av-nav-active-edge, var(--av-accent));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe\:animate-av-route-in,
+  .motion-safe\:animate-av-fade-in,
+  .motion-safe\:animate-av-fade-up,
+  .motion-safe\:animate-av-soft-pulse {
+    animation: none !important;
+  }
+
+  .animate-av-title-marquee {
+    animation: none !important;
+  }
+
+  @supports (view-transition-name: none) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.001ms !important;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  .anivault-shell {
+    --av-border: #52525b;
+    --av-muted-foreground: #a1a1aa;
+  }
+}
+
+/* Micro-interactions (phase 26): subtle press on primary chrome without extra JS */
+@layer components {
+  .av-micro-press {
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .av-micro-press:active {
+    transform: scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-micro-press {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .av-micro-press:active {
+    transform: none;
+  }
 }

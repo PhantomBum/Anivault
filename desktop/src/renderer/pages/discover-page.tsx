@@ -3,15 +3,21 @@ import { Button } from "@/renderer/components/ui/button";
 import { useAnilistEnrichment } from "@/renderer/hooks/use-anilist-enrichment";
 import {
   mergeShowThumbnailsFromShowDetails,
+  prefetchThumbnailForShowId,
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
-import { cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
-import { cachedAniRecent, cachedAniSearch } from "@/renderer/lib/ani-session-cache";
+import { cachedAniRecent, cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
+import type { AniListSearchTile } from "@/renderer/lib/anilist";
+import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
+import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
 import type { AnimeSearchResult } from "@/shared/anime-result";
+import { showToast } from "@/renderer/lib/av-toast";
 import { cn } from "@/renderer/lib/utils";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { Compass } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 const TABS: { id: string; label: string; query: string; hint: string }[] = [
@@ -28,6 +34,9 @@ const TABS: { id: string; label: string; query: string; hint: string }[] = [
 ];
 
 export function DiscoverPage() {
+  const { t } = useTranslation();
+  const { config } = useAnivaultConfig();
+  const allowMature = config?.allowMatureContent ?? false;
   const navigate = useNavigate();
   const [tab, setTab] = useState(TABS[0].id);
   const [rows, setRows] = useState<AnimeSearchResult[]>([]);
@@ -46,7 +55,7 @@ export function DiscoverPage() {
       try {
         let list: AnimeSearchResult[];
         if (active.id === "fresh") {
-          const r = await cachedAniRecent(1, 48, () => aniCli.getRecent(1, 48));
+          const r = await cachedAniRecent(1, 36, () => aniCli.getRecent(1, 36));
           list = r.items;
         } else {
           list = await cachedAniSearch(active.query, () => aniCli.search(active.query));
@@ -65,6 +74,14 @@ export function DiscoverPage() {
 
   const sig = useMemo(() => `${tab}:${rows.map((r) => r.id).join("\u0001")}`, [tab, rows]);
   const enrichMap = useAnilistEnrichment(rows, sig);
+
+  const visibleRows = useMemo(() => {
+    return rows.filter((r) => {
+      const t = enrichMap[r.id];
+      const rating = inferMatureRating(r.name, t?.genres);
+      return !isMatureContentBlocked(allowMature, rating);
+    });
+  }, [rows, enrichMap, allowMature]);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +125,12 @@ export function DiscoverPage() {
     [navigate]
   );
 
+  const addToMyLists = useCallback((r: AnimeSearchResult, tile?: AniListSearchTile | null) => {
+    const name = tile?.titleEnglish ?? tile?.titleRomaji ?? r.name;
+    const { added } = addLocalWatchlistEntry({ id: r.id, name, mode: r.mode });
+    showToast(added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists"));
+  }, [t]);
+
   return (
     <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-3 text-[var(--av-text)] md:px-5 md:py-5">
       <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)]/35 p-4 shadow-av-sm md:p-6">
@@ -138,19 +161,19 @@ export function DiscoverPage() {
         </div>
 
         <div className="relative mt-5 flex flex-wrap gap-2 border-t border-[var(--av-border)]/80 pt-4">
-          {TABS.map((t) => (
+          {TABS.map((tabDef) => (
             <button
-              key={t.id}
+              key={tabDef.id}
               type="button"
               className={cn(
                 "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200",
-                tab === t.id
+                tab === tabDef.id
                   ? "border-zinc-400/40 bg-zinc-100/10 text-zinc-50 shadow-av-xs"
                   : "border-transparent bg-[var(--av-bg)]/40 text-[var(--av-muted)] hover:border-[var(--av-border)] hover:text-[var(--av-text)]"
               )}
-              onClick={() => setTab(t.id)}
+              onClick={() => setTab(tabDef.id)}
             >
-              {t.label}
+              {tabDef.label}
             </button>
           ))}
         </div>
@@ -176,16 +199,20 @@ export function DiscoverPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {rows.map((r) => {
-            const t = enrichMap[r.id];
+          {visibleRows.map((r) => {
+            const enriched = enrichMap[r.id];
             return (
               <AnimeTitleCard
                 key={r.id}
                 result={r}
-                tile={t === undefined ? undefined : t}
+                tile={enriched === undefined ? undefined : enriched}
                 fallbackPosterUrl={thumbById[r.id]}
                 onOpenDetail={() => openDetail(r)}
                 onQuickPlay={() => void quickPlay(r)}
+                onAddToMyLists={() => addToMyLists(r, enriched)}
+                onPrefetch={() => {
+                  void prefetchThumbnailForShowId(r.id, () => false);
+                }}
               />
             );
           })}

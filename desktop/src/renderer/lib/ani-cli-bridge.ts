@@ -5,7 +5,7 @@
 export function getAniCli(): AniCliContext {
   const w = window as Window & { aniCli?: AniCliContext };
   if (!w.aniCli) {
-    throw new Error("AniVault bridge is not ready. Restart the app.");
+    throw new Error("AniVault Unvaulted bridge is not ready. Restart the app.");
   }
   return w.aniCli;
 }

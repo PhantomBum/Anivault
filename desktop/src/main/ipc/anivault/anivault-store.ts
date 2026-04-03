@@ -13,12 +13,18 @@ export const anivaultDefaults: AnivaultStoreSchema = {
   uiDensity: "comfortable",
   useNativeVideoControls: true,
   playerSeekStepSec: 5,
+  skipIntroSeconds: 90,
   defaultPlaybackSpeed: 1,
   autoPlayNextEpisode: true,
   smoothCursor: true,
   shellVisualEffects: true,
   chromaticEmphasis: "full",
   shellPreset: "midnight",
+  allowMatureContent: false,
+  telemetryOptIn: false,
+  telemetryEndpoint: "",
+  offlineDownloadsEnabled: false,
+  offlineDownloadsPath: "",
 };
 
 export const anivaultStore = new Store<AnivaultStoreSchema>({

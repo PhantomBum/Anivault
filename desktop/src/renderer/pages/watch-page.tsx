@@ -1,8 +1,31 @@
-import { ArrowLeft, MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  Download,
+  Link2,
+  ListOrdered,
+  MessageCircle,
+  SkipForward,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { WatchPlayerStage } from "@/renderer/components/player/watch-player-stage";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/renderer/components/ui/context-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/renderer/components/ui/dropdown-menu";
 import { useNowPlaying } from "@/renderer/context/now-playing-context";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
@@ -17,9 +40,12 @@ import {
 } from "@/renderer/lib/anivault-api";
 import { type ShowDetails, getAniCli } from "@/renderer/lib/ani-cli-bridge";
 import { cachedGetEpisodes, cachedGetShowDetails } from "@/renderer/lib/ani-session-cache";
+import { showToast } from "@/renderer/lib/av-toast";
+import { isPlaybackUrlCopySafe } from "@/renderer/lib/playback-url-clipboard";
 import { cn } from "@/renderer/lib/utils";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { getRecentlyWatched } from "@/renderer/lib/recently-watched-bridge";
+import type { OfflineDownloadAddResult } from "@/shared/offline-downloads-types";
 
 /** How many automatic reconnects after a playback error before showing the manual overlay. */
 const MAX_AUTO_RECONNECT = 5;
@@ -76,6 +102,7 @@ interface WatchState {
 }
 
 export function WatchPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as WatchState | null;
@@ -103,8 +130,10 @@ export function WatchPage() {
 
   const [useNativeVideoControls, setUseNativeVideoControls] = useState(true);
   const [playerSeekStepSec, setPlayerSeekStepSec] = useState(5);
+  const [skipIntroSeconds, setSkipIntroSeconds] = useState(90);
   const [defaultPlaybackSpeed, setDefaultPlaybackSpeed] = useState(1);
   const [upNext, setUpNext] = useState<{ episode: string; sec: number } | null>(null);
+  const [offlineQueueReady, setOfflineQueueReady] = useState(false);
 
   const autoPlayNextRef = useRef(true);
   const lastProgressSaveRef = useRef(0);
@@ -114,8 +143,16 @@ export function WatchPage() {
     void window.anivault.getAllConfig().then((c) => {
       setUseNativeVideoControls(c.useNativeVideoControls);
       setPlayerSeekStepSec(c.playerSeekStepSec);
+      setSkipIntroSeconds(
+        typeof c.skipIntroSeconds === "number" && !Number.isNaN(c.skipIntroSeconds)
+          ? Math.min(300, Math.max(15, c.skipIntroSeconds))
+          : 90
+      );
       setDefaultPlaybackSpeed(c.defaultPlaybackSpeed);
       autoPlayNextRef.current = c.autoPlayNextEpisode;
+      setOfflineQueueReady(
+        Boolean(c.offlineDownloadsEnabled && (c.offlineDownloadsPath ?? "").trim().length > 0)
+      );
     });
   }, []);
 
@@ -519,6 +556,39 @@ export function WatchPage() {
     autoReconnectAttemptRef.current = 0;
   }, []);
 
+  const handleSkipIntro = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !playUrl || loadingEpisode) return;
+    const add = skipIntroSeconds;
+    const dur = v.duration;
+    const next = v.currentTime + add;
+    if (Number.isFinite(dur) && dur > 1) {
+      v.currentTime = Math.min(Math.max(0, next), Math.max(0, dur - 0.5));
+    } else {
+      v.currentTime = Math.max(0, next);
+    }
+  }, [playUrl, loadingEpisode, skipIntroSeconds]);
+
+  const handleQueueOffline = useCallback(() => {
+    if (!anime || !offlineQueueReady) return;
+    void window.offlineDownloads
+      .add({
+        showId: anime.id,
+        showName: anime.name,
+        episode: currentEpisode,
+        mode: anime.mode,
+      })
+      .then((r: OfflineDownloadAddResult) => {
+        if (r.ok) {
+          // i18n t() is typed loosely for dynamic keys
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          showToast(t("watch.toastQueueOfflineAdded"));
+        } else {
+          showToast(String(r.error), 4200);
+        }
+      });
+  }, [anime, currentEpisode, offlineQueueReady, t]);
+
   useWatchKeyboard(videoRef, Boolean(playUrl), playerSeekStepSec, episodeNav);
 
   useEffect(() => {
@@ -670,36 +740,58 @@ export function WatchPage() {
                 </div>
               </div>
             ) : null}
-            <WatchPlayerStage
-              playUrl={playUrl}
-              streamRevision={streamRevision}
-              videoRef={videoRef}
-              loadingEpisode={loadingEpisode}
-              error={error}
-              recoveryHint={streamRecoveryHint}
-              playbackError={playbackError}
-              useNativeControls={useNativeVideoControls}
-              defaultPlaybackSpeed={defaultPlaybackSpeed}
-              onLoadedMetadata={(e) => {
-                applyResumeIfNeeded(e.currentTarget);
-                if (window.anivault) {
-                  void window.anivault.getConfig("volumeDefault").then((vol) => {
-                    if (typeof vol === "number" && !Number.isNaN(vol)) {
-                      e.currentTarget.volume = Math.min(1, Math.max(0, vol));
-                    }
-                  });
-                }
-              }}
-              onPlaying={handleVideoPlaying}
-              onVideoError={handleVideoError}
-              onVolumeChange={persistVolume}
-              onRetry={retryStream}
-              retryLoading={loadingEpisode}
-              toggleFullscreen={toggleFullscreen}
-              togglePictureInPicture={togglePictureInPicture}
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={handleVideoEnded}
-            />
+            <ContextMenu>
+              <ContextMenuTrigger asChild>
+                <div className="relative rounded-xl outline-none ring-offset-2 ring-offset-black focus-visible:ring-2 focus-visible:ring-zinc-500">
+                  <WatchPlayerStage
+                    playUrl={playUrl}
+                    streamRevision={streamRevision}
+                    videoRef={videoRef}
+                    loadingEpisode={loadingEpisode}
+                    error={error}
+                    recoveryHint={streamRecoveryHint}
+                    playbackError={playbackError}
+                    useNativeControls={useNativeVideoControls}
+                    defaultPlaybackSpeed={defaultPlaybackSpeed}
+                    onLoadedMetadata={(e) => {
+                      applyResumeIfNeeded(e.currentTarget);
+                      if (window.anivault) {
+                        void window.anivault.getConfig("volumeDefault").then((vol) => {
+                          if (typeof vol === "number" && !Number.isNaN(vol)) {
+                            e.currentTarget.volume = Math.min(1, Math.max(0, vol));
+                          }
+                        });
+                      }
+                    }}
+                    onPlaying={handleVideoPlaying}
+                    onVideoError={handleVideoError}
+                    onVolumeChange={persistVolume}
+                    onRetry={retryStream}
+                    retryLoading={loadingEpisode}
+                    toggleFullscreen={toggleFullscreen}
+                    togglePictureInPicture={togglePictureInPicture}
+                    onTimeUpdate={handleTimeUpdate}
+                    onEnded={handleVideoEnded}
+                  />
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="border-zinc-700 bg-zinc-900 text-sm text-zinc-100">
+                <ContextMenuItem
+                  className="focus:bg-zinc-800"
+                  disabled={!playUrl || !isPlaybackUrlCopySafe(playUrl)}
+                  onSelect={() => {
+                    if (!playUrl || !isPlaybackUrlCopySafe(playUrl)) return;
+                    void navigator.clipboard.writeText(playUrl).then(
+                      () => showToast(t("contextMenu.toastCopiedPlaybackUrl")),
+                      () => showToast(t("contextMenu.toastCopyPlaybackUnavailable"), 3200)
+                    );
+                  }}
+                >
+                  <Link2 className="mr-2 h-3.5 w-3.5 opacity-80" />
+                  {t("contextMenu.copyPlaybackUrl")}
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           </div>
 
           {playUrl ? (
@@ -713,6 +805,74 @@ export function WatchPage() {
             </p>
           ) : null}
 
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              {t("watch.playbackAssists")}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-zinc-500">{t("watch.playbackAssistsHint")}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!playUrl || loadingEpisode}
+                className="rounded-xl border-white/15 bg-white/[0.06] text-zinc-200 hover:bg-white/10"
+                title={t("watch.skipIntroTitle", { sec: String(skipIntroSeconds) })}
+                onClick={handleSkipIntro}
+              >
+                <SkipForward className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                {t("watch.skipIntro")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!playUrl || loadingEpisode || !offlineQueueReady}
+                className="rounded-xl border-white/15 bg-white/[0.06] text-zinc-200 hover:bg-white/10 disabled:text-zinc-500"
+                title={
+                  offlineQueueReady
+                    ? t("watch.queueOfflineTitle")
+                    : t("watch.queueOfflineNeedSettings")
+                }
+                onClick={handleQueueOffline}
+              >
+                <Download className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                {t("watch.queueOffline")}
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={sortedEpisodes.length <= 1}
+                    className="rounded-xl border-white/15 bg-white/[0.06] text-zinc-200 hover:bg-white/10 disabled:text-zinc-500"
+                    title={t("watch.chaptersTitle")}
+                  >
+                    <ListOrdered className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                    {t("watch.chapters")}
+                    <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" aria-hidden />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="max-h-64 overflow-y-auto border-zinc-700 bg-zinc-900 text-zinc-100"
+                >
+                  {sortedEpisodes.map((ep) => (
+                    <DropdownMenuItem
+                      key={ep}
+                      className="focus:bg-zinc-800"
+                      onSelect={() => onEpisodeSelect(ep)}
+                    >
+                      {ep}
+                      {ep === currentEpisode ? ` · ${t("watch.nowPlaying")}` : ""}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
           {details?.description ? (
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Synopsis</p>
@@ -725,7 +885,7 @@ export function WatchPage() {
           <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Reactions</p>
             <p className="mt-1 text-xs text-zinc-500">
-              Likes sync when signed in with AniVault server; dislikes are stored on this device only.
+              Likes sync when signed in with the AniVault companion server; dislikes are stored on this device only.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <Button
@@ -814,7 +974,7 @@ export function WatchPage() {
             </ul>
           </div>
 
-          <div>
+          <div id="watch-episodes" className="scroll-mt-24">
             <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Episodes
             </p>

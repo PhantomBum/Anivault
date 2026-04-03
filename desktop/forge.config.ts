@@ -36,19 +36,19 @@ const config: ForgeConfig = {
 
     icon: "./public/icon-rounded",
 
-    executableName: "anivault",
+    executableName: "anivault-unvaulted",
 
     win32metadata: {
 
-      CompanyName: "AniVault",
+      CompanyName: "AniVault Unvaulted",
 
-      FileDescription: "AniVault",
+      FileDescription: "AniVault Unvaulted",
 
-      OriginalFilename: "anivault.exe",
+      OriginalFilename: "anivault-unvaulted.exe",
 
-      ProductName: "AniVault",
+      ProductName: "AniVault Unvaulted",
 
-      InternalName: "anivault",
+      InternalName: "anivault-unvaulted",
 
     },
 
@@ -60,13 +60,13 @@ const config: ForgeConfig = {
 
     new MakerSquirrel({
 
-      name: "AniVault",
+      name: "AniVault Unvaulted",
 
-      setupExe: "AniVaultSetup.exe",
+      setupExe: "AniVaultUnvaultedSetup.exe",
 
     }),
 
-    // Zip only for macOS; Windows uses Squirrel (AniVaultSetup.exe).
+    // Zip only for macOS; Windows uses Squirrel (AniVaultUnvaultedSetup.exe).
     new MakerZIP({}, ["darwin"]),
 
     new MakerRpm({}),
@@ -151,7 +151,7 @@ const config: ForgeConfig = {
 
         draft: false,
 
-        prerelease: true,
+        prerelease: false,
 
         force: process.env.GITHUB_PUBLISH_FORCE === "1",
 

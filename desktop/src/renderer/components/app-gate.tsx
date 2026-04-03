@@ -1,6 +1,7 @@
 import { AvLoadingBar } from "@/renderer/components/av-loading-bar";
 import { BrandMark } from "@/renderer/components/brand-mark";
 import { cn } from "@/renderer/lib/utils";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/renderer/components/ui/button";
@@ -203,7 +204,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
         />
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">AniVault</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">{APP_DISPLAY_NAME}</h1>
           {mode === "init" ? (
             <p className="text-sm text-neutral-400">{initLabel}</p>
           ) : null}

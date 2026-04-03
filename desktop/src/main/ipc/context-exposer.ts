@@ -6,6 +6,7 @@ import { exposeExternalContext } from "./external/external-context";
 import { exposeRecentlyWatchedContext } from "./recently-watched/recently-watched-context";
 import { exposeWatchProgressContext } from "./watch-progress/watch-progress-context";
 import { exposeThemeContext } from "./theme/theme-context";
+import { exposeOfflineDownloadsContext } from "./offline-downloads/offline-downloads-context";
 import { exposeWindowControls } from "./window/window-context";
 
 export default function exposeContexts() {
@@ -15,6 +16,7 @@ export default function exposeContexts() {
   exposeAniCliContext();
   exposeRecentlyWatchedContext();
   exposeWatchProgressContext();
+  exposeOfflineDownloadsContext();
   exposeExternalContext();
   exposeAppContext();
   exposeWindowControls();

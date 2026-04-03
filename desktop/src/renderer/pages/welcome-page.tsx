@@ -5,11 +5,13 @@ import {
   Compass,
   Filter,
   LayoutList,
+  Play,
   Search,
   Sparkles,
   Trash2,
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 import { BrandMark } from "@/renderer/components/brand-mark";
@@ -29,6 +31,7 @@ import {
   SelectValue,
 } from "@/renderer/components/ui/select";
 import { cn } from "@/renderer/lib/utils";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import { useDebouncedValue } from "@/renderer/hooks/use-debounced-value";
 import { useWelcomeSearch } from "@/renderer/hooks/use-welcome-search";
 import { useWelcomeRecentlyWatched } from "@/renderer/hooks/use-welcome-recently-watched";
@@ -36,14 +39,23 @@ import {
   type AnimeSearchResult as AnimeSearchResultType,
   getAniCli,
 } from "@/renderer/lib/ani-cli-bridge";
-import { cachedAniRecent, cachedAniSearch } from "@/renderer/lib/ani-session-cache";
+import {
+  cachedAniRecent,
+  cachedAniSearch,
+  cachedGetEpisodes,
+} from "@/renderer/lib/ani-session-cache";
 import {
   UNKNOWN_SERIES_LABEL,
+  mergeShowDetailsByAnimeId,
   mergeShowThumbnailsFromShowDetails,
   SHOW_DETAILS_FETCH_CONCURRENCY,
   type ShowDetailsSummary,
 } from "@/renderer/lib/fetch-show-thumbnails";
-import { inferMatureRating } from "@/renderer/lib/mature-content";
+import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
+import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
+import { showToast } from "@/renderer/lib/av-toast";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
+import type { WatchProgressContinueItem } from "@/shared/watch-progress-types";
 import { type RecentlyWatchedEntry } from "@/renderer/lib/recently-watched-bridge";
 
 const SEARCH_DEBOUNCE_MS = 95;
@@ -68,6 +80,9 @@ function getAvailabilityLabel(anime: AnimeSearchResultType): string {
 }
 
 export function WelcomePage() {
+  const { t } = useTranslation();
+  const { config } = useAnivaultConfig();
+  const allowMature = config?.allowMatureContent ?? false;
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
@@ -85,6 +100,31 @@ export function WelcomePage() {
   const [progressStats, setProgressStats] = useState<{ trackedEpisodes: number } | null>(null);
   const [freshPicks, setFreshPicks] = useState<AnimeSearchResultType[]>([]);
   const [freshThumbs, setFreshThumbs] = useState<Record<string, string | null>>({});
+  const [continueItems, setContinueItems] = useState<WatchProgressContinueItem[]>([]);
+  const [continueDetails, setContinueDetails] = useState<Record<string, ShowDetailsSummary>>({});
+
+  useEffect(() => {
+    if (!window.watchProgress?.listContinue) return;
+    void window.watchProgress
+      .listContinue(10)
+      .then(setContinueItems)
+      .catch(() => setContinueItems([]));
+  }, []);
+
+  useEffect(() => {
+    if (continueItems.length === 0) return;
+    let cancelled = false;
+    const ids = [...new Set(continueItems.map((c) => c.animeId))];
+    void mergeShowDetailsByAnimeId(
+      ids,
+      SHOW_DETAILS_FETCH_CONCURRENCY,
+      setContinueDetails,
+      () => cancelled
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [continueItems]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,8 +203,32 @@ export function WelcomePage() {
     } else if (sortMode === "episodes") {
       list.sort((a, b) => b.episodeCount - a.episodeCount);
     }
-    return list;
-  }, [rawResults, filterMode, sortMode]);
+    return list.filter(
+      (a) => !isMatureContentBlocked(allowMature, inferMatureRating(a.name))
+    );
+  }, [rawResults, filterMode, sortMode, allowMature]);
+
+  const spotlightVisible = useMemo(
+    () =>
+      spotlight.filter(
+        (s) => !isMatureContentBlocked(allowMature, inferMatureRating(s.name))
+      ),
+    [spotlight, allowMature]
+  );
+
+  const freshVisible = useMemo(
+    () =>
+      freshPicks.filter(
+        (s) => !isMatureContentBlocked(allowMature, inferMatureRating(s.name))
+      ),
+    [freshPicks, allowMature]
+  );
+
+  useEffect(() => {
+    setSpotlightHero((i) =>
+      spotlightVisible.length === 0 ? 0 : Math.min(i, spotlightVisible.length - 1)
+    );
+  }, [spotlightVisible.length]);
 
   const openAniCliRepo = useCallback(() => {
     const url = "https://github.com/pystardust/ani-cli";
@@ -182,6 +246,32 @@ export function WelcomePage() {
       });
     },
     [navigate]
+  );
+
+  const resumeContinue = useCallback(
+    async (item: WatchProgressContinueItem) => {
+      const name =
+        continueDetails[item.animeId]?.name &&
+        continueDetails[item.animeId]?.name !== UNKNOWN_SERIES_LABEL
+          ? continueDetails[item.animeId]!.name
+          : item.animeId;
+      try {
+        const episodes = await cachedGetEpisodes(item.animeId, item.mode, () =>
+          getAniCli().getEpisodes(item.animeId, item.mode)
+        );
+        if (episodes.length === 0) return;
+        navigate("/watch", {
+          state: {
+            anime: { id: item.animeId, name, mode: item.mode },
+            episodes,
+            currentEpisode: item.episode,
+          },
+        });
+      } catch {
+        /* ignore */
+      }
+    },
+    [navigate, continueDetails]
   );
 
   const openRecentlyWatched = useCallback(
@@ -203,8 +293,8 @@ export function WelcomePage() {
     [navigate, recentlyWatchedDetails]
   );
 
-  const hero = spotlight[spotlightHero];
-  const spotlightLen = spotlight.length;
+  const hero = spotlightVisible[spotlightHero];
+  const spotlightLen = spotlightVisible.length;
 
   const goPrevSpotlight = useCallback(() => {
     if (spotlightLen <= 1) return;
@@ -226,7 +316,7 @@ export function WelcomePage() {
         <header className="flex flex-col items-center gap-5 text-center">
           <BrandMark size="hero" className="shadow-[0_12px_40px_-8px_rgba(0,0,0,0.75)]" />
           <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--av-text)] md:text-[2rem]">
-            AniVault
+            {APP_DISPLAY_NAME}
           </h1>
           <p className="max-w-lg text-sm leading-relaxed text-[var(--av-muted)]">
             Desktop streaming powered by{" "}
@@ -248,6 +338,59 @@ export function WelcomePage() {
             </p>
           ) : null}
         </header>
+
+        {continueItems.length > 0 ? (
+          <section className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Play className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
+              <h2 className="m-0 text-base font-bold tracking-tight">Continue watching</h2>
+            </div>
+            <HorizontalCarousel
+              variant="home"
+              items={continueItems.map((c) => {
+                const label =
+                  continueDetails[c.animeId]?.name &&
+                  continueDetails[c.animeId]?.name !== UNKNOWN_SERIES_LABEL
+                    ? continueDetails[c.animeId]!.name
+                    : c.animeId;
+                const pct =
+                  c.durationSec > 0
+                    ? Math.min(100, Math.round((c.positionSec / c.durationSec) * 100))
+                    : 0;
+                return {
+                  id: `${c.animeId}-${c.episode}-${c.mode}`,
+                  coverUrl: continueDetails[c.animeId]?.thumbnail ?? null,
+                  title: label,
+                  subtitle: `${c.episode} · ${c.mode.toUpperCase()} · ${pct}%`,
+                  mature: inferMatureRating(label),
+                  onClick: () => void resumeContinue(c),
+                  onContextCopyTitle: () => void navigator.clipboard.writeText(label),
+                  onContextOpenDetails: () =>
+                    navigate(`/anime/${encodeURIComponent(c.animeId)}`, {
+                      state: {
+                        anime: {
+                          id: c.animeId,
+                          name: label,
+                          episodeCount: 0,
+                          mode: c.mode,
+                        },
+                      },
+                    }),
+                  onContextAddToMyLists: () => {
+                    const { added } = addLocalWatchlistEntry({
+                      id: c.animeId,
+                      name: label,
+                      mode: c.mode,
+                    });
+                    showToast(
+                      added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists")
+                    );
+                  },
+                };
+              })}
+            />
+          </section>
+        ) : null}
 
         {hero ? (
           <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)]/90 shadow-2xl shadow-black/40 ring-1 ring-white/[0.06]">
@@ -354,7 +497,7 @@ export function WelcomePage() {
                 </div>
                 {spotlightLen > 1 ? (
                   <div className="flex flex-wrap gap-1.5 pt-1" role="tablist" aria-label="Spotlight picks">
-                    {spotlight.map((s, i) => (
+                    {spotlightVisible.map((s, i) => (
                       <button
                         key={s.id}
                         type="button"
@@ -377,7 +520,7 @@ export function WelcomePage() {
           </section>
         ) : null}
 
-        {freshPicks.length > 0 ? (
+        {freshVisible.length > 0 ? (
           <section className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
@@ -385,7 +528,7 @@ export function WelcomePage() {
             </div>
             <HorizontalCarousel
               variant="home"
-              items={freshPicks.map((anime) => ({
+              items={freshVisible.map((anime) => ({
                 id: anime.id,
                 coverUrl: freshThumbs[anime.id] ?? null,
                 title: anime.name,
@@ -395,6 +538,16 @@ export function WelcomePage() {
                 onContextCopyTitle: () => void navigator.clipboard.writeText(anime.name),
                 onContextOpenDetails: () =>
                   navigate(`/anime/${anime.id}`, { state: { anime } }),
+                onContextAddToMyLists: () => {
+                  const { added } = addLocalWatchlistEntry({
+                    id: anime.id,
+                    name: anime.name,
+                    mode: anime.mode,
+                  });
+                  showToast(
+                    added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists")
+                  );
+                },
               }))}
             />
           </section>
@@ -557,6 +710,16 @@ export function WelcomePage() {
                 onContextCopyTitle: () => void navigator.clipboard.writeText(anime.name),
                 onContextOpenDetails: () =>
                   navigate(`/anime/${anime.id}`, { state: { anime } }),
+                onContextAddToMyLists: () => {
+                  const { added } = addLocalWatchlistEntry({
+                    id: anime.id,
+                    name: anime.name,
+                    mode: anime.mode,
+                  });
+                  showToast(
+                    added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists")
+                  );
+                },
               }))}
             />
           </section>
@@ -611,6 +774,16 @@ export function WelcomePage() {
                           },
                         },
                       }),
+                    onContextAddToMyLists: () => {
+                      const { added } = addLocalWatchlistEntry({
+                        id: entry.animeId,
+                        name: title,
+                        mode: entry.mode,
+                      });
+                      showToast(
+                        added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists")
+                      );
+                    },
                   };
                 })}
               />
@@ -625,7 +798,7 @@ export function WelcomePage() {
               Featured picks
             </h3>
             <ul className="mt-2 space-y-1 text-sm">
-              {spotlight.map((s, i) => (
+              {spotlightVisible.map((s, i) => (
                 <li key={s.id}>
                   <button
                     type="button"

@@ -12,6 +12,8 @@ import * as SECURITY_CHANNELS from "./security/security-channels";
 import * as RECENTLY_WATCHED_CHANNELS from "./recently-watched/recently-watched-channels";
 import { addSecurityListeners } from "./security/security-listeners";
 import { addRecentlyWatchedListeners } from "./recently-watched/recently-watched-listeners";
+import * as OFFLINE_DOWNLOADS_CHANNELS from "./offline-downloads/offline-downloads-channels";
+import { addOfflineDownloadsListeners } from "./offline-downloads/offline-downloads-listeners";
 import * as WATCH_PROGRESS_CHANNELS from "./watch-progress/watch-progress-channels";
 import { addWatchProgressListeners } from "./watch-progress/watch-progress-listeners";
 import * as THEME_CHANNELS from "./theme/theme-channels";
@@ -26,6 +28,7 @@ export function registerListeners() {
   addAniCliListeners();
   addRecentlyWatchedListeners();
   addWatchProgressListeners();
+  addOfflineDownloadsListeners();
   addExternalEventListeners();
   addAppEventListeners();
   addWindowEventListeners();
@@ -39,6 +42,7 @@ export function unregisterListeners() {
     ...Object.values(EXTERNAL_CHANNELS),
     ...Object.values(RECENTLY_WATCHED_CHANNELS),
     ...Object.values(WATCH_PROGRESS_CHANNELS),
+    ...Object.values(OFFLINE_DOWNLOADS_CHANNELS),
     ...Object.values(APP_CHANNELS),
     ...Object.values(THEME_CHANNELS),
     ...Object.values(SECURITY_CHANNELS),

@@ -15,6 +15,7 @@ import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/renderer/components/ui/tabs";
 import { type AnimeSearchResult, type ShowDetails, getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { cachedGetEpisodes, cachedGetShowDetails } from "@/renderer/lib/ani-session-cache";
 import {
   getShowComments,
   getShowEngagement,
@@ -31,8 +32,11 @@ import {
 } from "@/renderer/lib/anilist";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { showToast } from "@/renderer/lib/av-toast";
+import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { pickSynopsis } from "@/renderer/lib/synopsis";
 import { cn } from "@/renderer/lib/utils";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 type EpisodesState =
   | { status: "idle" }
@@ -49,6 +53,7 @@ type AnimeMode = "sub" | "dub";
 const MODES: AnimeMode[] = ["sub", "dub"];
 
 export function AnimeDetailsPage() {
+  const { config } = useAnivaultConfig();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -331,6 +336,34 @@ export function AnimeDetailsPage() {
     );
   }
 
+  const nameForMature = details?.name ?? anime?.name ?? "";
+  const matureRating = inferMatureRating(nameForMature, tile?.genres ?? []);
+  const matureGate =
+    details != null &&
+    !aniListLoading &&
+    isMatureContentBlocked(config?.allowMatureContent ?? false, matureRating);
+
+  if (matureGate) {
+    return (
+      <div className="container flex min-h-[60vh] max-w-lg flex-col items-center justify-center gap-5 bg-[var(--av-bg)] px-6 py-16 text-center text-[var(--av-text)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-500/90">Mature content</p>
+        <h1 className="text-xl font-bold tracking-tight">{details?.name ?? nameForMature}</h1>
+        <p className="text-sm leading-relaxed text-[var(--av-muted)]">
+          This title is tagged for mature audiences. Enable &quot;Allow mature (18+) content&quot; in
+          Settings to view series details and episodes.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button asChild className="rounded-xl">
+            <Link to="/settings?tab=appearance">Open Settings</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-xl border-[var(--av-border)]">
+            <Link to="/discover">Browse Discover</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const displayName = details?.name ?? anime?.name ?? "Unknown";
   const hasSub = subEpisodes.length > 0;
   const hasDub = dubEpisodes.length > 0;
@@ -519,7 +552,10 @@ export function AnimeDetailsPage() {
               <p className="text-sm text-red-400">Failed to load episodes for both sub and dub.</p>
             )}
             {episodes.length > 0 && (
-              <ul className="flex flex-wrap gap-2">
+              <ul
+                className="grid max-h-[min(60vh,26rem)] grid-cols-[repeat(auto-fill,minmax(5.25rem,1fr))] gap-2 overflow-y-auto overscroll-contain pr-0.5 [scrollbar-gutter:stable]"
+                role="list"
+              >
                 {filteredEpisodes.length === 0 ? (
                   <li className="text-sm text-[var(--av-muted)]">No episodes match filter.</li>
                 ) : (
@@ -532,7 +568,7 @@ export function AnimeDetailsPage() {
                           type="button"
                           variant="outline"
                           className={cn(
-                            "rounded-xl border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:border-[var(--av-accent-dim)] hover:bg-[var(--av-surface-hover)]",
+                            "min-h-[2.5rem] rounded-xl border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] hover:border-[var(--av-accent-dim)] hover:bg-[var(--av-surface-hover)]",
                             done &&
                               "border-zinc-600/80 bg-zinc-900/50 text-zinc-400 grayscale hover:grayscale-0"
                           )}
@@ -591,7 +627,7 @@ export function AnimeDetailsPage() {
                   <span className="text-xs font-normal text-[var(--av-muted)]"> /10</span>
                 </p>
                 <p className="text-[10px] text-[var(--av-muted)]">
-                  {engagement?.ratingCount ?? 0} votes · AniVault
+                  {engagement?.ratingCount ?? 0} votes · {APP_DISPLAY_NAME}
                 </p>
               </div>
               <div>

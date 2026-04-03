@@ -20,6 +20,7 @@ import {
   Volume2,
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 function formatTime(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return "0:00";
@@ -29,7 +30,9 @@ function formatTime(sec: number): string {
 }
 
 export function MiniPlayerBar() {
+  const location = useLocation();
   const { session } = useNowPlaying();
+  const hideOnAnimeDetail = /^\/anime\/[^/]+$/.test(location.pathname);
   const [tick, setTick] = useState(0);
   const [volume, setVolume] = useState(1);
   const useMarqueeTitle = (session?.title.length ?? 0) > 42;
@@ -102,7 +105,7 @@ export function MiniPlayerBar() {
     [session, isDetached]
   );
 
-  if (!session) return null;
+  if (!session || hideOnAnimeDetail) return null;
 
   return (
     <div
@@ -132,7 +135,7 @@ export function MiniPlayerBar() {
         }}
       >
         <div
-          className="absolute inset-y-0 left-0 bg-[var(--av-accent-dim)] transition-[width] duration-150 ease-out"
+          className="absolute inset-y-0 left-0 bg-[var(--av-accent-dim)] transition-[width] duration-300 ease-out [transition-delay:45ms]"
           style={{ width: `${progress * 100}%` }}
         />
       </div>

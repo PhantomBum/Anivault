@@ -3,12 +3,14 @@ import { ipcMain } from "electron";
 import {
   WATCH_PROGRESS_CLEAR_SERIES,
   WATCH_PROGRESS_GET,
+  WATCH_PROGRESS_LIST_CONTINUE,
   WATCH_PROGRESS_SAVE,
   WATCH_PROGRESS_STATS,
 } from "./watch-progress-channels";
 import {
   clearWatchProgressForAnime,
   getWatchProgress,
+  listContinueWatching,
   saveWatchProgress,
   watchProgressStats,
 } from "./watch-progress-store";
@@ -46,4 +48,9 @@ export function addWatchProgressListeners() {
   });
 
   ipcMain.handle(WATCH_PROGRESS_STATS, async () => watchProgressStats());
+
+  ipcMain.handle(WATCH_PROGRESS_LIST_CONTINUE, async (_event, limit: number) => {
+    const n = typeof limit === "number" && Number.isFinite(limit) ? Math.min(48, Math.max(1, Math.floor(limit))) : 12;
+    return listContinueWatching(n);
+  });
 }

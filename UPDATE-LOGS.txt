@@ -1,4 +1,7 @@
-AniVault — changelog
+AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
+
+1.0.0
+- Stable **AniVault Unvaulted** line: installer AniVaultUnvaultedSetup.exe, app anivault-unvaulted.exe. See desktop README and bundled update log in the app.
 
 1.0.0-alpha.3
 - Windows build and GitHub Releases publishing

@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import { anivaultFetch, type MeResponse } from "@/renderer/lib/anivault-api";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
+import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 type AuditEntry = {
   id: string;
@@ -112,7 +113,10 @@ export function AccountPage() {
     <div className="mx-auto max-w-md space-y-6 text-[var(--av-text)]">
       <div>
         <h2 className="text-lg font-bold tracking-tight">Account</h2>
-        <p className="mt-1 text-sm text-[var(--av-muted)]">AniVault Cloud · sign in</p>
+        <p className="mt-1 text-sm text-[var(--av-muted)]">
+          {APP_DISPLAY_NAME} — optional sign-in for synced features. API URL is configured in Settings →
+          Playback (server base).
+        </p>
       </div>
 
       {me ? (
@@ -122,8 +126,8 @@ export function AccountPage() {
             <span className="font-medium">{me.email}</span>
           </p>
           <p className="text-sm">
-            <span className="text-[var(--av-muted)]">Access</span>{" "}
-            <span className="font-medium">Full catalog</span>
+            <span className="text-[var(--av-muted)]">Plan</span>{" "}
+            <span className="font-medium capitalize">{me.plan ?? "free"}</span>
           </p>
           {me.moderator ? (
             <p className="text-[10px] text-[var(--av-muted-foreground)]">Moderator</p>
@@ -226,7 +230,7 @@ export function AccountPage() {
               Create account
             </Button>
             <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
-              Requires the AniVault API in Settings. You will be signed in after registration.
+              Requires the companion API in Settings (AniVault server). You will be signed in after registration.
             </p>
           </TabsContent>
         </Tabs>

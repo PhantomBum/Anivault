@@ -1,5 +1,6 @@
 import { applyShellAppearance } from "@/renderer/helpers/shell-appearance";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
+import { invalidateTelemetryCache } from "@/renderer/lib/telemetry";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import React, {
   createContext,
@@ -24,6 +25,7 @@ export function AnivaultConfigProvider({ children }: { children: React.ReactNode
     if (!window.anivault) return;
     const c = await window.anivault.getAllConfig();
     setConfig(c);
+    invalidateTelemetryCache();
     applyUiDensityToShell(c.uiDensity);
     applyShellAppearance({
       chromaticEmphasis: c.chromaticEmphasis,

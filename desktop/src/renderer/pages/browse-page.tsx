@@ -3,21 +3,35 @@ import { Button } from "@/renderer/components/ui/button";
 import { useAnilistEnrichment } from "@/renderer/hooks/use-anilist-enrichment";
 import {
   mergeShowThumbnailsFromShowDetails,
+  prefetchThumbnailForShowId,
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
+import type { AniListSearchTile } from "@/renderer/lib/anilist";
+import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
+import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
+import { recordPerfEvent } from "@/renderer/lib/telemetry";
+import { showToast } from "@/renderer/lib/av-toast";
+import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import type { AnimeSearchResult } from "@/shared/anime-result";
 import { Grid3x3 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
 /** Short probes merged and deduped so the grid is broader than a single query. */
 const BROWSE_PROBE_QUERIES = ["a", "e", "i", "o", "u", "one", "na"] as const;
+
+/** Cap `getShowDetails` thumbnail merges to limit CPU/network on large merged catalogs (phase 20). */
+const BROWSE_THUMB_MERGE_CAP = 96;
 
 /**
  * Dense catalog grid from merged ani-cli probes (not a full provider index).
  * Uses the same title cards, AniList enrichment, and ani-cli poster fallbacks as Search.
  */
 export function BrowsePage() {
+  const { t } = useTranslation();
+  const { config } = useAnivaultConfig();
+  const allowMature = config?.allowMatureContent ?? false;
   const navigate = useNavigate();
   const [rows, setRows] = useState<AnimeSearchResult[]>([]);
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
@@ -56,8 +70,9 @@ export function BrowsePage() {
   useEffect(() => {
     let cancelled = false;
     if (rows.length === 0) return;
+    const slice = rows.slice(0, BROWSE_THUMB_MERGE_CAP);
     void mergeShowThumbnailsFromShowDetails(
-      rows,
+      slice,
       SHOW_DETAILS_FETCH_CONCURRENCY,
       setThumbById,
       () => cancelled
@@ -70,12 +85,31 @@ export function BrowsePage() {
   const signature = useMemo(() => rows.map((r) => r.id).join("\u0001"), [rows]);
   const enrichMap = useAnilistEnrichment(rows, signature);
 
+  const visibleRows = useMemo(() => {
+    return rows.filter((r) => {
+      const enriched = enrichMap[r.id];
+      const rating = inferMatureRating(r.name, enriched?.genres);
+      return !isMatureContentBlocked(allowMature, rating);
+    });
+  }, [rows, enrichMap, allowMature]);
+
+  useEffect(() => {
+    if (rows.length === 0) return;
+    recordPerfEvent("browse_catalog_loaded", { rowCount: rows.length });
+  }, [rows.length]);
+
   const openDetail = useCallback(
     (anime: AnimeSearchResult) => {
       navigate(`/anime/${encodeURIComponent(anime.id)}`);
     },
     [navigate]
   );
+
+  const addToMyLists = useCallback((r: AnimeSearchResult, tile?: AniListSearchTile | null) => {
+    const name = tile?.titleEnglish ?? tile?.titleRomaji ?? r.name;
+    const { added } = addLocalWatchlistEntry({ id: r.id, name, mode: r.mode });
+    showToast(added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists"));
+  }, [t]);
 
   const quickPlay = useCallback(
     async (anime: AnimeSearchResult) => {
@@ -104,16 +138,18 @@ export function BrowsePage() {
             <Grid3x3 className="h-6 w-6 text-[var(--av-accent)]" aria-hidden />
           </div>
           <div>
-            <h2 className="text-lg font-semibold tracking-tight">Series</h2>
-            <p className="text-sm text-[var(--av-muted)]">
-              Merged catalog probes — open Find shows for queries and filters.
-            </p>
+            <h2 className="text-lg font-semibold tracking-tight">{t("browse.title")}</h2>
+            <p className="text-sm text-[var(--av-muted)]">{t("browse.subtitle")}</p>
           </div>
         </div>
-        <Button asChild variant="secondary" className="w-fit rounded-xl border-[var(--av-border)]">
+        <Button
+          asChild
+          variant="secondary"
+          className="av-micro-press w-fit rounded-xl border-[var(--av-border)]"
+        >
           <Link to="/anime">
             <Grid3x3 className="mr-2 h-4 w-4 text-[var(--av-accent)]" />
-            Find shows
+            {t("browse.findShows")}
           </Link>
         </Button>
       </div>
@@ -125,19 +161,23 @@ export function BrowsePage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-[var(--av-muted)]">Loading catalog…</p>
+        <p className="text-sm text-[var(--av-muted)]">{t("browse.loading")}</p>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {rows.map((r) => {
-            const t = enrichMap[r.id];
+          {visibleRows.map((r) => {
+            const enriched = enrichMap[r.id];
             return (
               <AnimeTitleCard
                 key={r.id}
                 result={r}
-                tile={t === undefined ? undefined : t}
+                tile={enriched === undefined ? undefined : enriched}
                 fallbackPosterUrl={thumbById[r.id]}
                 onOpenDetail={() => openDetail(r)}
                 onQuickPlay={() => void quickPlay(r)}
+                onAddToMyLists={() => addToMyLists(r, enriched === undefined ? null : enriched)}
+                onPrefetch={() => {
+                  void prefetchThumbnailForShowId(r.id, () => false);
+                }}
               />
             );
           })}

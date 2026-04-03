@@ -5,15 +5,15 @@
 
 import type { AnimeSearchResult, ShowDetails } from "@/renderer/lib/ani-cli-bridge";
 
-/** Search / discover lists — refresh after this unless user is idle on same query. */
-const DEFAULT_TTL_MS = 8 * 60 * 1000;
-const EPISODE_TTL_MS = 12 * 60 * 1000;
-const DETAILS_TTL_MS = 12 * 60 * 1000;
+/** Search / discover lists — shorter TTL keeps RAM from holding stale large arrays. */
+const DEFAULT_TTL_MS = 4 * 60 * 1000;
+const EPISODE_TTL_MS = 8 * 60 * 1000;
+const DETAILS_TTL_MS = 8 * 60 * 1000;
 
-const MAX_SEARCH_ENTRIES = 56;
-const MAX_RECENT_ENTRIES = 12;
-const MAX_EPISODE_ENTRIES = 80;
-const MAX_DETAILS_ENTRIES = 64;
+const MAX_SEARCH_ENTRIES = 32;
+const MAX_RECENT_ENTRIES = 8;
+const MAX_EPISODE_ENTRIES = 40;
+const MAX_DETAILS_ENTRIES = 40;
 
 const searchCache = new Map<string, { at: number; data: AnimeSearchResult[] }>();
 const recentCache = new Map<string, { at: number; data: { items: AnimeSearchResult[]; hasMore: boolean } }>();

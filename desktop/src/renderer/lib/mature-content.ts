@@ -7,6 +7,11 @@ const ECCHI_RE = /\b(ecchi|nsfw|mature|sexual|fanservice|smut)\b/i;
 const EXPLICIT_GENRES = new Set(["hentai", "erotica"]);
 const ECCHI_GENRES = new Set(["ecchi", "boys love", "girls love"]);
 
+/** When mature content is disabled in settings, filter these from grids and lists. */
+export function isMatureContentBlocked(allowMatureContent: boolean, rating: MatureRating): boolean {
+  return !allowMatureContent && rating !== "none";
+}
+
 export function inferMatureRating(title: string, genres?: string[]): MatureRating {
   const t = title.toLowerCase();
   const g = (genres ?? []).map((x) => x.toLowerCase());

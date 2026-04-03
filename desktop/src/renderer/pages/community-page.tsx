@@ -58,7 +58,7 @@ export function CommunityPage() {
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Servers & safety</h1>
           <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
-            Shared spaces backed by the AniVault API. Threading and richer feeds ship in a follow-up;
+            Shared spaces backed by the companion AniVault API. Threading and richer feeds ship in a follow-up;
             today you can browse hubs and flag issues for moderators.
           </p>
         </div>
@@ -98,7 +98,7 @@ export function CommunityPage() {
         <div className="rounded-3xl border border-red-500/30 bg-red-950/20 p-6 text-sm text-red-200">
           <p className="font-medium">{err}</p>
           <p className="mt-2 text-xs text-red-200/80">
-            Start the AniVault server (see <code className="font-mono">anivault/server</code>) or set
+            Start the companion server (see <code className="font-mono">anivault/server</code>) or set
             the API base URL under Settings → Security.
           </p>
         </div>

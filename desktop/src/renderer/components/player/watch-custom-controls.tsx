@@ -128,7 +128,7 @@ export function WatchCustomControls({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 bottom-0 z-20 flex flex-col border-t border-zinc-800/80 bg-zinc-950/95 px-3 pb-3 pt-3 transition-opacity duration-200 ease-out sm:px-4",
+        "av-watch-controls absolute inset-x-0 bottom-0 z-20 flex flex-col border-t border-zinc-800/80 bg-zinc-950/95 px-3 pb-3 pt-3 transition-opacity duration-200 ease-out sm:px-4",
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       )}
     >
@@ -140,7 +140,7 @@ export function WatchCustomControls({
               style={{ width: `${bufPct}%` }}
             />
             <div
-              className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-zinc-200"
+              className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-zinc-200 transition-[width] duration-300 ease-out [transition-delay:40ms]"
               style={{ width: `${playedPct}%` }}
             />
             <input
