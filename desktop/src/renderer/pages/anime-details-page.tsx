@@ -8,7 +8,7 @@ import {
   MessageCircle,
   Star,
 } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/renderer/components/ui/button";
@@ -79,6 +79,10 @@ export function AnimeDetailsPage() {
   const [engageMsg, setEngageMsg] = useState<string | null>(null);
   const [completedEpisodes, setCompletedEpisodes] = useState<Set<string>>(new Set());
 
+  /** Avoids Strict Mode / fast remounts leaving loading stuck when cleanup runs before `finally`. */
+  const detailsLoadGenRef = useRef(0);
+  const aniListLoadGenRef = useRef(0);
+
   /**
    * When opening from URL alone (Find shows / Discover), `location.state` is empty. The fallback
    * object must be memoized — a fresh object every render made the data-loading effect depend on
@@ -97,22 +101,20 @@ export function AnimeDetailsPage() {
   useEffect(() => {
     const title = details?.name ?? anime?.name;
     if (!title || title === "Unknown") return;
-    let cancelled = false;
+    const myGen = ++aniListLoadGenRef.current;
     setAniListLoading(true);
     setAniList(null);
     setTile(null);
     void fetchAniListBundleByTitle(title)
       .then(({ extra, tile }) => {
-        if (cancelled) return;
+        if (myGen !== aniListLoadGenRef.current) return;
         setAniList(extra);
         setTile(tile);
       })
       .finally(() => {
-        if (!cancelled) setAniListLoading(false);
+        if (myGen !== aniListLoadGenRef.current) return;
+        setAniListLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
   }, [details?.name, anime?.name]);
 
   useEffect(() => {
@@ -142,9 +144,10 @@ export function AnimeDetailsPage() {
       setLoading(false);
       return;
     }
-    let cancelled = false;
+    const myGen = ++detailsLoadGenRef.current;
     setLoading(true);
     setError(null);
+    setDetails(null);
     const aniCli = getAniCli();
     setEpisodesByMode({ sub: { status: "loading" }, dub: { status: "loading" } });
 
@@ -154,7 +157,7 @@ export function AnimeDetailsPage() {
       cachedGetEpisodes(id, "dub", () => aniCli.getEpisodes(id, "dub")),
     ])
       .then(([detailsResult, subResult, dubResult]) => {
-        if (cancelled) return;
+        if (myGen !== detailsLoadGenRef.current) return;
 
         if (detailsResult.status === "fulfilled") {
           setDetails(detailsResult.value);
@@ -213,14 +216,13 @@ export function AnimeDetailsPage() {
         }
       })
       .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load details");
+        if (myGen !== detailsLoadGenRef.current) return;
+        setError(err instanceof Error ? err.message : "Failed to load details");
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (myGen !== detailsLoadGenRef.current) return;
+        setLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
   }, [id, anime]);
 
   const playEpisode = useCallback(
@@ -319,11 +321,12 @@ export function AnimeDetailsPage() {
     );
   }
 
-  if (loading && !details) {
+  if (error && !details) {
     return (
       <div className="container flex min-h-[50vh] flex-col items-center justify-center gap-4 bg-[var(--av-bg)] p-8 text-[var(--av-text)]">
-        <Loader2 className="h-10 w-10 animate-spin text-[var(--av-accent)]" />
-        <p className="text-sm text-[var(--av-muted)]">Loading…</p>
+        <p className="text-sm text-red-400" role="alert">
+          {error}
+        </p>
         <Button asChild variant="outline">
           <Link to="/">Back to home</Link>
         </Button>
@@ -331,12 +334,11 @@ export function AnimeDetailsPage() {
     );
   }
 
-  if (error && !details) {
+  if (loading && !details) {
     return (
       <div className="container flex min-h-[50vh] flex-col items-center justify-center gap-4 bg-[var(--av-bg)] p-8 text-[var(--av-text)]">
-        <p className="text-sm text-red-400" role="alert">
-          {error}
-        </p>
+        <Loader2 className="h-10 w-10 animate-spin text-[var(--av-accent)]" />
+        <p className="text-sm text-[var(--av-muted)]">Loading…</p>
         <Button asChild variant="outline">
           <Link to="/">Back to home</Link>
         </Button>

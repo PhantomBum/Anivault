@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.2
+- **Fix:** Series **Details & episodes** no longer spins forever (React Strict Mode–safe load generation, clear stale details, errors shown before loading). **IPC timeouts** (120s) on `getShowDetails` / episode lists so a hung ani-cli call fails with an error instead of blocking the UI. Tag `v1.0.2` triggers CI to attach **AniVaultUnvaultedSetup.exe** and updater files on GitHub Releases.
+
 1.0.1
 - **Fix:** Opening a series from **Find shows** or **Discover** now loads reliably (stable `anime` memo + navigation `state`). Tag `v1.0.1` triggers CI to attach **AniVaultUnvaultedSetup.exe** and updater files on GitHub Releases.
 

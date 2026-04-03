@@ -25,6 +25,9 @@ import { getStreamUrl } from "./ani-cli-stream";
 /** Failsafe if inner resolution hangs (stream-resolver already caps work, but IPC must not hang forever). */
 const IPC_STREAM_URL_TIMEOUT_MS = 120_000;
 
+/** Show details / episode list can block if ani-cli never returns; cap wait so the UI can recover. */
+const IPC_SHOW_DETAILS_EPISODES_TIMEOUT_MS = 120_000;
+
 function withIpcTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   return new Promise<T>((resolve, reject) => {
@@ -60,7 +63,9 @@ export function addAniCliListeners() {
       )
   );
   ipcMain.handle(ANI_CLI_STREAM_PROXY_BASE_CHANNEL, () => getStreamProxyBaseUrl());
-  ipcMain.handle(ANI_CLI_SHOW_DETAILS_CHANNEL, (_event, showId: string) => getShowDetails(showId));
+  ipcMain.handle(ANI_CLI_SHOW_DETAILS_CHANNEL, (_event, showId: string) =>
+    withIpcTimeout(getShowDetails(showId), IPC_SHOW_DETAILS_EPISODES_TIMEOUT_MS, "getShowDetails")
+  );
   ipcMain.handle(ANI_CLI_RECENT_CHANNEL, (_event, page: number, limit?: number) =>
     getRecentAnime(page, limit ?? 12)
   );
