@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.1
+- **Fix:** Opening a series from **Find shows** or **Discover** now loads reliably (stable `anime` memo + navigation `state`). Tag `v1.0.1` triggers CI to attach **AniVaultUnvaultedSetup.exe** and updater files on GitHub Releases.
+
 1.0.0 (Unvaulted — stable line)
 - Product name is now **AniVault Unvaulted** (out of alpha). Version **1.0.0** ships the accumulated phases 15–30 work: settings search, calendar, lists export, offline download queue (progressive URLs), telemetry opt-in, stream tests, shell polish, and more.
 - Windows: installer **AniVaultUnvaultedSetup.exe**, app **anivault-unvaulted.exe**; App User Model ID `com.anivault.unvaulted`. Fresh install recommended for users coming from alpha Squirrel builds.
