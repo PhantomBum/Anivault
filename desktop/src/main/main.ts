@@ -1,3 +1,5 @@
+import "@/main/squirrel-bootstrap";
+
 import { BrowserWindow, app, nativeImage } from "electron";
 import fs from "node:fs";
 import path from "node:path";

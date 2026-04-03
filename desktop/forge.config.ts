@@ -14,11 +14,18 @@ import type { ForgeConfig } from "@electron-forge/shared-types";
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
+import path from "node:path";
+
 import { forgePostMakeLatestYml } from "./scripts/forge-post-make-latest-yml";
 
 import { resolveGithubRepoForPublish } from "./scripts/github-repo";
 
+import pkg from "./package.json";
+
 const gh = resolveGithubRepoForPublish();
+
+/** Forge runs with `cwd` = `desktop/` (where this file lives). */
+const desktopRoot = process.cwd();
 
 const config: ForgeConfig = {
 
@@ -59,12 +66,18 @@ const config: ForgeConfig = {
   makers: [
 
     new MakerSquirrel({
-
       /** NuGet package ID: no spaces (Squirrel/nuget_pack rejects `AniVault Unvaulted`). Display name stays in package.json `productName`. */
       name: "AniVaultUnvaulted",
-
       setupExe: "AniVaultUnvaultedSetup.exe",
-
+      /** Setup.exe + Add/Remove Programs branding (must be `.ico`). */
+      setupIcon: path.join(desktopRoot, "public", "icon-rounded.ico"),
+      /** Splash during install (`npm run installer:assets` regenerates from `public/icon-rounded.png`). */
+      loadingGif: path.join(desktopRoot, "installer", "installing.gif"),
+      authors: typeof pkg.author === "string" ? pkg.author : "AniVault Unvaulted",
+      description: pkg.description,
+      title: pkg.productName,
+      /** MSI is rarely needed for desktop apps; Squirrel Setup.exe is the primary path. */
+      noMsi: true,
     }),
 
     // Zip only for macOS; Windows uses Squirrel (AniVaultUnvaultedSetup.exe).
