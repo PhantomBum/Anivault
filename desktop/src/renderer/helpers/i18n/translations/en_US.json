@@ -1,9 +1,87 @@
 {
   "title": "Home Page",
   "description": "This is an example of translation in en",
+  "commandPalette": {
+    "placeholder": "Jump to page or action…",
+    "empty": "No matches.",
+    "groupGoTo": "Go to",
+    "home": "Home",
+    "discover": "Discover",
+    "findShows": "Find shows",
+    "myLists": "My lists",
+    "calendar": "Calendar",
+    "watchPage": "Watch",
+    "groupSettings": "Settings",
+    "groupComingSoon": "Coming soon",
+    "communityPlaceholder": "Community (placeholder route)",
+    "groupPlayback": "Playback",
+    "resumeWatch": "Resume watch (mini player)",
+    "scrollToPlayer": "Scroll to player on Watch",
+    "groupHelp": "Help",
+    "keyboardShortcuts": "Keyboard shortcuts",
+    "copyDiagnostics": "Copy diagnostics (version · OS · route)",
+    "toastDiagnosticsCopied": "Diagnostics copied to clipboard",
+    "toastDiagnosticsFailed": "Could not copy diagnostics"
+  },
+  "nav": {
+    "sectionLibrary": "Library",
+    "sectionTools": "Tools",
+    "sectionComingSoon": "Coming soon",
+    "home": "Home",
+    "discover": "Discover",
+    "findShows": "Find shows",
+    "myLists": "My lists",
+    "calendar": "Calendar",
+    "requestShow": "Request a show",
+    "legal": "Legal",
+    "community": "Community",
+    "gallery": "Gallery",
+    "clips": "Clips"
+  },
+  "routes": {
+    "homeTitle": "Home",
+    "homeSub": "Continue watching · spotlight",
+    "discoverTitle": "Discover",
+    "discoverSub": "Popular · trending · seasonal picks",
+    "browseTitle": "Discover",
+    "browseSub": "Redirected from Series",
+    "exploreTitle": "Explore",
+    "exploreSub": "Redirecting to Discover…",
+    "clipsTitle": "Clips",
+    "clipsSub": "Community moments — coming soon",
+    "listsTitle": "My lists",
+    "listsSub": "Local watchlist",
+    "animeDetailTitle": "Series",
+    "animeDetailSub": "Details & episodes",
+    "animeSearchTitle": "Find shows",
+    "animeSearchSub": "Search & filters",
+    "watchTitle": "Watch",
+    "watchSub": "Now playing",
+    "playerTitle": "Player",
+    "playerSub": "Legacy",
+    "settingsTitle": "Settings",
+    "settingsSub": "Playback · appearance · privacy · shortcuts · data · studio",
+    "communityTitle": "Community",
+    "communitySub": "Servers & threads — coming soon",
+    "galleryTitle": "Gallery",
+    "gallerySub": "Art & screenshots — coming soon",
+    "scheduleTitle": "Calendar",
+    "scheduleSub": "Airing schedule · local times",
+    "requestTitle": "Request a show",
+    "requestSub": "Suggest a title",
+    "termsTitle": "Legal",
+    "termsSub": "Terms of service",
+    "accountTitle": "Account",
+    "accountSub": "Sign in"
+  },
+  "comingSoon": {
+    "title": "Coming soon",
+    "body": "This area is being unvaulted in a future update. Check Settings → Updates for release notes.",
+    "backHome": "Back to home"
+  },
   "settings": {
     "title": "Settings",
-    "subtitle": "Playback · appearance · language · translation · updates · data · studio",
+    "subtitle": "Playback · appearance · language · translation · shortcuts · updates · data · privacy · studio",
     "loading": "Loading settings…",
     "findPlaceholder": "Find in settings…",
     "findAria": "Find in settings",
@@ -49,7 +127,17 @@
     "versionCopyHint": "Click to copy version",
     "findMatches": "{{count}} matches",
     "refreshQueue": "Refresh queue",
-    "findShortcutHint": "Press / to focus search"
+    "findShortcutHint": "Press / to focus search",
+    "privacyDiagTitle": "Local data folder",
+    "privacyDiagBody": "AniVault stores config and cache here. Open the folder for backups or troubleshooting. Do not share contents publicly if they include personal paths.",
+    "openUserDataFolder": "Open app data folder",
+    "copyDiagnostics": "Copy diagnostic summary",
+    "toastDiagnosticsCopied": "Diagnostic summary copied",
+    "privacyTermsLink": "Terms of service",
+    "shortcutsIntro": "These shortcuts work when focus is not in a text field (except Ctrl+/). Adjust seek step and skip intro under Playback.",
+    "shortcutsOpenPlayback": "Open Playback settings",
+    "tabShortcuts": "Shortcuts",
+    "tabPrivacy": "Privacy"
   },
   "lists": {
     "kicker": "Lists",
@@ -74,7 +162,12 @@
     "toastImported": "Imported {{count}} series",
     "toastReadError": "Could not read file",
     "toastTsvCopied": "TSV copied",
-    "toastCopyFailed": "Copy failed"
+    "toastCopyFailed": "Copy failed",
+    "selectRowAria": "Select for bulk remove",
+    "selectAll": "Select all",
+    "clearSelection": "Clear selection",
+    "removeSelected": "Remove selected ({{count}})",
+    "toastBulkRemoved": "Removed {{count}} from list"
   },
   "browse": {
     "title": "Series",
@@ -103,7 +196,8 @@
     "toastAddedToLists": "Added to My lists",
     "toastAlreadyInLists": "Already in My lists",
     "toastCopiedPlaybackUrl": "Playback URL copied",
-    "toastCopyPlaybackUnavailable": "This stream URL cannot be copied (blob or offline source)"
+    "toastCopyPlaybackUnavailable": "This stream URL cannot be copied (blob or offline source)",
+    "removeFromContinue": "Remove from Continue watching"
   },
   "watch": {
     "playbackAssists": "Playback assists",
@@ -116,6 +210,9 @@
     "queueOffline": "Save for offline",
     "queueOfflineTitle": "Add this episode to the offline queue (Settings → Data)",
     "queueOfflineNeedSettings": "Enable offline downloads and choose a folder in Settings → Data",
-    "toastQueueOfflineAdded": "Added to offline queue"
+    "toastQueueOfflineAdded": "Added to offline queue",
+    "toastLinkCopied": "Watch link copied (opens this episode from the URL)",
+    "toastCopyFailed": "Could not copy link",
+    "copyLinkTitle": "Copy link to this episode"
   }
 }

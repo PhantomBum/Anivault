@@ -439,6 +439,15 @@ export function AnimeDetailsPage() {
         </div>
 
         <div className="container mx-auto flex max-w-5xl flex-col gap-4 p-3 pb-10 md:gap-5 md:p-6">
+          <nav className="flex flex-wrap items-center gap-1.5 text-[11px] text-[var(--av-muted)]" aria-label="Breadcrumb">
+            <Link to="/discover" className="transition-colors hover:text-[var(--av-text)]">
+              Discover
+            </Link>
+            <span className="text-[var(--av-muted-foreground)]" aria-hidden>
+              /
+            </span>
+            <span className="min-w-0 truncate font-medium text-[var(--av-text)]">{displayName}</span>
+          </nav>
           {openedWithoutSearchState && details ? (
             <p
               className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] px-3 py-2 text-xs text-[var(--av-muted)]"

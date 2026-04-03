@@ -52,6 +52,9 @@ const TermsPage = lazy(() =>
 const ListsPage = lazy(() =>
   import("@/renderer/pages/lists-page").then((m) => ({ default: m.ListsPage }))
 );
+const ComingSoonPage = lazy(() =>
+  import("@/renderer/pages/coming-soon-page").then((m) => ({ default: m.ComingSoonPage }))
+);
 
 function RouteFallback() {
   return (
@@ -106,9 +109,9 @@ export default function App() {
                   <Route path="/watch" element={<WatchPage />} />
                   <Route path="/player" element={<PlayerPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/community" element={<Navigate to="/" replace />} />
-                  <Route path="/gallery" element={<Navigate to="/" replace />} />
-                  <Route path="/clips" element={<Navigate to="/" replace />} />
+                  <Route path="/community" element={<ComingSoonPage />} />
+                  <Route path="/gallery" element={<ComingSoonPage />} />
+                  <Route path="/clips" element={<ComingSoonPage />} />
                   <Route path="/lists" element={<ListsPage />} />
                   <Route path="/account" element={<AccountPage />} />
                 </Route>

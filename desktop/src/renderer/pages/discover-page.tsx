@@ -15,10 +15,13 @@ import type { AnimeSearchResult } from "@/shared/anime-result";
 import { showToast } from "@/renderer/lib/av-toast";
 import { cn } from "@/renderer/lib/utils";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
-import { Compass } from "lucide-react";
+import { AvEmptyState } from "@/renderer/components/av-empty-state";
+import { Compass, SearchX } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+
+const DISCOVER_TAB_SESSION_KEY = "anivault-discover-active-tab";
 
 const TABS: { id: string; label: string; query: string; hint: string }[] = [
   {
@@ -38,7 +41,23 @@ export function DiscoverPage() {
   const { config } = useAnivaultConfig();
   const allowMature = config?.allowMatureContent ?? false;
   const navigate = useNavigate();
-  const [tab, setTab] = useState(TABS[0].id);
+  const [tab, setTab] = useState(() => {
+    try {
+      const s = sessionStorage.getItem(DISCOVER_TAB_SESSION_KEY);
+      if (s && TABS.some((x) => x.id === s)) return s;
+    } catch {
+      /* ignore */
+    }
+    return TABS[0].id;
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(DISCOVER_TAB_SESSION_KEY, tab);
+    } catch {
+      /* ignore */
+    }
+  }, [tab]);
   const [rows, setRows] = useState<AnimeSearchResult[]>([]);
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
@@ -197,6 +216,16 @@ export function DiscoverPage() {
             />
           ))}
         </div>
+      ) : visibleRows.length === 0 ? (
+        <AvEmptyState
+          icon={SearchX}
+          title="Nothing to show in this tab"
+          description="Try another Discover row or open Find shows for a specific title."
+        >
+          <Button asChild variant="outline" className="mt-1 rounded-xl border-[var(--av-border)]">
+            <Link to="/anime">Find shows</Link>
+          </Button>
+        </AvEmptyState>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {visibleRows.map((r) => {

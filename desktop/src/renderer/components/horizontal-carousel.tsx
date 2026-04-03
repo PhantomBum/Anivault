@@ -7,7 +7,7 @@ import {
 import type { MatureRating } from "@/renderer/lib/mature-content";
 import { cn } from "@/renderer/lib/utils";
 import { APP_SHORT_BADGE } from "@/shared/app-brand";
-import { BookmarkPlus, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { BookmarkPlus, ChevronLeft, ChevronRight, ImageOff, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -24,6 +24,8 @@ export type HorizontalCarouselItem = {
   onContextCopyTitle?: () => void;
   onContextOpenDetails?: () => void;
   onContextAddToMyLists?: () => void;
+  /** Remove series from “Continue watching” (clears saved progress). */
+  onContextRemoveFromContinue?: () => void;
   /** Mature content hint (badges on poster). */
   mature?: MatureRating;
 };
@@ -71,7 +73,10 @@ function HorizontalCarouselCard({
   const showFallback = failed || !item.coverUrl;
   const isHome = variant === "home";
   const hasMenu = Boolean(
-    item.onContextCopyTitle || item.onContextOpenDetails || item.onContextAddToMyLists
+    item.onContextCopyTitle ||
+      item.onContextOpenDetails ||
+      item.onContextAddToMyLists ||
+      item.onContextRemoveFromContinue
   );
 
   const mature = item.mature ?? "none";
@@ -199,6 +204,17 @@ function HorizontalCarouselCard({
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5 opacity-90" />
             {t("contextMenu.addToMyLists")}
+          </ContextMenuItem>
+        ) : null}
+        {item.onContextRemoveFromContinue ? (
+          <ContextMenuItem
+            onSelect={() => {
+              item.onContextRemoveFromContinue?.();
+            }}
+            className="text-red-400 focus:text-red-300"
+          >
+            <Trash2 className="mr-2 h-3.5 w-3.5 opacity-90" />
+            {t("contextMenu.removeFromContinue")}
           </ContextMenuItem>
         ) : null}
       </ContextMenuContent>

@@ -8,6 +8,8 @@ import {
   APP_OS_CHANNEL,
   APP_PICK_DOWNLOADS_FOLDER_CHANNEL,
   APP_QUIT_AND_INSTALL_CHANNEL,
+  APP_REVEAL_USER_DATA_CHANNEL,
+  APP_USER_DATA_PATH_CHANNEL,
   APP_VERSION_CHANNEL,
 } from "./app-channels";
 
@@ -34,6 +36,10 @@ export function exposeAppContext() {
       >,
     pickDownloadsFolder: () =>
       ipcRenderer.invoke(APP_PICK_DOWNLOADS_FOLDER_CHANNEL) as Promise<string | null>,
+    getUserDataPath: () =>
+      ipcRenderer.invoke(APP_USER_DATA_PATH_CHANNEL) as Promise<string>,
+    revealUserDataFolder: () =>
+      ipcRenderer.invoke(APP_REVEAL_USER_DATA_CHANNEL) as Promise<boolean>,
     onUpdateDownloaded: (cb: () => void) => {
       const fn = () => cb();
       ipcRenderer.on(UPDATE_DOWNLOADED_EVENT, fn);

@@ -83,6 +83,10 @@ interface AppContext {
   onUpdateDownloaded: (cb: () => void) => () => void;
   /** Native folder picker for offline downloads path. */
   pickDownloadsFolder: () => Promise<string | null>;
+  /** Electron `userData` directory (config, cache). */
+  getUserDataPath: () => Promise<string>;
+  /** Open the userData folder in the system file manager. */
+  revealUserDataFolder: () => Promise<boolean>;
 }
 
 interface SecurityContext {

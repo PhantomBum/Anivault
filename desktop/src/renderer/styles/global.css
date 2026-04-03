@@ -62,6 +62,14 @@
   background: var(--av-main-gradient);
 }
 
+/* Keyboard focus visibility (complements Radix focus rings on complex widgets). */
+@layer base {
+  .anivault-shell :where(a, button, input:not([type="hidden"]), select, textarea, [role="tab"]):focus-visible {
+    outline: 2px solid var(--av-accent-dim);
+    outline-offset: 2px;
+  }
+}
+
 /* Shared layout utilities (mirrors index.html `.card`, `.watch-callout`). */
 @layer components {
   .av-card {

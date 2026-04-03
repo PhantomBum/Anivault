@@ -385,6 +385,13 @@ export function WelcomePage() {
                       added ? t("contextMenu.toastAddedToLists") : t("contextMenu.toastAlreadyInLists")
                     );
                   },
+                  onContextRemoveFromContinue: () => {
+                    if (!window.watchProgress?.clearSeries) return;
+                    void window.watchProgress.clearSeries(c.animeId).then(() => {
+                      setContinueItems((prev) => prev.filter((x) => x.animeId !== c.animeId));
+                      void window.watchProgress?.stats().then(setProgressStats).catch(() => undefined);
+                    });
+                  },
                 };
               })}
             />

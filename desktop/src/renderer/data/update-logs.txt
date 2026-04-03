@@ -1,5 +1,15 @@
 AniVault Unvaulted — changelog
 
+1.0.8
+- **Navigation:** Sidebar sections (Library / Tools / Coming soon); `/community`, `/gallery`, `/clips` show a unified coming-soon page; route headings aligned with i18n.
+- **Settings:** Tab panels split under `pages/settings/`; new **Privacy & diagnostics** and **Shortcuts & input** tabs; telemetry moved to Privacy; Find-in-settings and tab URLs updated; **Alt+,** cycles tabs.
+- **Shell:** Command palette (**Ctrl+Shift+P**) — jump to routes, every Settings tab, resume watch / scroll to player, copy diagnostics; main scroll **restored per route** (sessionStorage); **Alt+Left** history back.
+- **Watch:** Breadcrumb (Discover → series → episode); **copy shareable link** with `id` / `mode` / `ep` query args; opening Watch from that URL hydrates the session.
+- **Discover / Search:** Discover tab remembered in session; Find shows restores last query in session and adds a **clear** control on the search field.
+- **Home:** Continue watching — context menu **Remove from Continue watching** (clears progress for that series).
+- **Lists:** **Bulk select** + remove selected.
+- **Docs:** `desktop/docs/performance-notes.md` for profiler/bundle reminders.
+
 1.0.7
 - **Fix:** Settings no longer crashes with “Cannot access before initialization” (translation `t` vs tab param). **Studio** tab added (maintenance / coming soon) with teaser roadmap. QoL: last-tab memory, find-in-settings shortcuts, copy link to tab, offline queue refresh, version copy, and more. Tag **`v1.0.7`** → **AniVaultUnvaultedSetup.exe** on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
 

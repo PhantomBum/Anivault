@@ -1,36 +1,46 @@
 import {
   Calendar,
+  Clapperboard,
   Compass,
   FileText,
+  ImageIcon,
   LayoutList,
   MessageSquarePlus,
   Search,
   Sparkles,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 
 import { cn } from "@/renderer/lib/utils";
 
 type NavItem = {
-  title: string;
+  titleKey: string;
   href: string;
   icon: LucideIcon;
   matchPrefix?: boolean;
 };
 
-const browseItems: NavItem[] = [
-  { title: "Home", href: "/", icon: Compass },
-  { title: "Discover", href: "/discover", icon: Sparkles },
-  { title: "Find shows", href: "/anime", icon: Search, matchPrefix: true },
-  { title: "My lists", href: "/lists", icon: LayoutList },
+const LIBRARY_ITEMS: NavItem[] = [
+  { titleKey: "nav.home", href: "/", icon: Compass },
+  { titleKey: "nav.discover", href: "/discover", icon: Sparkles },
+  { titleKey: "nav.findShows", href: "/anime", icon: Search, matchPrefix: true },
+  { titleKey: "nav.myLists", href: "/lists", icon: LayoutList },
 ];
 
-const moreItems: NavItem[] = [
-  { title: "Calendar", href: "/schedule", icon: Calendar },
-  { title: "Request a show", href: "/request-series", icon: MessageSquarePlus },
-  { title: "Legal", href: "/terms", icon: FileText },
+const TOOLS_ITEMS: NavItem[] = [
+  { titleKey: "nav.calendar", href: "/schedule", icon: Calendar },
+  { titleKey: "nav.requestShow", href: "/request-series", icon: MessageSquarePlus },
+  { titleKey: "nav.legal", href: "/terms", icon: FileText },
+];
+
+const COMING_SOON_ITEMS: NavItem[] = [
+  { titleKey: "nav.community", href: "/community", icon: Users },
+  { titleKey: "nav.gallery", href: "/gallery", icon: ImageIcon },
+  { titleKey: "nav.clips", href: "/clips", icon: Clapperboard },
 ];
 
 function isNavActive(pathname: string, item: NavItem): boolean {
@@ -45,10 +55,12 @@ function isNavActive(pathname: string, item: NavItem): boolean {
 
 function NavButton({
   item,
+  title,
   onNavigate,
   collapsed,
 }: {
   item: NavItem;
+  title: string;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
@@ -59,8 +71,8 @@ function NavButton({
     <Link
       to={item.href}
       onClick={onNavigate}
-      title={collapsed ? item.title : undefined}
-      aria-label={collapsed ? item.title : undefined}
+      title={collapsed ? title : undefined}
+      aria-label={collapsed ? title : undefined}
       className={cn(
         "flex w-full items-center gap-2.5 rounded-lg py-2 text-[0.8125rem] font-medium transition-colors duration-150 ease-out",
         collapsed ? "justify-center px-2" : "px-2.5 text-left",
@@ -77,7 +89,7 @@ function NavButton({
         strokeWidth={2}
         aria-hidden
       />
-      {collapsed ? null : <span>{item.title}</span>}
+      {collapsed ? null : <span>{title}</span>}
     </Link>
   );
 }
@@ -85,12 +97,14 @@ function NavButton({
 function NavSection({
   label,
   items,
+  itemTitles,
   onNavigate,
   collapsed,
   sectionDivider,
 }: {
   label: string;
   items: NavItem[];
+  itemTitles: string[];
   onNavigate?: () => void;
   collapsed?: boolean;
   sectionDivider?: boolean;
@@ -105,8 +119,14 @@ function NavSection({
           {label}
         </p>
       ) : null}
-      {items.map((item) => (
-        <NavButton key={item.href} item={item} onNavigate={onNavigate} collapsed={collapsed} />
+      {items.map((item, i) => (
+        <NavButton
+          key={item.href}
+          item={item}
+          title={itemTitles[i] ?? item.titleKey}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+        />
       ))}
     </div>
   );
@@ -119,12 +139,33 @@ export function AniVaultNav({
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const { t } = useTranslation();
+
+  const libraryTitles = LIBRARY_ITEMS.map((i) => t(i.titleKey));
+  const toolsTitles = TOOLS_ITEMS.map((i) => t(i.titleKey));
+  const comingSoonTitles = COMING_SOON_ITEMS.map((i) => t(i.titleKey));
+
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Main">
-      <NavSection label="Library" items={browseItems} onNavigate={onNavigate} collapsed={collapsed} />
       <NavSection
-        label="Tools"
-        items={moreItems}
+        label={t("nav.sectionLibrary")}
+        items={LIBRARY_ITEMS}
+        itemTitles={libraryTitles}
+        onNavigate={onNavigate}
+        collapsed={collapsed}
+      />
+      <NavSection
+        label={t("nav.sectionTools")}
+        items={TOOLS_ITEMS}
+        itemTitles={toolsTitles}
+        onNavigate={onNavigate}
+        collapsed={collapsed}
+        sectionDivider
+      />
+      <NavSection
+        label={t("nav.sectionComingSoon")}
+        items={COMING_SOON_ITEMS}
+        itemTitles={comingSoonTitles}
         onNavigate={onNavigate}
         collapsed={collapsed}
         sectionDivider

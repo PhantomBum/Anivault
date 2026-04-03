@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   ChevronDown,
+  Copy,
   Download,
   Link2,
   ListOrdered,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { WatchPlayerStage } from "@/renderer/components/player/watch-player-stage";
 import {
@@ -105,7 +106,9 @@ export function WatchPage() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const state = location.state as WatchState | null;
+  const hydratedFromQueryRef = useRef(false);
 
   const [playUrl, setPlayUrl] = useState<string>("");
   /** Bumps when a new stream URL is ready so the <video> remounts (retry after errors). */
@@ -120,6 +123,51 @@ export function WatchPage() {
   const initialEpisode = state?.currentEpisode ?? episodes[0] ?? "";
 
   const [currentEpisode, setCurrentEpisode] = useState<string>(initialEpisode);
+
+  useEffect(() => {
+    if (state?.anime) return;
+    if (hydratedFromQueryRef.current) return;
+    const id = searchParams.get("id");
+    const mode = searchParams.get("mode");
+    const ep = searchParams.get("ep") ?? "";
+    if (!id || (mode !== "sub" && mode !== "dub")) return;
+    hydratedFromQueryRef.current = true;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const details = await cachedGetShowDetails(id, () => getAniCli().getShowDetails(id));
+        if (cancelled) return;
+        const name = details?.name ?? id;
+        const eps = await cachedGetEpisodes(id, mode, () => getAniCli().getEpisodes(id, mode));
+        if (cancelled || eps.length === 0) {
+          hydratedFromQueryRef.current = false;
+          return;
+        }
+        const nextEp = ep && eps.includes(ep) ? ep : eps[0];
+        navigate("/watch", {
+          replace: true,
+          state: {
+            anime: { id, name, mode },
+            episodes: eps,
+            currentEpisode: nextEp,
+          },
+        });
+      } catch {
+        hydratedFromQueryRef.current = false;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [state?.anime, searchParams, navigate]);
+
+  useEffect(() => {
+    const s = location.state as WatchState | null;
+    if (!s?.anime) return;
+    setEpisodes(s.episodes ?? []);
+    setCurrentEpisode(s.currentEpisode ?? s.episodes?.[0] ?? "");
+  }, [location.state]);
+
   const [episodeFilter, setEpisodeFilter] = useState("");
   const [engagement, setEngagement] = useState<ShowEngagementResponse | null>(null);
   const [comments, setComments] = useState<ShowCommentRow[]>([]);
@@ -651,6 +699,19 @@ export function WatchPage() {
     }
   }, [anime?.id, commentBody]);
 
+  const queryHydrating =
+    !state?.anime &&
+    Boolean(searchParams.get("id")) &&
+    (searchParams.get("mode") === "sub" || searchParams.get("mode") === "dub");
+
+  if (queryHydrating) {
+    return (
+      <div className="container flex flex-col items-center justify-center gap-4 bg-[var(--av-bg)] p-8 text-zinc-100">
+        <p className="text-center text-sm text-zinc-400">Opening from link…</p>
+      </div>
+    );
+  }
+
   if (!state?.anime) {
     return (
       <div className="container flex flex-col items-center justify-center gap-4 bg-[var(--av-bg)] p-8 text-zinc-100">
@@ -677,10 +738,25 @@ export function WatchPage() {
   const ratioDenom = likes + localDislikes;
   const likeRatioPct = ratioDenom > 0 ? Math.round((likes / ratioDenom) * 100) : 50;
 
+  const copyWatchDeepLink = useCallback(() => {
+    try {
+      const href = window.location.href;
+      const hashIdx = href.indexOf("#");
+      const base = hashIdx >= 0 ? href.slice(0, hashIdx) : href;
+      const link = `${base}#/watch?id=${encodeURIComponent(anime.id)}&mode=${anime.mode}&ep=${encodeURIComponent(currentEpisode)}`;
+      void navigator.clipboard.writeText(link).then(
+        () => showToast(t("watch.toastLinkCopied")),
+        () => showToast(t("watch.toastCopyFailed"), 3200)
+      );
+    } catch {
+      showToast(t("watch.toastCopyFailed"), 3200);
+    }
+  }, [anime.id, anime.mode, currentEpisode, t]);
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--av-bg)] text-zinc-100">
       <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[var(--av-bg)] px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
@@ -702,8 +778,48 @@ export function WatchPage() {
               {anime.mode === "dub" ? "English dub" : "Japanese sub"}
             </p>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 shrink-0 text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+            title={t("watch.copyLinkTitle")}
+            aria-label={t("watch.copyLinkTitle")}
+            onClick={copyWatchDeepLink}
+          >
+            <Copy className="h-5 w-5" />
+          </Button>
         </div>
       </header>
+      <nav
+        className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-white/[0.06] px-3 py-1.5 text-[11px] text-zinc-500 sm:px-4"
+        aria-label="Breadcrumb"
+      >
+        <Link to="/discover" className="transition-colors hover:text-zinc-200">
+          Discover
+        </Link>
+        <span className="text-zinc-600" aria-hidden>
+          /
+        </span>
+        <Link
+          to={`/anime/${encodeURIComponent(anime.id)}`}
+          state={{
+            anime: {
+              id: anime.id,
+              name: displayName,
+              episodeCount: 0,
+              mode: anime.mode,
+            },
+          }}
+          className="min-w-0 max-w-[40vw] truncate transition-colors hover:text-zinc-200"
+        >
+          {displayName}
+        </Link>
+        <span className="text-zinc-600" aria-hidden>
+          /
+        </span>
+        <span className="min-w-0 max-w-[30vw] truncate font-medium text-zinc-300">{currentEpisode}</span>
+      </nav>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 pb-8 pt-4 sm:px-5">
         <div className="mx-auto w-full max-w-5xl space-y-6">

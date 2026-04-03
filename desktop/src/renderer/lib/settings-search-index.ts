@@ -5,8 +5,10 @@ export const SETTINGS_TABS = [
   "appearance",
   "language",
   "translation",
+  "shortcuts",
   "updates",
   "data",
+  "privacy",
   /** Placeholder for upcoming tools (maintenance gate). */
   "labs",
 ] as const;
@@ -144,6 +146,14 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
     keywords: "translation key api secret",
   },
   {
+    id: "shortcuts-list",
+    tab: "shortcuts",
+    label: "Keyboard shortcuts",
+    category: "Shortcuts",
+    anchorId: "settings-shortcuts-list",
+    keywords: "keyboard shortcuts hotkeys ctrl alt navigation",
+  },
+  {
     id: "updates",
     tab: "updates",
     label: "Check for updates",
@@ -176,10 +186,18 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
     keywords: "connection test api ping health server",
   },
   {
+    id: "privacy-diagnostics",
+    tab: "privacy",
+    label: "Diagnostics & app folder",
+    category: "Privacy",
+    anchorId: "settings-privacy-diagnostics",
+    keywords: "diagnostics user data folder support logs path export",
+  },
+  {
     id: "telemetry",
-    tab: "data",
+    tab: "privacy",
     label: "Performance telemetry",
-    category: "Data",
+    category: "Privacy",
     anchorId: "settings-telemetry",
     keywords: "telemetry analytics performance opt in anonymous usage endpoint url post",
   },

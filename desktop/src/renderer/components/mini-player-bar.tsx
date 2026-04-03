@@ -140,7 +140,7 @@ export function MiniPlayerBar() {
         />
       </div>
 
-      <div className="flex min-h-0 items-center gap-2 px-2 py-1.5 sm:gap-3 sm:px-3 sm:py-2">
+      <div className="flex min-h-0 items-center gap-2.5 px-2.5 py-2 sm:gap-3 sm:px-3.5 sm:py-2.5">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-zinc-900 ring-1 ring-white/10">
             {session.posterUrl ? (

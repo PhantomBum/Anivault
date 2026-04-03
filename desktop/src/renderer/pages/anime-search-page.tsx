@@ -32,7 +32,7 @@ import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { seriesFingerprint } from "@/renderer/lib/series-fingerprint";
 import type { AnimeSearchResult } from "@/shared/anime-result";
-import { ChevronDown, ChevronRight, Filter, LayoutGrid, List, Play, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, Filter, LayoutGrid, List, Play, Search, X } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -62,6 +62,8 @@ function loadSearchPrefs(): Partial<SearchPrefs> {
 }
 
 const RECENT_SEARCHES_KEY = "anivault-recent-searches";
+/** Last non-empty query when URL has no `q` (session restore). */
+const SESSION_LAST_QUERY_KEY = "anivault-find-shows-session-q";
 const MAX_RECENT_SEARCHES = 8;
 
 function loadRecentSearches(): string[] {
@@ -221,7 +223,15 @@ export function AnimeSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [query, setQuery] = useState(() => {
+    const fromUrl = searchParams.get("q") ?? "";
+    if (fromUrl) return fromUrl;
+    try {
+      return sessionStorage.getItem(SESSION_LAST_QUERY_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const [apiResults, setApiResults] = useState<AnimeSearchResult[]>([]);
   const [filterMode, setFilterMode] = useState<"all" | "sub" | "dub">(
@@ -264,6 +274,15 @@ export function AnimeSearchPage() {
       { replace: true }
     );
   }, [debouncedQuery, setSearchParams]);
+
+  useEffect(() => {
+    const q = debouncedQuery.trim();
+    try {
+      if (q.length >= 2) sessionStorage.setItem(SESSION_LAST_QUERY_KEY, q);
+    } catch {
+      /* ignore */
+    }
+  }, [debouncedQuery]);
 
   useEffect(() => {
     try {
@@ -629,9 +648,26 @@ export function AnimeSearchPage() {
             placeholder="e.g. one piece, spy x family"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg-elevated)] pl-9 text-[var(--av-text)] placeholder:text-[var(--av-muted-foreground)]"
+            className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg-elevated)] pl-9 pr-10 text-[var(--av-text)] placeholder:text-[var(--av-muted-foreground)]"
             disabled={loading}
           />
+          {query.trim().length > 0 ? (
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl text-[var(--av-muted)] transition hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
+              aria-label="Clear search"
+              onClick={() => {
+                setQuery("");
+                try {
+                  sessionStorage.removeItem(SESSION_LAST_QUERY_KEY);
+                } catch {
+                  /* ignore */
+                }
+              }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-0.5">

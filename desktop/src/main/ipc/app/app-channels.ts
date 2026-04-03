@@ -4,3 +4,5 @@ export const APP_CHECK_FOR_UPDATE_CHANNEL = "app:check-for-update";
 export const APP_QUIT_AND_INSTALL_CHANNEL = "app:quit-and-install";
 export const APP_CHECK_ELECTRON_UPDATES_CHANNEL = "app:check-electron-updates";
 export const APP_PICK_DOWNLOADS_FOLDER_CHANNEL = "app:pick-downloads-folder";
+export const APP_USER_DATA_PATH_CHANNEL = "app:user-data-path";
+export const APP_REVEAL_USER_DATA_CHANNEL = "app:reveal-user-data";

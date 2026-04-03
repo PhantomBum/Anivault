@@ -6,23 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/renderer/components/ui/dialog";
+import { KEYBOARD_SHORTCUT_ROWS } from "@/renderer/lib/keyboard-shortcuts-data";
 import React from "react";
-
-type Row = { keys: string; action: string };
-
-const SHORTCUTS: Row[] = [
-  { keys: "Ctrl K", action: "Open Find shows and focus search" },
-  { keys: "Ctrl /", action: "Show this shortcuts list" },
-  { keys: "N · B", action: "Next / previous episode (watch page)" },
-  { keys: "Alt 1 · Alt 0", action: "Home" },
-  { keys: "Alt 2", action: "Find shows" },
-  { keys: "Alt 3", action: "Settings" },
-  { keys: "/", action: "Focus Find in settings (when Settings is open)" },
-  { keys: "Alt 4", action: "Calendar" },
-  { keys: "Alt 5", action: "Discover" },
-  { keys: "Alt 6", action: "My lists" },
-  { keys: "Escape", action: "Close mobile sidebar (when open)" },
-];
 
 export function KeyboardShortcutsDialog({
   open,
@@ -41,7 +26,7 @@ export function KeyboardShortcutsDialog({
           </DialogDescription>
         </DialogHeader>
         <ul className="space-y-2 text-sm">
-          {SHORTCUTS.map((row) => (
+          {KEYBOARD_SHORTCUT_ROWS.map((row) => (
             <li
               key={row.keys + row.action}
               className="flex items-center justify-between gap-4 border-b border-[var(--av-border)]/60 py-2 last:border-0"

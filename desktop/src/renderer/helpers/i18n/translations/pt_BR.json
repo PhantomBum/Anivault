@@ -1,9 +1,87 @@
 {
   "title": "Página Inicial",
   "description": "Este é um exemplo de tradução em pt_BR",
+  "commandPalette": {
+    "placeholder": "Ir para página ou ação…",
+    "empty": "Nenhum resultado.",
+    "groupGoTo": "Ir para",
+    "home": "Início",
+    "discover": "Descobrir",
+    "findShows": "Buscar séries",
+    "myLists": "Minhas listas",
+    "calendar": "Calendário",
+    "watchPage": "Assistir",
+    "groupSettings": "Configurações",
+    "groupComingSoon": "Em breve",
+    "communityPlaceholder": "Comunidade (rota placeholder)",
+    "groupPlayback": "Reprodução",
+    "resumeWatch": "Retomar reprodução (mini player)",
+    "scrollToPlayer": "Rolar até o player em Assistir",
+    "groupHelp": "Ajuda",
+    "keyboardShortcuts": "Atalhos de teclado",
+    "copyDiagnostics": "Copiar diagnóstico (versão · SO · rota)",
+    "toastDiagnosticsCopied": "Diagnóstico copiado",
+    "toastDiagnosticsFailed": "Não foi possível copiar o diagnóstico"
+  },
+  "nav": {
+    "sectionLibrary": "Biblioteca",
+    "sectionTools": "Ferramentas",
+    "sectionComingSoon": "Em breve",
+    "home": "Início",
+    "discover": "Descobrir",
+    "findShows": "Buscar séries",
+    "myLists": "Minhas listas",
+    "calendar": "Calendário",
+    "requestShow": "Pedir série",
+    "legal": "Legal",
+    "community": "Comunidade",
+    "gallery": "Galeria",
+    "clips": "Clips"
+  },
+  "routes": {
+    "homeTitle": "Início",
+    "homeSub": "Continuar · destaques",
+    "discoverTitle": "Descobrir",
+    "discoverSub": "Popular · em alta · temporada",
+    "browseTitle": "Descobrir",
+    "browseSub": "Redirecionado de Séries",
+    "exploreTitle": "Explorar",
+    "exploreSub": "Redirecionando para Descobrir…",
+    "clipsTitle": "Clips",
+    "clipsSub": "Momentos da comunidade — em breve",
+    "listsTitle": "Minhas listas",
+    "listsSub": "Lista local",
+    "animeDetailTitle": "Série",
+    "animeDetailSub": "Detalhes e episódios",
+    "animeSearchTitle": "Buscar séries",
+    "animeSearchSub": "Busca e filtros",
+    "watchTitle": "Assistir",
+    "watchSub": "Em reprodução",
+    "playerTitle": "Player",
+    "playerSub": "Legado",
+    "settingsTitle": "Configurações",
+    "settingsSub": "Reprodução · aparência · privacidade · atalhos · dados · estúdio",
+    "communityTitle": "Comunidade",
+    "communitySub": "Servidores e tópicos — em breve",
+    "galleryTitle": "Galeria",
+    "gallerySub": "Arte e capturas — em breve",
+    "scheduleTitle": "Calendário",
+    "scheduleSub": "Grade de exibição · horários locais",
+    "requestTitle": "Pedir série",
+    "requestSub": "Sugerir um título",
+    "termsTitle": "Legal",
+    "termsSub": "Termos de serviço",
+    "accountTitle": "Conta",
+    "accountSub": "Entrar"
+  },
+  "comingSoon": {
+    "title": "Em breve",
+    "body": "Esta área será desbloqueada em uma atualização futura. Veja Configurações → Atualizações.",
+    "backHome": "Voltar ao início"
+  },
   "settings": {
     "title": "Configurações",
-    "subtitle": "Reprodução · aparência · idioma · tradução · atualizações · dados · estúdio",
+    "subtitle": "Reprodução · aparência · idioma · tradução · atalhos · atualizações · dados · privacidade · estúdio",
     "loading": "Carregando configurações…",
     "findPlaceholder": "Buscar nas configurações…",
     "findAria": "Buscar nas configurações",
@@ -49,7 +127,17 @@
     "versionCopyHint": "Clique para copiar a versão",
     "findMatches": "{{count}} resultados",
     "refreshQueue": "Atualizar fila",
-    "findShortcutHint": "Pressione / para focar a busca"
+    "findShortcutHint": "Pressione / para focar a busca",
+    "privacyDiagTitle": "Pasta de dados local",
+    "privacyDiagBody": "O AniVault guarda configuração e cache aqui. Abra a pasta para backup ou suporte. Não compartilhe publicamente se houver caminhos pessoais.",
+    "openUserDataFolder": "Abrir pasta de dados do app",
+    "copyDiagnostics": "Copiar resumo de diagnóstico",
+    "toastDiagnosticsCopied": "Resumo de diagnóstico copiado",
+    "privacyTermsLink": "Termos de serviço",
+    "shortcutsIntro": "Esses atalhos funcionam quando o foco não está em um campo de texto (exceto Ctrl+/). Ajuste seek e pular abertura em Reprodução.",
+    "shortcutsOpenPlayback": "Abrir configurações de reprodução",
+    "tabShortcuts": "Atalhos",
+    "tabPrivacy": "Privacidade"
   },
   "lists": {
     "kicker": "Listas",
@@ -74,7 +162,12 @@
     "toastImported": "Importadas {{count}} séries",
     "toastReadError": "Não foi possível ler o arquivo",
     "toastTsvCopied": "TSV copiado",
-    "toastCopyFailed": "Falha ao copiar"
+    "toastCopyFailed": "Falha ao copiar",
+    "selectRowAria": "Selecionar para remoção em massa",
+    "selectAll": "Selecionar todos",
+    "clearSelection": "Limpar seleção",
+    "removeSelected": "Remover selecionados ({{count}})",
+    "toastBulkRemoved": "{{count}} removidos da lista"
   },
   "browse": {
     "title": "Séries",
@@ -103,7 +196,8 @@
     "toastAddedToLists": "Adicionado a Minhas listas",
     "toastAlreadyInLists": "Já está em Minhas listas",
     "toastCopiedPlaybackUrl": "URL de reprodução copiada",
-    "toastCopyPlaybackUnavailable": "Esta URL não pode ser copiada (blob ou fonte offline)"
+    "toastCopyPlaybackUnavailable": "Esta URL não pode ser copiada (blob ou fonte offline)",
+    "removeFromContinue": "Remover de Continuar assistindo"
   },
   "watch": {
     "playbackAssists": "Assistência na reprodução",
@@ -116,6 +210,9 @@
     "queueOffline": "Salvar offline",
     "queueOfflineTitle": "Adicionar este episódio à fila offline (Configurações → Dados)",
     "queueOfflineNeedSettings": "Ative downloads offline e escolha uma pasta em Configurações → Dados",
-    "toastQueueOfflineAdded": "Adicionado à fila offline"
+    "toastQueueOfflineAdded": "Adicionado à fila offline",
+    "toastLinkCopied": "Link da reprodução copiado (abre este episódio pela URL)",
+    "toastCopyFailed": "Não foi possível copiar o link",
+    "copyLinkTitle": "Copiar link deste episódio"
   }
 }

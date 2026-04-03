@@ -3,15 +3,18 @@ import { Input } from "@/renderer/components/ui/input";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
 import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
 import { useNowPlaying } from "@/renderer/context/now-playing-context";
+import { AppCommandPalette } from "@/renderer/components/app-command-palette";
 import { KeyboardShortcutsDialog } from "@/renderer/components/keyboard-shortcuts-dialog";
 import { SidebarProfileFooter } from "@/renderer/components/sidebar-profile-footer";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
+import { getRouteHeading } from "@/renderer/lib/route-headings";
 import { cn } from "@/renderer/lib/utils";
 import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import { ChevronLeft, ChevronRight, ChevronUp, Keyboard, Menu, Search, Settings } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -19,61 +22,6 @@ function isTypingTarget(target: EventTarget | null): boolean {
   const tag = target.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
   return target.isContentEditable;
-}
-
-function useRouteHeading(pathname: string): { title: string; sub: string } {
-  if (pathname === "/") {
-    return { title: "Home", sub: "Continue watching · spotlight" };
-  }
-  if (pathname === "/discover") {
-    return { title: "Discover", sub: "Popular · trending · seasonal picks" };
-  }
-  if (pathname === "/browse") {
-    return { title: "Discover", sub: "Redirected from Series" };
-  }
-  if (pathname === "/explore") {
-    return { title: "Explore", sub: "Redirecting to Discover…" };
-  }
-  if (pathname === "/clips") {
-    return { title: "Clips", sub: "Community moments" };
-  }
-  if (pathname === "/lists") {
-    return { title: "My lists", sub: "Local watchlist" };
-  }
-  if (pathname.startsWith("/anime/")) {
-    return { title: "Series", sub: "Details & episodes" };
-  }
-  if (pathname === "/anime") {
-    return { title: "Find shows", sub: "Search & filters" };
-  }
-  if (pathname === "/watch") {
-    return { title: "Watch", sub: "Now playing" };
-  }
-  if (pathname === "/player") {
-    return { title: "Player", sub: "Legacy" };
-  }
-  if (pathname === "/settings") {
-    return { title: "Settings", sub: "Playback · appearance · data · studio" };
-  }
-  if (pathname === "/community") {
-    return { title: "Community", sub: "Servers · threads" };
-  }
-  if (pathname === "/gallery") {
-    return { title: "Gallery", sub: "Art" };
-  }
-  if (pathname === "/schedule") {
-    return { title: "Calendar", sub: `Coming to ${APP_DISPLAY_NAME}` };
-  }
-  if (pathname === "/request-series") {
-    return { title: "Request a show", sub: "Suggest a title" };
-  }
-  if (pathname === "/terms") {
-    return { title: "Legal", sub: "Terms of service" };
-  }
-  if (pathname === "/account" || pathname === "/login") {
-    return { title: "Account", sub: "Sign in" };
-  }
-  return { title: APP_DISPLAY_NAME, sub: "" };
 }
 
 const SIDEBAR_COLLAPSED_LS = "anivault-sidebar-collapsed";
@@ -91,10 +39,14 @@ function readSidebarCollapsed(): boolean {
  * Collapsible sidebar shell (shadcn-style pattern).
  */
 export default function SidebarLayout() {
+  const { t } = useTranslation();
   const { config: avConfig } = useAnivaultConfig();
   const location = useLocation();
   const navigate = useNavigate();
-  const { title, sub } = useRouteHeading(location.pathname);
+  const { title, sub } = useMemo(
+    () => getRouteHeading(t, location.pathname),
+    [t, location.pathname]
+  );
   const isHome = location.pathname === "/";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(readSidebarCollapsed);
@@ -102,9 +54,11 @@ export default function SidebarLayout() {
     () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
   );
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [showBackTop, setShowBackTop] = useState(false);
   const [quickSearch, setQuickSearch] = useState("");
   const mainScrollRef = useRef<HTMLDivElement>(null);
+  const prevPathnameForScrollRef = useRef(location.pathname);
   const { session: nowPlayingSession } = useNowPlaying();
 
   const railCollapsed = sidebarCollapsed && isMdUp;
@@ -114,8 +68,29 @@ export default function SidebarLayout() {
     document.title = `${title} · ${APP_DISPLAY_NAME}`;
   }, [title]);
 
+  /** Restore main column scroll per route (sessionStorage). */
   useEffect(() => {
-    mainScrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
+    const el = mainScrollRef.current;
+    const from = prevPathnameForScrollRef.current;
+    const to = location.pathname;
+    if (from !== to) {
+      try {
+        sessionStorage.setItem(`anivault-main-scroll:${from}`, String(el?.scrollTop ?? 0));
+      } catch {
+        /* ignore */
+      }
+      prevPathnameForScrollRef.current = to;
+      let top = 0;
+      try {
+        const raw = sessionStorage.getItem(`anivault-main-scroll:${to}`);
+        if (raw != null) top = Number.parseInt(raw, 10) || 0;
+      } catch {
+        /* ignore */
+      }
+      requestAnimationFrame(() => {
+        el?.scrollTo({ top, behavior: "auto" });
+      });
+    }
   }, [location.pathname]);
 
   const onMainScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -141,6 +116,20 @@ export default function SidebarLayout() {
         e.preventDefault();
         navigate("/anime", { state: { focusSearch: true } });
         closeMobile();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "p" || e.key === "P")) {
+        if (isTypingTarget(e.target)) return;
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+        return;
+      }
+
+      if (e.altKey && e.key === "ArrowLeft") {
+        if (isTypingTarget(e.target)) return;
+        e.preventDefault();
+        navigate(-1);
         return;
       }
 
@@ -413,6 +402,11 @@ export default function SidebarLayout() {
       ) : null}
 
       <KeyboardShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+      <AppCommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        onOpenShortcuts={() => setShortcutsOpen(true)}
+      />
     </div>
   );
 }

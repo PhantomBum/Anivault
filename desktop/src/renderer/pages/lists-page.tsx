@@ -28,15 +28,27 @@ type SavedListRowData = {
   navigate: ReturnType<typeof useNavigate>;
   onRemove: (id: string) => void;
   removeLabel: string;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
+  selectRowAria: string;
 };
 
 function SavedListRow({ index, style, data }: ListChildComponentProps<SavedListRowData>) {
   const e = data.entries[index];
   if (!e) return null;
-  const { navigate, onRemove, removeLabel } = data;
+  const { navigate, onRemove, removeLabel, selectedIds, onToggleSelect, selectRowAria } = data;
+  const checked = selectedIds.has(e.id);
   return (
     <div style={style} className="box-border px-0" role="listitem">
       <div className="flex h-[calc(100%-0.5rem)] items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] px-4 py-3">
+        <input
+          type="checkbox"
+          className="h-4 w-4 shrink-0 rounded border-[var(--av-border)] accent-[var(--av-text)]"
+          checked={checked}
+          onChange={() => onToggleSelect(e.id)}
+          onClick={(ev) => ev.stopPropagation()}
+          aria-label={selectRowAria}
+        />
         <button
           type="button"
           className="min-w-0 flex-1 text-left"
@@ -89,6 +101,7 @@ export function ListsPage() {
     { id: string; name: string; episodeCount: number; mode: "sub" | "dub" }[]
   >([]);
   const [lookupBusy, setLookupBusy] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     setEntries(loadLocalWatchlist());
@@ -157,9 +170,31 @@ export function ListsPage() {
   const remove = useCallback(
     (id: string) => {
       persist(entries.filter((e) => e.id !== id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     },
     [entries, persist]
   );
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const removeSelected = useCallback(() => {
+    if (selectedIds.size === 0) return;
+    persist(entries.filter((e) => !selectedIds.has(e.id)));
+    const n = selectedIds.size;
+    setSelectedIds(new Set());
+    showToast(t("lists.toastBulkRemoved", { count: n }));
+  }, [entries, persist, selectedIds, t]);
 
   const exportJson = useCallback(() => {
     const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
@@ -216,8 +251,11 @@ export function ListsPage() {
       navigate,
       onRemove: remove,
       removeLabel: t("lists.removeAria"),
+      selectedIds,
+      onToggleSelect: toggleSelect,
+      selectRowAria: t("lists.selectRowAria"),
     }),
-    [entries, navigate, remove, t]
+    [entries, navigate, remove, t, selectedIds, toggleSelect]
   );
 
   return (
@@ -359,60 +397,96 @@ export function ListsPage() {
 
       {entries.length === 0 ? (
         <p className="text-sm text-[var(--av-muted)]">{t("lists.empty")}</p>
-      ) : entries.length > VIRTUAL_LIST_THRESHOLD ? (
-        <div ref={listWrapRef} className="w-full" role="list">
-          <FixedSizeList
-            height={Math.min(560, entries.length * LIST_ROW_HEIGHT)}
-            width={listWidth}
-            itemCount={entries.length}
-            itemSize={LIST_ROW_HEIGHT}
-            itemData={virtualListData}
-            className="scrollbar-thin"
-          >
-            {SavedListRow}
-          </FixedSizeList>
-        </div>
       ) : (
-        <ul className="space-y-2">
-          {entries.map((e) => (
-            <li
-              key={e.id}
-              className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] px-4 py-3"
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 rounded-xl border-[var(--av-border)] text-xs"
+              onClick={() =>
+                setSelectedIds((prev) =>
+                  prev.size === entries.length ? new Set() : new Set(entries.map((e) => e.id))
+                )
+              }
             >
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() =>
-                  navigate(`/anime/${e.id}`, {
-                    state: {
-                      anime: {
-                        id: e.id,
-                        name: e.name,
-                        episodeCount: 0,
-                        mode: e.mode,
-                      },
-                    },
-                  })
-                }
+              {selectedIds.size === entries.length ? t("lists.clearSelection") : t("lists.selectAll")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 rounded-xl border-[var(--av-border)] text-xs text-red-400 hover:text-red-300"
+              disabled={selectedIds.size === 0}
+              onClick={removeSelected}
+            >
+              {t("lists.removeSelected", { count: selectedIds.size })}
+            </Button>
+          </div>
+          {entries.length > VIRTUAL_LIST_THRESHOLD ? (
+            <div ref={listWrapRef} className="w-full" role="list">
+              <FixedSizeList
+                height={Math.min(560, entries.length * LIST_ROW_HEIGHT)}
+                width={listWidth}
+                itemCount={entries.length}
+                itemSize={LIST_ROW_HEIGHT}
+                itemData={virtualListData}
+                className="scrollbar-thin"
               >
-                <p className="truncate font-medium">{e.name}</p>
-                <p className="text-[10px] tabular-nums text-[var(--av-muted-foreground)]">
-                  {e.id} · {e.mode}
-                </p>
-              </button>
-              <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                className="shrink-0 rounded-xl text-[var(--av-muted)] hover:text-red-400"
-                aria-label={t("lists.removeAria")}
-                onClick={() => remove(e.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </li>
-          ))}
-        </ul>
+                {SavedListRow}
+              </FixedSizeList>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {entries.map((e) => (
+                <li
+                  key={e.id}
+                  className="flex items-center gap-3 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] px-4 py-3"
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 shrink-0 rounded border-[var(--av-border)] accent-[var(--av-text)]"
+                    checked={selectedIds.has(e.id)}
+                    onChange={() => toggleSelect(e.id)}
+                    aria-label={t("lists.selectRowAria")}
+                  />
+                  <button
+                    type="button"
+                    className="min-w-0 flex-1 text-left"
+                    onClick={() =>
+                      navigate(`/anime/${e.id}`, {
+                        state: {
+                          anime: {
+                            id: e.id,
+                            name: e.name,
+                            episodeCount: 0,
+                            mode: e.mode,
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <p className="truncate font-medium">{e.name}</p>
+                    <p className="text-[10px] tabular-nums text-[var(--av-muted-foreground)]">
+                      {e.id} · {e.mode}
+                    </p>
+                  </button>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="shrink-0 rounded-xl text-[var(--av-muted)] hover:text-red-400"
+                    aria-label={t("lists.removeAria")}
+                    onClick={() => remove(e.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );

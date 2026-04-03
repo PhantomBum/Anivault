@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { platform as nodePlatform } from "node:os";
 import { autoUpdater } from "electron-updater";
 
@@ -7,12 +7,22 @@ import {
   APP_CHECK_FOR_UPDATE_CHANNEL,
   APP_OS_CHANNEL,
   APP_PICK_DOWNLOADS_FOLDER_CHANNEL,
+  APP_REVEAL_USER_DATA_CHANNEL,
+  APP_USER_DATA_PATH_CHANNEL,
   APP_QUIT_AND_INSTALL_CHANNEL,
   APP_VERSION_CHANNEL,
 } from "./app-channels";
 import { checkGitHubReleaseVsCurrent } from "./check-for-update";
 
 export function addAppEventListeners() {
+  ipcMain.handle(APP_USER_DATA_PATH_CHANNEL, () => app.getPath("userData"));
+
+  ipcMain.handle(APP_REVEAL_USER_DATA_CHANNEL, async () => {
+    const dir = app.getPath("userData");
+    const err = await shell.openPath(dir);
+    return err === "" || err === undefined;
+  });
+
   ipcMain.handle(APP_PICK_DOWNLOADS_FOLDER_CHANNEL, async () => {
     const win = BrowserWindow.getFocusedWindow();
     const r = await dialog.showOpenDialog(win ?? undefined, {
