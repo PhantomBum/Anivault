@@ -4,6 +4,8 @@ import { MakerRpm } from "@electron-forge/maker-rpm";
 
 import { MakerZIP } from "@electron-forge/maker-zip";
 
+import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 
 import { VitePlugin } from "@electron-forge/plugin-vite";
@@ -12,29 +14,17 @@ import type { ForgeConfig } from "@electron-forge/shared-types";
 
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
-import path from "node:path";
-
 import { forgePostMakeLatestYml } from "./scripts/forge-post-make-latest-yml";
 
 import { resolveGithubRepoForPublish } from "./scripts/github-repo";
 
 const gh = resolveGithubRepoForPublish();
 
-/** Generic updater base; electron-updater also uses `setFeedURL({ provider: "github" })` at runtime. */
-
-const releaseDownloadBase = `https://github.com/${gh.owner}/${gh.name}/releases/latest/download`;
-
-/** `npm run make` / Forge use `desktop/` as cwd. */
-
-const windowsIconIco = path.resolve(process.cwd(), "public", "icon-rounded.ico");
-
-
-
 const config: ForgeConfig = {
 
   hooks: {
 
-    /** Legacy: Squirrel nupkg hook (no-op with NSIS). NSIS maker emits `latest.yml` via electron-updater-yaml. */
+    /** Squirrel ships `*-full.nupkg` without `latest.yml`; hook writes one next to the nupkg for electron-updater. */
 
     postMake: forgePostMakeLatestYml,
 
@@ -68,72 +58,15 @@ const config: ForgeConfig = {
 
   makers: [
 
-    {
+    new MakerSquirrel({
 
-      name: "@felixrieseberg/electron-forge-maker-nsis",
+      name: "AniVault",
 
-      config: {
+      setupExe: "AniVaultSetup.exe",
 
-        updater: {
+    }),
 
-          url: releaseDownloadBase,
-
-          channel: "latest",
-
-          updaterCacheDirName: "anivault-updater",
-
-        },
-
-        getAppBuilderConfig: async () => ({
-
-          appId: "com.anivault.desktop",
-
-          productName: "AniVault",
-
-          // ASCII-only: special chars in NSIS scripts have broken some CI runners
-          copyright: "Copyright (c) AniVault",
-
-          executableName: "anivault",
-
-          win: {
-
-            icon: windowsIconIco,
-
-            artifactName: "AniVaultSetup.${ext}",
-
-            executableName: "anivault",
-
-          },
-
-          nsis: {
-
-            // Must be explicit booleans: app-builder treats omitted oneClick as true (one-click installer).
-            oneClick: false,
-
-            allowToChangeInstallationDirectory: true,
-
-            allowElevation: true,
-
-            installerIcon: windowsIconIco,
-
-            uninstallerIcon: windowsIconIco,
-
-            installerHeaderIcon: windowsIconIco,
-
-            createDesktopShortcut: true,
-
-            createStartMenuShortcut: true,
-
-            shortcutName: "AniVault",
-
-          },
-
-        }),
-
-      },
-
-    },
-
+    // Zip only for macOS; Windows uses Squirrel (AniVaultSetup.exe).
     new MakerZIP({}, ["darwin"]),
 
     new MakerRpm({}),

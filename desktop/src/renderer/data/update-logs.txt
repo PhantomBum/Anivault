@@ -1,5 +1,8 @@
 AniVault — changelog
 
+1.0.0-alpha.14
+- Windows installer is Squirrel again (NSIS `npm run make` was failing on GitHub Actions since alpha.10, so releases had no binaries). You get `AniVaultSetup.exe`, `*-full.nupkg`, `RELEASES`, and `latest.yml` again.
+
 1.0.0-alpha.13
 - CI: simplified package.json `build.nsis` (removed language flags that broke `npm run make` on GitHub Actions)
 - CI: upload release assets with svenstaro/upload-release-action + `${{ github.workspace }}` glob for reliable Windows paths

@@ -1,6 +1,6 @@
-# Build Windows NSIS installer and attach binaries to the GitHub Release for this tag.
+# Build Windows Squirrel installer and attach binaries to the GitHub Release for this tag.
 #
-# Release: .\scripts\release-desktop.ps1 1.0.0-alpha.13
+# Release: .\scripts\release-desktop.ps1 1.0.0-alpha.14
 
 name: Release desktop (Windows)
 
@@ -43,7 +43,7 @@ jobs:
       - name: Print package version
         run: node -e "console.log('desktop/package.json version:', require('./package.json').version)"
 
-      - name: Build Windows installer (NSIS)
+      - name: Build Windows installer (Squirrel)
         id: make
         env:
           NODE_OPTIONS: --max-old-space-size=8192
@@ -59,16 +59,16 @@ jobs:
           } else {
             Write-Host "no out/"
           }
-          Write-Host "---- expect nsis x64 ----"
-          $p = "out/make/nsis/x64"
+          Write-Host "---- expect squirrel.windows x64 ----"
+          $p = "out/make/squirrel.windows/x64"
           if (Test-Path $p) { Get-ChildItem $p -File | ForEach-Object { $_.Name, $_.Length } }
 
-      - name: Upload NSIS assets to release
+      - name: Upload Windows installer artifacts to release
         if: success() && startsWith(github.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: ${{ github.workspace }}/desktop/out/make/nsis/x64/*
+          tag: ${{ github.ref_name }}
+          file: ${{ github.workspace }}/desktop/out/make/squirrel.windows/x64/*
           file_glob: true
           overwrite: true

@@ -1,7 +1,6 @@
 /**
  * Legacy hook: Squirrel produced `*-full.nupkg` without `latest.yml`; this wrote one next to the nupkg.
- * Windows now uses NSIS (`@felixrieseberg/electron-forge-maker-nsis`), which emits `latest.yml` itself.
- * This hook stays as a no-op unless a future target ships nupkg again.
+ * Windows uses Squirrel (`*-full.nupkg`); this hook writes `latest.yml` for electron-updater.
  */
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";

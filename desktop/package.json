@@ -1,20 +1,13 @@
 {
   "name": "anivault",
   "productName": "AniVault",
-  "version": "1.0.0-alpha.13",
+  "version": "1.0.0-alpha.14",
   "description": "AniVault — desktop streaming powered by pystardust/ani-cli.",
   "repository": {
     "type": "git",
     "url": "https://github.com/PhantomBum/Anivault.git"
   },
   "main": ".vite/build/main.js",
-  "build": {
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "allowElevation": true
-    }
-  },
   "scripts": {
     "start": "electron-forge start",
     "build": "electron-forge package",
@@ -34,12 +27,12 @@
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
     "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "@felixrieseberg/electron-forge-maker-nsis": "^7.2.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.14.12",
     "@types/react": "^18.3.3",
