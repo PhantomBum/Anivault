@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.4
+- **Release / CI:** GitHub Actions no longer uses glob-based upload on Windows (replaced with **`gh release create` / `gh release upload`** + artifact verification). Squirrel **NuGet ID** remains `AniVaultUnvaulted` (no spaces). Tag **`v1.0.4`** publishes **AniVaultUnvaultedSetup.exe**, nupkg, **RELEASES**, and **latest.yml**.
+
 1.0.3
 - **Build / release:** Windows Squirrel installer failed on CI because the NuGet package ID cannot contain spaces. Squirrel `name` is now `AniVaultUnvaulted` (display name unchanged). Tag `v1.0.3` re-triggers **AniVaultUnvaultedSetup.exe** on GitHub Releases.
 
