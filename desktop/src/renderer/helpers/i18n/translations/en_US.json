@@ -3,7 +3,7 @@
   "description": "This is an example of translation in en",
   "settings": {
     "title": "Settings",
-    "subtitle": "Playback · appearance · language · translation · updates · data",
+    "subtitle": "Playback · appearance · language · translation · updates · data · studio",
     "loading": "Loading settings…",
     "findPlaceholder": "Find in settings…",
     "findAria": "Find in settings",
@@ -38,7 +38,18 @@
     "offlineStatusQueued": "Queued",
     "offlineStatusDownloading": "Downloading…",
     "offlineStatusComplete": "Saved",
-    "offlineStatusFailed": "Failed"
+    "offlineStatusFailed": "Failed",
+    "labsKicker": "Studio",
+    "labsTitle": "Under maintenance",
+    "labsBody": "This space is being unvaulted — deeper tools, automation, and polish are on the way. Nothing to configure here yet; watch the changelog in Updates.",
+    "labsBadge": "Coming in a future release",
+    "copyLink": "Copy link to this tab",
+    "toastLinkCopied": "Settings link copied",
+    "toastVersionCopied": "Version copied to clipboard",
+    "versionCopyHint": "Click to copy version",
+    "findMatches": "{{count}} matches",
+    "refreshQueue": "Refresh queue",
+    "findShortcutHint": "Press / to focus search"
   },
   "lists": {
     "kicker": "Lists",

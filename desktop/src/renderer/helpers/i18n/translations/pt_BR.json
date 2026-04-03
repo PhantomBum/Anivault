@@ -3,7 +3,7 @@
   "description": "Este é um exemplo de tradução em pt_BR",
   "settings": {
     "title": "Configurações",
-    "subtitle": "Reprodução · aparência · idioma · tradução · atualizações · dados",
+    "subtitle": "Reprodução · aparência · idioma · tradução · atualizações · dados · estúdio",
     "loading": "Carregando configurações…",
     "findPlaceholder": "Buscar nas configurações…",
     "findAria": "Buscar nas configurações",
@@ -38,7 +38,18 @@
     "offlineStatusQueued": "Na fila",
     "offlineStatusDownloading": "Baixando…",
     "offlineStatusComplete": "Salvo",
-    "offlineStatusFailed": "Falhou"
+    "offlineStatusFailed": "Falhou",
+    "labsKicker": "Estúdio",
+    "labsTitle": "Em manutenção",
+    "labsBody": "Esta área está sendo desbloqueada — ferramentas mais profundas, automação e polimento chegam em breve. Nada para configurar ainda; veja o changelog em Atualizações.",
+    "labsBadge": "Em uma versão futura",
+    "copyLink": "Copiar link desta aba",
+    "toastLinkCopied": "Link das configurações copiado",
+    "toastVersionCopied": "Versão copiada",
+    "versionCopyHint": "Clique para copiar a versão",
+    "findMatches": "{{count}} resultados",
+    "refreshQueue": "Atualizar fila",
+    "findShortcutHint": "Pressione / para focar a busca"
   },
   "lists": {
     "kicker": "Listas",

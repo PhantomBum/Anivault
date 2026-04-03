@@ -8,10 +8,12 @@ import {
   SelectValue,
 } from "@/renderer/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/renderer/components/ui/tabs";
-import { Database, FolderOpen, Palette, Search } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Copy, Database, FolderOpen, Palette, RefreshCw, Search, Sparkles } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+
+import { showToast } from "@/renderer/lib/av-toast";
 
 import { applyShellAppearance } from "@/renderer/helpers/shell-appearance";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
@@ -37,15 +39,32 @@ const settingsTabTriggerClassName =
   "flex min-h-[2.75rem] w-full items-center justify-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-[var(--av-muted)] transition-colors data-[state=active]:bg-[var(--av-accent-muted)] data-[state=active]:text-[var(--av-text)] data-[state=active]:shadow-none data-[state=inactive]:hover:bg-[var(--av-surface-hover)]";
 
 const settingsTabContentClassName =
-  "mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-opacity duration-200 motion-safe:animate-av-route-in md:p-8";
+  "mt-8 min-h-[32rem] space-y-6 rounded-2xl border border-[var(--av-border)] bg-[linear-gradient(145deg,#1c1c21_0%,#18181b_55%,#141418_100%)] p-6 shadow-sm transition-opacity duration-200 motion-safe:animate-av-route-in motion-reduce:animate-none md:p-8";
+
+const SETTINGS_LAST_TAB_KEY = "anivault-settings-last-tab";
 
 export function SettingsPage() {
-  const { i18n, t } = useTranslation();
+  const { i18n, t: translate } = useTranslation();
   const { refresh } = useAnivaultConfig();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const findFieldRef = useRef<HTMLInputElement | null>(null);
+  const findWrapRef = useRef<HTMLDivElement | null>(null);
+
   const activeTab = useMemo((): SettingsTab => {
-    const t = searchParams.get("tab") ?? "";
-    return SETTINGS_TABS.includes(t as SettingsTab) ? (t as SettingsTab) : "playback";
+    const tabParam = searchParams.get("tab") ?? "";
+    if (SETTINGS_TABS.includes(tabParam as SettingsTab)) {
+      return tabParam as SettingsTab;
+    }
+    try {
+      const stored = sessionStorage.getItem(SETTINGS_LAST_TAB_KEY);
+      if (stored && SETTINGS_TABS.includes(stored as SettingsTab)) {
+        return stored as SettingsTab;
+      }
+    } catch {
+      /* ignore */
+    }
+    return "playback";
   }, [searchParams]);
   const [cfg, setCfg] = useState<AnivaultStoreSchema | null>(null);
   const [saved, setSaved] = useState(false);
@@ -58,6 +77,60 @@ export function SettingsPage() {
   const [offlineQueue, setOfflineQueue] = useState<OfflineDownloadItem[]>([]);
 
   const searchHits = useMemo(() => filterSettingsSearch(findQuery), [findQuery]);
+
+  useEffect(() => {
+    const raw = searchParams.get("tab") ?? "";
+    if (SETTINGS_TABS.includes(raw as SettingsTab)) return;
+    try {
+      const stored = sessionStorage.getItem(SETTINGS_LAST_TAB_KEY);
+      if (stored && SETTINGS_TABS.includes(stored as SettingsTab)) {
+        setSearchParams({ tab: stored }, { replace: true });
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SETTINGS_LAST_TAB_KEY, activeTab);
+    } catch {
+      /* ignore */
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!findWrapRef.current) return;
+      if (e.target instanceof Node && !findWrapRef.current.contains(e.target)) {
+        setFindQuery("");
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setFindQuery("");
+        return;
+      }
+      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = e.target;
+      if (
+        el instanceof HTMLElement &&
+        (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)
+      ) {
+        return;
+      }
+      if (location.pathname !== "/settings") return;
+      e.preventDefault();
+      findFieldRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [location.pathname]);
 
   const load = useCallback(async () => {
     if (!window.anivault) return;
@@ -78,22 +151,22 @@ export function SettingsPage() {
     void window.app.version().then((v) => setAppVersion(String(v)));
   }, []);
 
+  const refreshOfflineQueue = useCallback(() => {
+    void window.offlineDownloads.list().then(setOfflineQueue);
+  }, []);
+
   useEffect(() => {
     if (!cfg?.offlineDownloadsEnabled) {
       setOfflineQueue([]);
       return;
     }
-    const load = () => {
+    const tick = () => {
       refreshOfflineQueue();
     };
-    load();
-    const timer = window.setInterval(load, 2800);
+    tick();
+    const timer = window.setInterval(tick, 2800);
     return () => window.clearInterval(timer);
   }, [cfg?.offlineDownloadsEnabled, refreshOfflineQueue]);
-
-  const refreshOfflineQueue = useCallback(() => {
-    void window.offlineDownloads.list().then(setOfflineQueue);
-  }, []);
 
   const persist = async (partial: Partial<AnivaultStoreSchema>) => {
     if (!window.anivault) return;
@@ -116,7 +189,7 @@ export function SettingsPage() {
 
   if (!cfg) {
     return (
-      <div className="text-sm text-[var(--av-muted)]">{t("settings.loading")}</div>
+      <div className="text-sm text-[var(--av-muted)]">{translate("settings.loading")}</div>
     );
   }
 
@@ -124,28 +197,35 @@ export function SettingsPage() {
     <div className="mx-auto max-w-5xl space-y-8 px-1 pb-10 text-[var(--av-text)]">
       <div className="border-b border-[var(--av-border)] pb-6">
         <h2 className="text-2xl font-bold tracking-tight text-[var(--av-text)] md:text-[1.75rem]">
-          {t("settings.title")}
+          {translate("settings.title")}
         </h2>
-        <p className="mt-2 text-base text-[var(--av-muted)]">{t("settings.subtitle")}</p>
-        <div className="relative mt-4 max-w-md">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-muted)]"
-            aria-hidden
-          />
-          <Input
-            value={findQuery}
-            onChange={(e) => setFindQuery(e.target.value)}
-            placeholder={t("settings.findPlaceholder")}
-            className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] pl-10 pr-3 text-sm"
-            aria-label={t("settings.findAria")}
-            autoComplete="off"
-          />
-          {searchHits.length > 0 ? (
-            <ul
-              className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-1 shadow-av-lg"
-              role="listbox"
-            >
-              {searchHits.map((h) => (
+        <p className="mt-2 text-base text-[var(--av-muted)]">{translate("settings.subtitle")}</p>
+        <p className="mt-1 text-[11px] text-[var(--av-muted-foreground)]">{translate("settings.findShortcutHint")}</p>
+        <div className="mt-4 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-start">
+          <div ref={findWrapRef} className="relative min-w-0 flex-1 max-w-md">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-muted)]"
+              aria-hidden
+            />
+            <Input
+              ref={findFieldRef}
+              value={findQuery}
+              onChange={(e) => setFindQuery(e.target.value)}
+              placeholder={translate("settings.findPlaceholder")}
+              className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] pl-10 pr-3 text-sm"
+              aria-label={translate("settings.findAria")}
+              autoComplete="off"
+            />
+            {searchHits.length > 0 ? (
+              <ul
+                className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] py-1 shadow-av-lg"
+                role="listbox"
+                aria-label={translate("settings.findAria")}
+              >
+                <li role="presentation" className="border-b border-[var(--av-border)]/50 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-[var(--av-muted)]">
+                  {translate("settings.findMatches", { count: searchHits.length })}
+                </li>
+                {searchHits.map((h) => (
                 <li key={h.id} role="option">
                   <button
                     type="button"
@@ -167,9 +247,34 @@ export function SettingsPage() {
                     <span className="block font-medium text-[var(--av-text)]">{h.label}</span>
                   </button>
                 </li>
-              ))}
-            </ul>
-          ) : null}
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 shrink-0 gap-2 rounded-xl border-[var(--av-border)] px-4 text-sm"
+            onClick={() => {
+              try {
+                const u = new URL(window.location.href);
+                const rawHash = u.hash || "#/settings";
+                const withoutHash = rawHash.startsWith("#") ? rawHash.slice(1) : rawHash;
+                const [pathOnly, q] = withoutHash.split("?");
+                const params = new URLSearchParams(q ?? "");
+                params.set("tab", activeTab);
+                const rebuilt = `${u.origin}${u.pathname}${u.search}#${pathOnly}?${params.toString()}`;
+                void navigator.clipboard.writeText(rebuilt).then(() => {
+                  showToast(translate("settings.toastLinkCopied"));
+                });
+              } catch {
+                showToast(translate("settings.toastLinkCopied"), 2800);
+              }
+            }}
+          >
+            <Copy className="h-4 w-4 opacity-90" aria-hidden />
+            {translate("settings.copyLink")}
+          </Button>
         </div>
       </div>
 
@@ -181,7 +286,7 @@ export function SettingsPage() {
         }}
         className="w-full min-h-[40rem]"
       >
-        <TabsList className="grid h-auto w-full grid-cols-2 items-stretch gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1.5 sm:grid-cols-3 lg:grid-cols-6">
+        <TabsList className="grid h-auto w-full grid-cols-2 items-stretch gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7">
           <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
           </TabsTrigger>
@@ -201,6 +306,10 @@ export function SettingsPage() {
           <TabsTrigger value="data" className={settingsTabTriggerClassName}>
             <Database className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
             Data
+          </TabsTrigger>
+          <TabsTrigger value="labs" className={settingsTabTriggerClassName}>
+            <Sparkles className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+            Studio
           </TabsTrigger>
         </TabsList>
 
@@ -329,10 +438,10 @@ export function SettingsPage() {
               >
                 <div>
                   <span className="text-sm text-[var(--av-muted-foreground)]">
-                    {t("settings.playbackSkipIntro")}
+                    {translate("settings.playbackSkipIntro")}
                   </span>
                   <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">
-                    {t("settings.playbackSkipIntroHelp")}
+                    {translate("settings.playbackSkipIntroHelp")}
                   </p>
                 </div>
                 <Input
@@ -567,7 +676,20 @@ export function SettingsPage() {
         <TabsContent value="updates" className={settingsTabContentClassName}>
           <div id="settings-updates" className="space-y-2 scroll-mt-28">
             <span className="text-sm font-medium text-[var(--av-muted)]">App version</span>
-            <p className="text-base tabular-nums text-[var(--av-muted-foreground)]">{appVersion || "—"}</p>
+            <button
+              type="button"
+              className="block w-fit rounded-lg border border-transparent px-1 py-0.5 text-left text-base tabular-nums text-[var(--av-muted-foreground)] transition-colors hover:border-[var(--av-border)] hover:bg-[var(--av-surface-hover)]"
+              title={translate("settings.toastVersionCopied")}
+              onClick={() => {
+                if (!appVersion) return;
+                void navigator.clipboard.writeText(appVersion).then(() => {
+                  showToast(translate("settings.toastVersionCopied"));
+                });
+              }}
+            >
+              {appVersion || "—"}
+            </button>
+            <p className="text-[11px] text-[var(--av-muted)]">{translate("settings.versionCopyHint")}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -632,13 +754,13 @@ export function SettingsPage() {
 
         <TabsContent value="data" className={settingsTabContentClassName}>
           <section id="settings-data-backup" className="space-y-3 scroll-mt-28">
-            <h3 className="text-sm font-semibold text-[var(--av-text)]">{t("settings.dataBackupTitle")}</h3>
+            <h3 className="text-sm font-semibold text-[var(--av-text)]">{translate("settings.dataBackupTitle")}</h3>
             <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
-              {t("settings.dataBackupLead")}{" "}
+              {translate("settings.dataBackupLead")}{" "}
               <Link className="font-medium text-[var(--av-accent)] underline-offset-2 hover:underline" to="/lists">
-                {t("lists.title")}
+                {translate("lists.title")}
               </Link>{" "}
-              {t("settings.dataBackupTrail")}
+              {translate("settings.dataBackupTrail")}
             </p>
           </section>
 
@@ -646,13 +768,13 @@ export function SettingsPage() {
             id="settings-data-downloads"
             className="mt-8 space-y-3 border-t border-[var(--av-border)] pt-8 scroll-mt-28"
           >
-            <h3 className="text-sm font-semibold text-[var(--av-text)]">{t("settings.dataDownloadsTitle")}</h3>
+            <h3 className="text-sm font-semibold text-[var(--av-text)]">{translate("settings.dataDownloadsTitle")}</h3>
             <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
-              {t("settings.dataDownloadsBody")}
+              {translate("settings.dataDownloadsBody")}
             </p>
             <div className="flex flex-col gap-3 rounded-xl border border-[var(--av-border)]/80 bg-[var(--av-bg)]/30 p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <span className="text-sm font-medium text-[var(--av-muted)]">{t("settings.offlineDownloads")}</span>
+                <span className="text-sm font-medium text-[var(--av-muted)]">{translate("settings.offlineDownloads")}</span>
                 <input
                   type="checkbox"
                   className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-[var(--av-accent)]"
@@ -661,7 +783,7 @@ export function SettingsPage() {
                 />
               </div>
               <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
-                {t("settings.offlineDownloadsHelp")}
+                {translate("settings.offlineDownloadsHelp")}
               </p>
               {cfg.offlineDownloadsEnabled ? (
                 <>
@@ -678,12 +800,12 @@ export function SettingsPage() {
                         });
                       }}
                     >
-                      {t("settings.offlineDownloadsChoose")}
+                      {translate("settings.offlineDownloadsChoose")}
                     </Button>
                     {cfg.offlineDownloadsPath ? (
                       <>
                         <span className="text-xs text-[var(--av-muted)]">
-                          {t("settings.offlineDownloadsPath")}:{" "}
+                          {translate("settings.offlineDownloadsPath")}:{" "}
                           <code className="break-all font-mono text-[11px] text-[var(--av-text)]">
                             {cfg.offlineDownloadsPath}
                           </code>
@@ -695,7 +817,7 @@ export function SettingsPage() {
                           className="h-9 text-xs"
                           onClick={() => void persist({ offlineDownloadsPath: "" })}
                         >
-                          {t("settings.offlineDownloadsClear")}
+                          {translate("settings.offlineDownloadsClear")}
                         </Button>
                       </>
                     ) : null}
@@ -707,25 +829,37 @@ export function SettingsPage() {
                     >
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--av-muted)]">
-                          {t("settings.offlineQueueTitle")}
+                          {translate("settings.offlineQueueTitle")}
                         </h4>
-                        {offlineQueue.some((i) => i.status === "complete") ? (
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             type="button"
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            className="h-8 text-xs"
-                            onClick={() => {
-                              void window.offlineDownloads.clearCompleted().then(refreshOfflineQueue);
-                            }}
+                            className="h-8 gap-1.5 text-xs"
+                            onClick={() => refreshOfflineQueue()}
                           >
-                            {t("settings.offlineQueueClearDone")}
+                            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+                            {translate("settings.refreshQueue")}
                           </Button>
-                        ) : null}
+                          {offlineQueue.some((i) => i.status === "complete") ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs"
+                              onClick={() => {
+                                void window.offlineDownloads.clearCompleted().then(refreshOfflineQueue);
+                              }}
+                            >
+                              {translate("settings.offlineQueueClearDone")}
+                            </Button>
+                          ) : null}
+                        </div>
                       </div>
                       {offlineQueue.length === 0 ? (
                         <p className="text-xs text-[var(--av-muted-foreground)]">
-                          {t("settings.offlineQueueEmpty")}
+                          {translate("settings.offlineQueueEmpty")}
                         </p>
                       ) : (
                         <ul className="space-y-2">
@@ -743,10 +877,10 @@ export function SettingsPage() {
                                   </span>
                                 </p>
                                 <p className="mt-1 text-[11px] text-[var(--av-muted-foreground)]">
-                                  {row.status === "queued" && t("settings.offlineStatusQueued")}
-                                  {row.status === "downloading" && t("settings.offlineStatusDownloading")}
-                                  {row.status === "complete" && t("settings.offlineStatusComplete")}
-                                  {row.status === "failed" && t("settings.offlineStatusFailed")}
+                                  {row.status === "queued" && translate("settings.offlineStatusQueued")}
+                                  {row.status === "downloading" && translate("settings.offlineStatusDownloading")}
+                                  {row.status === "complete" && translate("settings.offlineStatusComplete")}
+                                  {row.status === "failed" && translate("settings.offlineStatusFailed")}
                                 </p>
                                 {row.error ? (
                                   <p className="mt-1 text-[11px] leading-snug text-amber-600/95 dark:text-amber-400/95">
@@ -772,7 +906,7 @@ export function SettingsPage() {
                                       });
                                     }}
                                   >
-                                    {t("settings.offlineQueueRetry")}
+                                    {translate("settings.offlineQueueRetry")}
                                   </Button>
                                 ) : null}
                                 {row.status === "complete" && row.localPath ? (
@@ -781,7 +915,7 @@ export function SettingsPage() {
                                     variant="outline"
                                     size="sm"
                                     className="h-8 rounded-lg px-2"
-                                    title={t("settings.offlineQueueReveal")}
+                                    title={translate("settings.offlineQueueReveal")}
                                     onClick={() => {
                                       const p = row.localPath;
                                       if (p) void window.offlineDownloads.reveal(p);
@@ -802,7 +936,7 @@ export function SettingsPage() {
                                     });
                                   }}
                                 >
-                                  {t("settings.offlineQueueRemove")}
+                                  {translate("settings.offlineQueueRemove")}
                                 </Button>
                               </div>
                             </li>
@@ -820,10 +954,10 @@ export function SettingsPage() {
             id="settings-telemetry"
             className="mt-8 space-y-3 border-t border-[var(--av-border)] pt-8 scroll-mt-28"
           >
-            <h3 className="text-sm font-semibold text-[var(--av-text)]">{t("settings.telemetryTitle")}</h3>
-            <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">{t("settings.telemetryBody")}</p>
+            <h3 className="text-sm font-semibold text-[var(--av-text)]">{translate("settings.telemetryTitle")}</h3>
+            <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">{translate("settings.telemetryBody")}</p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-              <span className="text-sm font-medium text-[var(--av-muted)]">{t("settings.telemetryCheckbox")}</span>
+              <span className="text-sm font-medium text-[var(--av-muted)]">{translate("settings.telemetryCheckbox")}</span>
               <input
                 type="checkbox"
                 className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-[var(--av-accent)]"
@@ -832,8 +966,8 @@ export function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <span className="text-sm font-medium text-[var(--av-muted)]">{t("settings.telemetryEndpoint")}</span>
-              <p className="text-xs text-[var(--av-muted-foreground)]">{t("settings.telemetryEndpointHelp")}</p>
+              <span className="text-sm font-medium text-[var(--av-muted)]">{translate("settings.telemetryEndpoint")}</span>
+              <p className="text-xs text-[var(--av-muted-foreground)]">{translate("settings.telemetryEndpointHelp")}</p>
               <Input
                 className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-sm"
                 placeholder="https://…"
@@ -847,9 +981,9 @@ export function SettingsPage() {
             id="settings-data-api"
             className="mt-8 space-y-3 border-t border-[var(--av-border)] pt-8 scroll-mt-28"
           >
-            <h3 className="text-sm font-semibold text-[var(--av-text)]">{t("settings.dataApiTitle")}</h3>
+            <h3 className="text-sm font-semibold text-[var(--av-text)]">{translate("settings.dataApiTitle")}</h3>
             <p className="text-xs leading-relaxed text-[var(--av-muted-foreground)]">
-              {t("settings.dataApiBody")}
+              {translate("settings.dataApiBody")}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <Button
@@ -867,7 +1001,7 @@ export function SettingsPage() {
                     .finally(() => setConnBusy(false));
                 }}
               >
-                {connBusy ? t("settings.testingConnection") : t("settings.testConnection")}
+                {connBusy ? translate("settings.testingConnection") : translate("settings.testConnection")}
               </Button>
             </div>
             {connMsg ? (
@@ -877,10 +1011,45 @@ export function SettingsPage() {
             ) : null}
           </section>
         </TabsContent>
+
+        <TabsContent value="labs" className={settingsTabContentClassName}>
+          <div
+            id="settings-labs"
+            className="relative overflow-hidden rounded-2xl border border-[var(--av-accent)]/25 bg-[linear-gradient(135deg,rgba(99,102,241,0.12)_0%,rgba(24,24,27,0.92)_45%,rgba(9,9,11,0.98)_100%)] p-8 scroll-mt-28"
+          >
+            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[var(--av-accent)]/15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-fuchsia-500/10 blur-3xl" />
+            <div className="relative space-y-5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--av-border)] bg-[var(--av-bg)]/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--av-muted)]">
+                <Sparkles className="h-3.5 w-3.5 text-[var(--av-accent)]" aria-hidden />
+                {translate("settings.labsKicker")}
+              </div>
+              <h3 className="text-2xl font-bold tracking-tight text-[var(--av-text)]">
+                {translate("settings.labsTitle")}
+              </h3>
+              <p className="max-w-2xl text-sm leading-relaxed text-[var(--av-muted-foreground)]">
+                {translate("settings.labsBody")}
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {["Automation", "Sync & backup", "Themes & layouts", "Plugins"].map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-full border border-[var(--av-border)]/80 bg-[var(--av-surface)]/50 px-3 py-1 text-[11px] font-medium text-[var(--av-muted)]"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+              <p className="text-xs font-medium text-[var(--av-accent)]">{translate("settings.labsBadge")}</p>
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
 
       {saved ? (
-        <p className="text-center text-sm tracking-wide text-[var(--av-muted)]">{t("settings.saved")}</p>
+        <p className="text-center text-sm tracking-wide text-[var(--av-muted)]" aria-live="polite">
+          {translate("settings.saved")}
+        </p>
       ) : null}
     </div>
   );

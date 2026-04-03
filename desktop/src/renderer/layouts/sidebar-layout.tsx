@@ -53,7 +53,7 @@ function useRouteHeading(pathname: string): { title: string; sub: string } {
     return { title: "Player", sub: "Legacy" };
   }
   if (pathname === "/settings") {
-    return { title: "Settings", sub: "Playback · security · i18n" };
+    return { title: "Settings", sub: "Playback · appearance · data · studio" };
   }
   if (pathname === "/community") {
     return { title: "Community", sub: "Servers · threads" };

@@ -7,6 +7,8 @@ export const SETTINGS_TABS = [
   "translation",
   "updates",
   "data",
+  /** Placeholder for upcoming tools (maintenance gate). */
+  "labs",
 ] as const;
 export type SettingsTab = (typeof SETTINGS_TABS)[number];
 
@@ -180,6 +182,14 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
     category: "Data",
     anchorId: "settings-telemetry",
     keywords: "telemetry analytics performance opt in anonymous usage endpoint url post",
+  },
+  {
+    id: "labs",
+    tab: "labs",
+    label: "Studio (coming soon)",
+    category: "Studio",
+    anchorId: "settings-labs",
+    keywords: "studio labs experimental maintenance unvaulted roadmap automation sync plugins themes",
   },
 ];
 

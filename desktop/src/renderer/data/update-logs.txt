@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.7
+- **Fix:** Settings no longer crashes with “Cannot access before initialization” (translation `t` vs tab param). **Studio** tab added (maintenance / coming soon) with teaser roadmap. QoL: last-tab memory, find-in-settings shortcuts, copy link to tab, offline queue refresh, version copy, and more. Tag **`v1.0.7`** → **AniVaultUnvaultedSetup.exe** on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
+
 1.0.6
 - **UI:** **AniVault** text logotype (Ani + Vault styling) replaces the diamond icon app-wide — sidebar, home, gate, and window title bar. Tag **`v1.0.6`** → installer on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
 

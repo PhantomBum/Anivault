@@ -17,6 +17,7 @@ const SHORTCUTS: Row[] = [
   { keys: "Alt 1 · Alt 0", action: "Home" },
   { keys: "Alt 2", action: "Find shows" },
   { keys: "Alt 3", action: "Settings" },
+  { keys: "/", action: "Focus Find in settings (when Settings is open)" },
   { keys: "Alt 4", action: "Calendar" },
   { keys: "Alt 5", action: "Discover" },
   { keys: "Alt 6", action: "My lists" },
