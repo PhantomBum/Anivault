@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.1
+- **Hotfix:** Black screen on launch — missing `getWindowControls` import in config context (ReferenceError). Tag **v1.2.1**.
+
 1.2.0
 - Playback & shell: optional **always-on-top** main window (Settings → Playback); IPC `window:set-always-on-top`. Dialogs: **showCloseButton** for update + command palette. Performance: **in-flight dedupe** in `ani-session-cache` for details/episodes; vendor **manualChunks** in renderer Vite build. Tag **v1.2.0**.
 

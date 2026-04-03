@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.2.1
+- **Fix:** App could show a **black screen** on startup — `AnivaultConfigProvider` called `getWindowControls()` without importing it, throwing `ReferenceError` after config loaded.
+
 1.2.0
 - **Playback / window:** Optional **Keep window above others** — `BrowserWindow.setAlwaysOnTop` via IPC (`windowControls.setAlwaysOnTop`). Synced from config on load and when toggled in **Settings → Playback** (helps with mini-player multitasking).
 - **Accessibility:** `DialogContent` **`showCloseButton`** — update dialogs and **command palette** no longer render a hidden duplicate close control; focus trap + footer actions behave predictably.

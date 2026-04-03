@@ -1,6 +1,7 @@
 import { applyShellAppearance } from "@/renderer/helpers/shell-appearance";
 import { applyUiDensityToShell } from "@/renderer/helpers/ui-density";
 import { invalidateTelemetryCache } from "@/renderer/lib/telemetry";
+import { getWindowControls } from "@/renderer/lib/window-controls-bridge";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import React, {
   createContext,
@@ -40,7 +41,7 @@ export function AnivaultConfigProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     if (config == null) return;
     try {
-      void getWindowControls().setAlwaysOnTop(config.windowAlwaysOnTop);
+      void getWindowControls().setAlwaysOnTop(Boolean(config.windowAlwaysOnTop));
     } catch {
       /* ignore — non-Electron test environments */
     }
