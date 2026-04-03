@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.5
+- **UI:** Restored the official **AniVault rounded-square logo** (SVG assets) across the shell, home hero, and access gate — same mark as the window title bar. Sidebar brand card, frosted header with logo + page title, and refreshed spacing. Tag **`v1.0.5`** → **AniVaultUnvaultedSetup.exe** + updater files on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases).
+
 1.0.4
 - **Release / CI:** GitHub Actions no longer uses glob-based upload on Windows (replaced with **`gh release create` / `gh release upload`** + artifact verification). Squirrel **NuGet ID** remains `AniVaultUnvaulted` (no spaces). Tag **`v1.0.4`** publishes **AniVaultUnvaultedSetup.exe**, nupkg, **RELEASES**, and **latest.yml**.
 

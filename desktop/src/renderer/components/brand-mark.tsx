@@ -1,54 +1,59 @@
 import { cn } from "@/renderer/lib/utils";
-import React, { useId } from "react";
+import React from "react";
 
-/** Vector vault mark — crisp at any size (no bitmap scaling). */
+import LogoRoundedSquareLight from "@/renderer/assets/logo-rounded-square-light.svg?url";
+import LogoRoundedSquare from "@/renderer/assets/logo-rounded-square.svg?url";
+
+/**
+ * Official AniVault mark (rounded-square SVG assets).
+ * Light theme → dark tile; dark theme → light tile — matches `titlebar-*.tsx`.
+ */
 export function BrandMark({
   className,
   size = "sidebar",
 }: {
   className?: string;
-  /** `sidebar` · `hero` welcome · `gate` splash */
-  size?: "sidebar" | "hero" | "gate";
+  /** `sidebar` rail · `header` page title row · `hero` home · `gate` splash */
+  size?: "sidebar" | "header" | "hero" | "gate";
 }) {
-  const gid = useId().replace(/:/g, "");
   const dim =
     size === "gate"
-      ? "h-20 w-20 min-h-20 min-w-20"
+      ? "h-24 w-24 min-h-24 min-w-24 md:h-28 md:w-28"
       : size === "hero"
-        ? "h-[5.25rem] w-[5.25rem] min-h-[5.25rem] min-w-[5.25rem]"
-        : "h-9 w-9 min-h-9 min-w-9";
+        ? "h-[5.25rem] w-[5.25rem] min-h-[5.25rem] min-w-[5.25rem] md:h-[6rem] md:w-[6rem] md:min-h-[6rem] md:min-w-[6rem]"
+        : size === "header"
+          ? "h-9 w-9 min-h-9 min-w-9"
+          : "h-9 w-9 min-h-9 min-w-9";
+
+  const rounding =
+    size === "gate"
+      ? "rounded-[1.35rem] md:rounded-[1.5rem]"
+      : size === "hero"
+        ? "rounded-2xl"
+        : "rounded-xl";
 
   return (
     <div
       className={cn(
-        "shrink-0 select-none rounded-[10px] border border-white/12 bg-zinc-950 shadow-inner ring-1 ring-white/[0.04]",
-        size === "hero" && "rounded-2xl",
-        size === "gate" && "rounded-3xl",
+        "shrink-0 select-none overflow-hidden bg-black/5 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] ring-1 ring-white/[0.08] dark:bg-white/[0.04]",
+        rounding,
         dim,
         className
       )}
       aria-hidden
     >
-      <svg
-        viewBox="0 0 32 32"
-        className="h-full w-full rounded-[inherit] text-zinc-100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient id={`avVaultGrad-${gid}`} x1="6" y1="4" x2="26" y2="28" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#fafafa" />
-            <stop offset="1" stopColor="#a1a1aa" />
-          </linearGradient>
-        </defs>
-        <rect width="32" height="32" rx="9" className="fill-zinc-950" />
-        <path
-          d="M8 9h7v14H8V9zm9 0h7v7h-7V9zm0 9h7v5h-7v-5z"
-          fill={`url(#avVaultGrad-${gid})`}
-          opacity="0.96"
-        />
-        <path d="M8 22h16v2H8v-2z" className="fill-zinc-500/60" />
-      </svg>
+      <img
+        src={LogoRoundedSquare}
+        alt=""
+        draggable={false}
+        className="h-full w-full object-cover dark:hidden"
+      />
+      <img
+        src={LogoRoundedSquareLight}
+        alt=""
+        draggable={false}
+        className="hidden h-full w-full object-cover dark:block"
+      />
     </div>
   );
 }

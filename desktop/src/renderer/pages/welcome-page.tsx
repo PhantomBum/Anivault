@@ -314,7 +314,10 @@ export function WelcomePage() {
       />
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-8 md:gap-12 md:px-8 md:pt-12">
         <header className="flex flex-col items-center gap-5 text-center">
-          <BrandMark size="hero" className="shadow-[0_12px_40px_-8px_rgba(0,0,0,0.75)]" />
+          <BrandMark
+            size="hero"
+            className="shadow-[0_20px_56px_-12px_rgba(0,0,0,0.88)] ring-2 ring-white/[0.12]"
+          />
           <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--av-text)] md:text-[2rem]">
             {APP_DISPLAY_NAME}
           </h1>

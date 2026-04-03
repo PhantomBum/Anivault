@@ -28,11 +28,11 @@
   --av-accent-muted: rgba(255, 255, 255, 0.06);
   --av-nav-active-bg: rgba(255, 255, 255, 0.06);
   --av-nav-active-edge: #e4e4e7;
-  --av-sidebar-w: 252px;
-  --av-shell-header-title: 1.1rem;
-  --av-shell-header-sub: 0.78rem;
-  --av-page-pad-y: 0.75rem;
-  --av-page-pad-x: 1rem;
+  --av-sidebar-w: 260px;
+  --av-shell-header-title: 1.125rem;
+  --av-shell-header-sub: 0.8rem;
+  --av-page-pad-y: 1rem;
+  --av-page-pad-x: 1.125rem;
 }
 
 .anivault-shell[data-density="compact"] {

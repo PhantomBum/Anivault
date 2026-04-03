@@ -200,7 +200,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
       >
         <BrandMark
           size="gate"
-          className="animate-in zoom-in-95 fade-in duration-500 ease-out shadow-[0_12px_48px_-12px_rgba(0,0,0,0.85)]"
+          className="animate-in zoom-in-95 fade-in duration-500 ease-out shadow-[0_20px_64px_-16px_rgba(0,0,0,0.9)] ring-2 ring-white/15"
         />
 
         <div className="space-y-2">
