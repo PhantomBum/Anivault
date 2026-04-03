@@ -62,12 +62,11 @@ function NavButton({
       title={collapsed ? item.title : undefined}
       aria-label={collapsed ? item.title : undefined}
       className={cn(
-        "flex w-full items-center gap-2 rounded-xl py-2 text-[0.8125rem] font-medium transition-all duration-200 ease-out",
-        collapsed ? "justify-center px-2" : "border-l-2 border-transparent pl-[0.4rem] pr-2.5 text-left",
-        !active && "text-[var(--av-muted)] hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]",
-        active &&
-          "bg-[var(--av-nav-active-bg)] text-[var(--av-text)] shadow-[inset_3px_0_0_0_var(--av-nav-active-edge),var(--av-shadow-xs)]",
-        active && collapsed && "shadow-none ring-2 ring-white/25"
+        "flex w-full items-center gap-2.5 rounded-lg py-2 text-[0.8125rem] font-medium transition-colors duration-150 ease-out",
+        collapsed ? "justify-center px-2" : "px-2.5 text-left",
+        !active && "text-[var(--av-muted)] hover:bg-[var(--av-accent-muted)] hover:text-[var(--av-text)]",
+        active && "bg-[var(--av-nav-active-bg)] text-[var(--av-text)] ring-1 ring-white/[0.07]",
+        active && collapsed && "ring-2 ring-white/20"
       )}
     >
       <item.icon
@@ -102,7 +101,7 @@ function NavSection({
         <div className="mx-auto my-1 h-px w-6 bg-[var(--av-border)]" aria-hidden />
       ) : null}
       {!collapsed ? (
-        <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted-foreground)]">
+        <p className="px-2.5 pb-1.5 pt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--av-muted-foreground)]/90">
           {label}
         </p>
       ) : null}
