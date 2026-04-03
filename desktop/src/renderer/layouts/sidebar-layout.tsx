@@ -1,4 +1,4 @@
-import { BrandMark } from "@/renderer/components/brand-mark";
+import { AniVaultWordmark } from "@/renderer/components/anivault-wordmark";
 import { Input } from "@/renderer/components/ui/input";
 import { AniVaultNav } from "@/renderer/components/anivault-nav";
 import { MiniPlayerBar } from "@/renderer/components/mini-player-bar";
@@ -205,7 +205,7 @@ export default function SidebarLayout() {
       {/* Mobile menu (below window titlebar) */}
       <button
         type="button"
-        className="fixed left-3 top-14 z-[60] flex h-10 w-10 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-text)] shadow-av-md transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:shadow-av-lg active:scale-95 md:hidden"
+        className="fixed left-3 top-14 z-[60] flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 text-[var(--av-text)] shadow-sm transition-all duration-200 hover:bg-[var(--av-surface-hover)] active:scale-[0.98] md:hidden"
         aria-label="Open navigation"
         aria-expanded={mobileOpen}
         onClick={() => setMobileOpen(true)}
@@ -225,20 +225,18 @@ export default function SidebarLayout() {
       <div className="flex w-full pt-12">
         <aside
           className={cn(
-            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col border-r border-[var(--av-border)]/90 bg-[var(--av-bg-elevated)]/95 pb-3 pt-4 shadow-[4px_0_32px_rgba(0,0,0,0.35)] backdrop-blur-md transition-[width,transform] duration-300 ease-out md:translate-x-0",
-            railCollapsed ? "px-2" : "px-4",
-            mobileOpen ? "translate-x-0 shadow-av-lg" : "-translate-x-full md:translate-x-0"
+            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col border-r border-[var(--av-border)] bg-[var(--av-bg-elevated)] pb-3 pt-3 transition-[width,transform] duration-300 ease-out md:translate-x-0",
+            railCollapsed ? "px-2" : "px-3",
+            mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
           aria-label="Sidebar"
         >
           {railCollapsed ? (
-            <div className="mb-3 flex flex-col items-center gap-2 border-b border-[var(--av-border)]/80 px-1 pb-4 pt-0.5">
-              <div className="rounded-2xl border border-[var(--av-border)]/70 bg-[var(--av-surface)]/35 p-1.5 shadow-inner">
-                <BrandMark size="sidebar" />
-              </div>
+            <div className="mb-4 flex flex-col items-center gap-3 border-b border-[var(--av-border)] px-0.5 pb-4 pt-1">
+              <AniVaultWordmark compact className="py-0.5" />
               <button
                 type="button"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] text-[var(--av-muted)] shadow-av-xs transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)] hover:shadow-av-sm"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--av-muted)] transition-colors hover:bg-[var(--av-nav-active-bg)] hover:text-[var(--av-text)]"
                 aria-label="Expand sidebar"
                 title="Expand sidebar"
                 onClick={() => setSidebarCollapsed(false)}
@@ -247,27 +245,25 @@ export default function SidebarLayout() {
               </button>
             </div>
           ) : (
-            <div className="mb-3 rounded-2xl border border-[var(--av-border)]/70 bg-gradient-to-br from-[var(--av-surface)]/50 to-[var(--av-bg)]/40 p-2.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-              <div className="flex items-center gap-3 border-b border-[var(--av-border)]/60 pb-3">
-                <BrandMark size="sidebar" />
-                <div className="min-w-0 flex-1">
-                  <h1 className="m-0 text-[1.05rem] font-bold leading-tight tracking-tight text-[var(--av-text)]">
-                    {APP_DISPLAY_NAME}
-                  </h1>
-                  <span className="mt-0.5 block text-[0.72rem] leading-snug text-[var(--av-muted-foreground)]">
-                    Unvaulted · ani-cli
-                  </span>
+            <div className="mb-4 flex items-start gap-3 border-b border-[var(--av-border)] pb-4 pt-0.5">
+              <div className="min-w-0 flex-1 pt-0.5">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                  <AniVaultWordmark size="md" />
+                  <span className="text-[0.68rem] font-medium text-[var(--av-muted-foreground)]">Unvaulted</span>
                 </div>
-                <button
-                  type="button"
-                  className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/80 text-[var(--av-muted)] shadow-av-xs transition-all duration-200 hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)] hover:shadow-av-sm md:flex"
-                  aria-label="Collapse sidebar"
-                  title="Collapse sidebar"
-                  onClick={() => setSidebarCollapsed(true)}
-                >
-                  <ChevronLeft className="h-4 w-4" strokeWidth={2} />
-                </button>
+                <span className="mt-1 block text-[0.68rem] leading-snug text-[var(--av-muted-foreground)]">
+                  Desktop · ani-cli
+                </span>
               </div>
+              <button
+                type="button"
+                className="mt-0.5 hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--av-muted)] transition-colors hover:bg-[var(--av-nav-active-bg)] hover:text-[var(--av-text)] md:flex"
+                aria-label="Collapse sidebar"
+                title="Collapse sidebar"
+                onClick={() => setSidebarCollapsed(true)}
+              >
+                <ChevronLeft className="h-4 w-4" strokeWidth={2} />
+              </button>
             </div>
           )}
 
@@ -275,9 +271,9 @@ export default function SidebarLayout() {
 
           <SidebarProfileFooter collapsed={railCollapsed} />
 
-            <div
+          <div
             className={cn(
-              "border-t border-[var(--av-border)] pt-2 text-[0.65rem] leading-snug text-[var(--av-muted-foreground)]",
+              "border-t border-[var(--av-border)] pt-3 text-[0.65rem] leading-snug text-[var(--av-muted-foreground)]",
               railCollapsed && "hidden"
             )}
           >
@@ -299,26 +295,22 @@ export default function SidebarLayout() {
         <div className="av-shell-main flex min-h-[calc(100vh-3rem)] min-w-0 flex-1 flex-col md:ml-[var(--av-sidebar-w)]">
           <header
             className={cn(
-              "av-shell-header flex flex-wrap items-center gap-2 border-b border-[var(--av-border)]/90 py-3 pl-14 pr-[var(--av-page-pad-x)] md:pl-6",
-              "bg-[var(--av-bg)]/90 backdrop-blur-md",
-              "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_4px_24px_rgba(0,0,0,0.22)]"
+              "av-shell-header flex flex-wrap items-center gap-3 border-b border-[var(--av-border)] py-3.5 pl-14 pr-[var(--av-page-pad-x)] md:pl-6",
+              "bg-transparent"
             )}
           >
-            <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center">
-              <BrandMark size="header" className="mt-0.5 hidden shadow-md sm:block" />
-              <div className="min-w-0 flex-1">
-                <h1
-                  className="m-0 font-bold leading-tight tracking-tight text-[var(--av-text)]"
-                  style={{ fontSize: "var(--av-shell-header-title)" }}
-                >
-                  {title}
-                </h1>
-                {sub ? (
-                  <p className="mt-0.5 leading-snug text-[var(--av-muted)] [font-size:var(--av-shell-header-sub)]">
-                    {sub}
-                  </p>
-                ) : null}
-              </div>
+            <div className="min-w-0 flex-1">
+              <h1
+                className="m-0 font-semibold leading-tight tracking-tight text-[var(--av-text)]"
+                style={{ fontSize: "var(--av-shell-header-title)" }}
+              >
+                {title}
+              </h1>
+              {sub ? (
+                <p className="mt-0.5 leading-snug text-[var(--av-muted)] [font-size:var(--av-shell-header-sub)]">
+                  {sub}
+                </p>
+              ) : null}
             </div>
             <form
               className="mr-1 hidden min-w-0 max-w-[min(100%,14rem)] flex-1 md:flex"

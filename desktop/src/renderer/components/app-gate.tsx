@@ -1,5 +1,5 @@
 import { AvLoadingBar } from "@/renderer/components/av-loading-bar";
-import { BrandMark } from "@/renderer/components/brand-mark";
+import { AniVaultWordmark } from "@/renderer/components/anivault-wordmark";
 import { cn } from "@/renderer/lib/utils";
 import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -198,13 +198,12 @@ export function AppGate({ children }: { children: React.ReactNode }) {
           "animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out"
         )}
       >
-        <BrandMark
-          size="gate"
-          className="animate-in zoom-in-95 fade-in duration-500 ease-out shadow-[0_20px_64px_-16px_rgba(0,0,0,0.9)] ring-2 ring-white/15"
-        />
+        <div className="animate-in zoom-in-95 fade-in duration-500 ease-out">
+          <AniVaultWordmark inverted size="gate" className="justify-center" />
+        </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">{APP_DISPLAY_NAME}</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-zinc-300 md:text-xl">{APP_DISPLAY_NAME}</h1>
           {mode === "init" ? (
             <p className="text-sm text-neutral-400">{initLabel}</p>
           ) : null}

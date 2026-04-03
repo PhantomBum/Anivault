@@ -4,9 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Minus, Square, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import LogoRoundedSquareLight from "@/renderer/assets/logo-rounded-square-light.svg?url";
-import LogoRoundedSquare from "@/renderer/assets/logo-rounded-square.svg?url";
-
+import { AniVaultWordmark } from "@/renderer/components/anivault-wordmark";
 import { ThemePicker } from "./theme-picker";
 import { Button } from "./ui/button";
 import { getWindowControls } from "@/renderer/lib/window-controls-bridge";
@@ -48,20 +46,9 @@ export function WindowsTitlebar({
             className="flex items-center gap-2 clickable"
             onClick={() => navigate("/")}
           >
-            <img
-              className="h-5 w-5 shrink-0 rounded dark:hidden select-none pointer-events-none"
-              src={LogoRoundedSquare}
-              alt=""
-              draggable={false}
-            />
-            <img
-              className="h-5 w-5 shrink-0 rounded hidden dark:block select-none pointer-events-none"
-              src={LogoRoundedSquareLight}
-              alt=""
-              draggable={false}
-            />
-            <span className="text-[0.8rem] font-semibold tracking-tight text-[var(--av-text)]">
-              {APP_DISPLAY_NAME}
+            <AniVaultWordmark size="titlebar" />
+            <span className="text-[0.72rem] font-medium tracking-tight text-[var(--av-muted)]">
+              Unvaulted
             </span>
           </button>
         )}
@@ -69,20 +56,9 @@ export function WindowsTitlebar({
         {children}
 
         <div className="flex flex-auto justify-end items-center gap-2 pr-1">
-          <img
-            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 dark:hidden select-none pointer-events-none"
-            src={LogoRoundedSquare}
-            alt=""
-            draggable={false}
-            title={APP_DISPLAY_NAME}
-          />
-          <img
-            className="h-8 w-8 shrink-0 rounded-lg ring-1 ring-white/10 hidden dark:block select-none pointer-events-none"
-            src={LogoRoundedSquareLight}
-            alt=""
-            draggable={false}
-            title={APP_DISPLAY_NAME}
-          />
+          <div className="pointer-events-none pr-1 select-none" title={APP_DISPLAY_NAME}>
+            <AniVaultWordmark size="sm" />
+          </div>
           <ThemePicker className="clickable h-9 w-9 shrink-0" isIconFormat />
           <div className="flex items-center gap-1">
             <Button

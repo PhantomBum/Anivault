@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.0.6
+- **UI:** **AniVault** text logotype (Ani + Vault styling) replaces the diamond icon app-wide — sidebar, home, gate, and window title bar. Tag **`v1.0.6`** → installer on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
+
 1.0.5
 - **UI:** Restored the official **AniVault rounded-square logo** (SVG assets) across the shell, home hero, and access gate — same mark as the window title bar. Sidebar brand card, frosted header with logo + page title, and refreshed spacing. Tag **`v1.0.5`** → **AniVaultUnvaultedSetup.exe** + updater files on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases).
 

@@ -14,7 +14,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 
-import { BrandMark } from "@/renderer/components/brand-mark";
+import { AniVaultWordmark } from "@/renderer/components/anivault-wordmark";
 import { HorizontalCarousel, PosterPlaceholder } from "@/renderer/components/horizontal-carousel";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
@@ -31,7 +31,6 @@ import {
   SelectValue,
 } from "@/renderer/components/ui/select";
 import { cn } from "@/renderer/lib/utils";
-import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import { useDebouncedValue } from "@/renderer/hooks/use-debounced-value";
 import { useWelcomeSearch } from "@/renderer/hooks/use-welcome-search";
 import { useWelcomeRecentlyWatched } from "@/renderer/hooks/use-welcome-recently-watched";
@@ -309,18 +308,15 @@ export function WelcomePage() {
   return (
     <div className="relative min-h-[calc(100dvh-3rem)] bg-[var(--av-bg)] text-[var(--av-text)] antialiased">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(255,255,255,0.06),transparent)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_70%_55%_at_50%_-15%,rgba(130,150,200,0.07),transparent_58%)]"
         aria-hidden
       />
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-8 md:gap-12 md:px-8 md:pt-12">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-10 md:gap-12 md:px-8 md:pt-14">
         <header className="flex flex-col items-center gap-5 text-center">
-          <BrandMark
-            size="hero"
-            className="shadow-[0_20px_56px_-12px_rgba(0,0,0,0.88)] ring-2 ring-white/[0.12]"
-          />
-          <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--av-text)] md:text-[2rem]">
-            {APP_DISPLAY_NAME}
-          </h1>
+          <AniVaultWordmark size="hero" className="justify-center" />
+          <p className="m-0 text-[0.75rem] font-medium uppercase tracking-[0.18em] text-[var(--av-muted-foreground)]">
+            Unvaulted
+          </p>
           <p className="max-w-lg text-sm leading-relaxed text-[var(--av-muted)]">
             Desktop streaming powered by{" "}
             <button
