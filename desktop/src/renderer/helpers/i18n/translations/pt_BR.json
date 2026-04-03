@@ -48,7 +48,7 @@
     "exploreTitle": "Explorar",
     "exploreSub": "Redirecionando para Descobrir…",
     "clipsTitle": "Clips",
-    "clipsSub": "Momentos da comunidade — em breve",
+    "clipsSub": "Destaques · roadmap no estilo Estúdio",
     "listsTitle": "Minhas listas",
     "listsSub": "Lista local",
     "animeDetailTitle": "Série",
@@ -62,9 +62,9 @@
     "settingsTitle": "Configurações",
     "settingsSub": "Reprodução · aparência · privacidade · atalhos · dados · estúdio",
     "communityTitle": "Comunidade",
-    "communitySub": "Servidores e tópicos — em breve",
+    "communitySub": "Preview do hub · gradiente e roadmap",
     "galleryTitle": "Galeria",
-    "gallerySub": "Arte e capturas — em breve",
+    "gallerySub": "Mural e coleções · mesmo brilho do Estúdio",
     "scheduleTitle": "Calendário",
     "scheduleSub": "Grade de exibição · horários locais",
     "requestTitle": "Pedir série",
@@ -75,9 +75,29 @@
     "accountSub": "Entrar"
   },
   "comingSoon": {
-    "title": "Em breve",
-    "body": "Esta área será desbloqueada em uma atualização futura. Veja Configurações → Atualizações.",
-    "backHome": "Voltar ao início"
+    "backHome": "Voltar ao início",
+    "openStudio": "Abrir Estúdio nas configurações",
+    "community": {
+      "kicker": "Comunidade",
+      "title": "Seu hub de fãs — desbloqueando em breve",
+      "body": "Estamos desenhando um espaço para tópicos, reações e descoberta com o mesmo visual em gradiente do Estúdio. Ainda não dá para publicar — esta página é o preview do que vem.",
+      "badge": "Em uma versão futura · changelog em Atualizações",
+      "chips": ["Feed e tópicos", "Reações", "Seguindo", "Destaques e eventos"]
+    },
+    "gallery": {
+      "kicker": "Galeria",
+      "title": "Mural de arte e capturas",
+      "body": "Grades curadas, lightbox e decks compartilháveis estão a caminho. A linguagem visual segue o Estúdio — gradientes suaves, chips vidrados e tipografia calma.",
+      "badge": "Desbloqueio na próxima onda maior",
+      "chips": ["Murais fixados", "Lightbox", "Tags e filtros", "Exportar imagens"]
+    },
+    "clips": {
+      "kicker": "Clips",
+      "title": "Momentos que valem replay",
+      "body": "Destaques curtos, ferramentas de corte e compartilhamento rápido estão planejados. Por enquanto, este cartão de roadmap — a mesma energia de Configurações → Estúdio.",
+      "badge": "Ferramentas de clip após o polimento do player",
+      "chips": ["Cortar e exportar", "Legendas", "Compartilhar rápido", "Biblioteca sincronizada"]
+    }
   },
   "settings": {
     "title": "Configurações",

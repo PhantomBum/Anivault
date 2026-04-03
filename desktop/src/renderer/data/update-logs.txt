@@ -1,5 +1,9 @@
 AniVault Unvaulted — changelog
 
+1.1.0
+- **UI / roadmap:** Shared **`AvFutureSurface`** component — diagonal gradients + soft orbs (Studio, Community, Gallery, Clips variants). **Community**, **Gallery**, and **Clips** pages are full preview cards (chips, badges, CTA to **Studio** in Settings) instead of a plain placeholder. **Settings → Studio** uses the same surface for consistency.
+- **Copy:** Updated route subtitles and `en_US` / `pt_BR` strings for the coming-soon area.
+
 1.0.8
 - **Navigation:** Sidebar sections (Library / Tools / Coming soon); `/community`, `/gallery`, `/clips` show a unified coming-soon page; route headings aligned with i18n.
 - **Settings:** Tab panels split under `pages/settings/`; new **Privacy & diagnostics** and **Shortcuts & input** tabs; telemetry moved to Privacy; Find-in-settings and tab URLs updated; **Alt+,** cycles tabs.

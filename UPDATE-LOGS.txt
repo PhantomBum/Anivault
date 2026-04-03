@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.1.0
+- **Unvaulted previews:** Community, Gallery, and Clips use the same gradient “Studio” visual language (`AvFutureSurface`); per-route copy, feature chips, link to Settings → Studio. Studio tab refactored to the shared component. Tag **v1.1.0**.
+
 1.0.8
 - Major UX: reorganized nav & coming-soon routes; Settings split with Privacy & Shortcuts tabs; command palette (Ctrl+Shift+P); scroll restore per route; watch deep links & breadcrumbs; lists bulk remove; continue-watching remove from context menu; diagnostics copy; Alt+, cycles Settings tabs; Alt+Left back. See desktop update log for detail. Tag **v1.0.8**.
 

@@ -48,7 +48,7 @@
     "exploreTitle": "Explore",
     "exploreSub": "Redirecting to Discover…",
     "clipsTitle": "Clips",
-    "clipsSub": "Community moments — coming soon",
+    "clipsSub": "Highlights preview · Studio-style roadmap",
     "listsTitle": "My lists",
     "listsSub": "Local watchlist",
     "animeDetailTitle": "Series",
@@ -62,9 +62,9 @@
     "settingsTitle": "Settings",
     "settingsSub": "Playback · appearance · privacy · shortcuts · data · studio",
     "communityTitle": "Community",
-    "communitySub": "Servers & threads — coming soon",
+    "communitySub": "Fan hub preview · gradient roadmap",
     "galleryTitle": "Gallery",
-    "gallerySub": "Art & screenshots — coming soon",
+    "gallerySub": "Wall & collections preview · same Studio polish",
     "scheduleTitle": "Calendar",
     "scheduleSub": "Airing schedule · local times",
     "requestTitle": "Request a show",
@@ -75,9 +75,29 @@
     "accountSub": "Sign in"
   },
   "comingSoon": {
-    "title": "Coming soon",
-    "body": "This area is being unvaulted in a future update. Check Settings → Updates for release notes.",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "openStudio": "Open Studio in Settings",
+    "community": {
+      "kicker": "Community",
+      "title": "Your fan hub — unvaulting next",
+      "body": "We are shaping a space for threads, reactions, and discovery with the same gradient-forward polish as Studio. Nothing to post yet — this page is your preview of what is landing.",
+      "badge": "Shipping in a future release · changelog in Updates",
+      "chips": ["Threads & feeds", "Reactions", "Following", "Spotlight & events"]
+    },
+    "gallery": {
+      "kicker": "Gallery",
+      "title": "Wall of art & screenshots",
+      "body": "Curated grids, lightbox viewing, and shareable decks are on the way. The visual language matches Studio — soft gradients, glass chips, and calm typography.",
+      "badge": "Unvaulting with the next major wave",
+      "chips": ["Pinned walls", "Lightbox", "Tags & filters", "Export stills"]
+    },
+    "clips": {
+      "kicker": "Clips",
+      "title": "Moments worth replaying",
+      "body": "Short highlights, trim tools, and quick share flows are planned. Until then, enjoy this roadmap card — same energy as Settings → Studio.",
+      "badge": "Clip tools arrive after core playback polish",
+      "chips": ["Trim & export", "Captions", "Quick share", "Library sync"]
+    }
   },
   "settings": {
     "title": "Settings",
