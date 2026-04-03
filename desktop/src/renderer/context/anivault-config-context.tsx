@@ -37,6 +37,15 @@ export function AnivaultConfigProvider({ children }: { children: React.ReactNode
     void refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    if (config == null) return;
+    try {
+      void getWindowControls().setAlwaysOnTop(config.windowAlwaysOnTop);
+    } catch {
+      /* ignore — non-Electron test environments */
+    }
+  }, [config, config.windowAlwaysOnTop]);
+
   const value = useMemo(() => ({ config, refresh }), [config, refresh]);
 
   return (

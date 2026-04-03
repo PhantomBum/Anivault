@@ -1,5 +1,10 @@
 AniVault Unvaulted — changelog
 
+1.2.0
+- **Playback / window:** Optional **Keep window above others** — `BrowserWindow.setAlwaysOnTop` via IPC (`windowControls.setAlwaysOnTop`). Synced from config on load and when toggled in **Settings → Playback** (helps with mini-player multitasking).
+- **Accessibility:** `DialogContent` **`showCloseButton`** — update dialogs and **command palette** no longer render a hidden duplicate close control; focus trap + footer actions behave predictably.
+- **Performance:** `cachedGetShowDetails` / `cachedGetEpisodes` **coalesce concurrent** requests; **Rollup `manualChunks`** for react / react-router / i18next in `vite.renderer.config.ts`. See `desktop/docs/performance-notes.md`.
+
 1.1.0
 - **UI / roadmap:** Shared **`AvFutureSurface`** component — diagonal gradients + soft orbs (Studio, Community, Gallery, Clips variants). **Community**, **Gallery**, and **Clips** pages are full preview cards (chips, badges, CTA to **Studio** in Settings) instead of a plain placeholder. **Settings → Studio** uses the same surface for consistency.
 - **Copy:** Updated route subtitles and `en_US` / `pt_BR` strings for the coming-soon area.

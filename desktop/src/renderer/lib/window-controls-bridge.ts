@@ -6,6 +6,8 @@ export interface WindowControlsContext {
   close: () => Promise<void>;
   toggleMaximize: () => Promise<boolean>;
   isMaximized: () => Promise<boolean>;
+  /** Keeps the main BrowserWindow above normal windows (playback / mini-bar multitasking). */
+  setAlwaysOnTop: (flag: boolean) => Promise<void>;
 }
 
 export function getWindowControls(): WindowControlsContext {

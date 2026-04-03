@@ -57,4 +57,9 @@ export type AnivaultStoreSchema = {
   offlineDownloadsEnabled: boolean;
   /** Target directory for offline downloads (empty until chosen). */
   offlineDownloadsPath: string;
+  /**
+   * When true, the main app window stays above other windows (Windows/macOS/Linux).
+   * Useful while watching in the mini player; turn off to return to normal stacking.
+   */
+  windowAlwaysOnTop: boolean;
 };

@@ -82,6 +82,14 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
     keywords: "skip intro opening seconds op ed",
   },
   {
+    id: "window-always-on-top",
+    tab: "playback",
+    label: "Always on top (window)",
+    category: "Player",
+    anchorId: "settings-window-always-on-top",
+    keywords: "always on top floating pin window above mini player multitask",
+  },
+  {
     id: "server",
     tab: "playback",
     label: "API server URL",

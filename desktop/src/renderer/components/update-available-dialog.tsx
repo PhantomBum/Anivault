@@ -43,7 +43,7 @@ export function UpdateAvailableDialog() {
   return (
     <>
       <Dialog open={githubOpen} onOpenChange={setGithubOpen}>
-        <DialogContent className="[&>button]:hidden">
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Update available</DialogTitle>
             <DialogDescription>
@@ -69,7 +69,7 @@ export function UpdateAvailableDialog() {
       </Dialog>
 
       <Dialog open={restartOpen} onOpenChange={setRestartOpen}>
-        <DialogContent className="[&>button]:hidden">
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Update downloaded</DialogTitle>
             <DialogDescription>

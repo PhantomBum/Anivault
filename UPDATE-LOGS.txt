@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.0
+- Playback & shell: optional **always-on-top** main window (Settings → Playback); IPC `window:set-always-on-top`. Dialogs: **showCloseButton** for update + command palette. Performance: **in-flight dedupe** in `ani-session-cache` for details/episodes; vendor **manualChunks** in renderer Vite build. Tag **v1.2.0**.
+
 1.1.0
 - **Unvaulted previews:** Community, Gallery, and Clips use the same gradient “Studio” visual language (`AvFutureSurface`); per-route copy, feature chips, link to Settings → Studio. Studio tab refactored to the shared component. Tag **v1.1.0**.
 

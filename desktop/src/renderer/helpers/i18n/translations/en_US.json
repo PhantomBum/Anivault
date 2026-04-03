@@ -122,6 +122,8 @@
     "telemetryEndpointHelp": "HTTPS URL, or http://localhost for dev. Empty = no upload (console only in dev).",
     "playbackSkipIntro": "Skip intro jump (seconds)",
     "playbackSkipIntroHelp": "How far the Skip intro button seeks (typical opening ~90s).",
+    "windowAlwaysOnTop": "Keep window above others",
+    "windowAlwaysOnTopHelp": "Pins the main app window on top while you multitask — great with the mini player. Turn off to restore normal window stacking.",
     "offlineDownloads": "Offline downloads (experimental)",
     "offlineDownloadsHelp": "Enable this, pick a writable folder, then use “Save for offline” on the watch page. Only one download runs at a time; comply with source terms and local law.",
     "offlineDownloadsChoose": "Choose folder",

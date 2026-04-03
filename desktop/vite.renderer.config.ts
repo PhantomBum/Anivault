@@ -17,6 +17,18 @@ export default defineConfig((env) => {
     base: "./",
     build: {
       outDir: `.vite/renderer/${name}`,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (!id.includes("node_modules")) return;
+            if (id.includes("react-router")) return "vendor-router";
+            if (id.includes("i18next")) return "vendor-i18n";
+            if (id.includes("react-dom") || id.includes("/react/") || id.includes("\\react\\")) {
+              return "vendor-react";
+            }
+          },
+        },
+      },
     },
     plugins: [pluginExposeRenderer(name), react()],
     resolve: {

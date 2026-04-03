@@ -122,6 +122,8 @@
     "telemetryEndpointHelp": "URL HTTPS ou http://localhost em desenvolvimento. Vazio = sem envio (apenas console em dev).",
     "playbackSkipIntro": "Pular abertura (segundos)",
     "playbackSkipIntroHelp": "Quanto avançar ao usar Pular abertura (abertura típica ~90s).",
+    "windowAlwaysOnTop": "Manter janela acima das outras",
+    "windowAlwaysOnTopHelp": "Fixa a janela principal por cima enquanto você multitarefa — útil com o mini player. Desligue para voltar ao empilhamento normal.",
     "offlineDownloads": "Downloads offline (experimental)",
     "offlineDownloadsHelp": "Ative, escolha uma pasta gravável e use “Salvar offline” na página de assistir. Só um download por vez; respeite os termos da fonte e a lei local.",
     "offlineDownloadsChoose": "Escolher pasta",

@@ -4,6 +4,7 @@ import {
   WINDOW_CLOSE_CHANNEL,
   WINDOW_IS_MAXIMIZED_CHANNEL,
   WINDOW_MINIMIZE_CHANNEL,
+  WINDOW_SET_ALWAYS_ON_TOP_CHANNEL,
   WINDOW_TOGGLE_MAXIMIZE_CHANNEL,
 } from "./window-channels";
 
@@ -28,6 +29,12 @@ export function addWindowEventListeners() {
 
   ipcMain.handle(WINDOW_IS_MAXIMIZED_CHANNEL, (event) => {
     return BrowserWindow.fromWebContents(event.sender)?.isMaximized() ?? false;
+  });
+
+  ipcMain.handle(WINDOW_SET_ALWAYS_ON_TOP_CHANNEL, (event, flag: boolean) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+    win.setAlwaysOnTop(Boolean(flag));
   });
 }
 

@@ -20,6 +20,10 @@ const recentCache = new Map<string, { at: number; data: { items: AnimeSearchResu
 const episodesCache = new Map<string, { at: number; data: string[] }>();
 const detailsCache = new Map<string, { at: number; data: ShowDetails }>();
 
+/** Coalesce concurrent requests for the same key (details / episodes). */
+const episodesInflight = new Map<string, Promise<string[]>>();
+const detailsInflight = new Map<string, Promise<ShowDetails>>();
+
 function cacheKeySearch(q: string): string {
   return q.trim().toLowerCase();
 }
@@ -91,10 +95,23 @@ export async function cachedGetEpisodes(
   const hit = episodesCache.get(k);
   const now = Date.now();
   if (hit && now - hit.at < ttlMs) return hit.data;
-  const data = await fetcher();
-  episodesCache.set(k, { at: now, data });
-  evictOldest(episodesCache, MAX_EPISODE_ENTRIES);
-  return data;
+
+  const inflight = episodesInflight.get(k);
+  if (inflight) return inflight;
+
+  const p = (async () => {
+    try {
+      const t = Date.now();
+      const data = await fetcher();
+      episodesCache.set(k, { at: t, data });
+      evictOldest(episodesCache, MAX_EPISODE_ENTRIES);
+      return data;
+    } finally {
+      episodesInflight.delete(k);
+    }
+  })();
+  episodesInflight.set(k, p);
+  return p;
 }
 
 /**
@@ -108,10 +125,23 @@ export async function cachedGetShowDetails(
   const hit = detailsCache.get(showId);
   const now = Date.now();
   if (hit && now - hit.at < ttlMs) return hit.data;
-  const data = await fetcher();
-  detailsCache.set(showId, { at: now, data });
-  evictOldest(detailsCache, MAX_DETAILS_ENTRIES);
-  return data;
+
+  const inflight = detailsInflight.get(showId);
+  if (inflight) return inflight;
+
+  const p = (async () => {
+    try {
+      const t = Date.now();
+      const data = await fetcher();
+      detailsCache.set(showId, { at: t, data });
+      evictOldest(detailsCache, MAX_DETAILS_ENTRIES);
+      return data;
+    } finally {
+      detailsInflight.delete(showId);
+    }
+  })();
+  detailsInflight.set(showId, p);
+  return p;
 }
 
 export function invalidateAniSearchCache(): void {
@@ -120,6 +150,9 @@ export function invalidateAniSearchCache(): void {
 
 export function invalidateShowCachesForId(showId: string): void {
   detailsCache.delete(showId);
+  detailsInflight.delete(showId);
   episodesCache.delete(episodeKey(showId, "sub"));
   episodesCache.delete(episodeKey(showId, "dub"));
+  episodesInflight.delete(episodeKey(showId, "sub"));
+  episodesInflight.delete(episodeKey(showId, "dub"));
 }

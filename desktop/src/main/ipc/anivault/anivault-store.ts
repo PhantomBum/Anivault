@@ -25,6 +25,7 @@ export const anivaultDefaults: AnivaultStoreSchema = {
   telemetryEndpoint: "",
   offlineDownloadsEnabled: false,
   offlineDownloadsPath: "",
+  windowAlwaysOnTop: false,
 };
 
 export const anivaultStore = new Store<AnivaultStoreSchema>({

@@ -157,6 +157,25 @@ export function PlaybackSettingsPanel({ cfg, persist, translate }: Props) {
               }
             />
           </div>
+          <div
+            id="settings-window-always-on-top"
+            className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6 scroll-mt-28"
+          >
+            <div>
+              <span className="text-sm font-medium text-[var(--av-muted)]">
+                {translate("settings.windowAlwaysOnTop")}
+              </span>
+              <p className="mt-1 text-xs text-[var(--av-muted-foreground)]">
+                {translate("settings.windowAlwaysOnTopHelp")}
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              className="h-5 w-5 shrink-0 rounded border border-[var(--av-border)] accent-zinc-400"
+              checked={cfg.windowAlwaysOnTop}
+              onChange={(e) => void persist({ windowAlwaysOnTop: e.target.checked })}
+            />
+          </div>
         </div>
       </div>
 
