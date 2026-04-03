@@ -1,7 +1,7 @@
 # Release AniVault desktop to GitHub (triggers CI that uploads AniVaultSetup.exe + updater files).
 #
 # Usage (from repo root, PowerShell):
-#   .\scripts\release-desktop.ps1 1.0.0-alpha.11
+#   .\scripts\release-desktop.ps1 1.0.0-alpha.13
 #
 # This script:
 #   1) Sets desktop/package.json "version" to the argument
