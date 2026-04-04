@@ -3,6 +3,7 @@ import "@/main/squirrel-bootstrap";
 import { BrowserWindow, app, nativeImage } from "electron";
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { registerMainCrashGuards } from "@/main/crash-guards";
 import { setupAutoUpdater } from "@/main/auto-updater-setup";
@@ -70,8 +71,14 @@ const createWindow = () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
+      /** Must stay `false` with `contextIsolation: true` — `true` breaks the renderer in recent Electron (blank window). */
+      nodeIntegration: false,
+      nodeIntegrationInWorker: false,
+      /**
+       * Packaged UI is loaded from `file://`; disabling avoids edge cases where the SPA bundle fails to run.
+       * Remote content is not loaded in the shell; APIs go through preload IPC.
+       */
+      webSecurity: !app.isPackaged,
       devTools: !app.isPackaged,
     },
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
@@ -81,10 +88,14 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     void mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    void mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    );
+    const indexHtml = path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`);
+    void mainWindow.loadURL(pathToFileURL(indexHtml).href);
   }
+
+  mainWindow.webContents.on("did-fail-load", (_event, code, desc, url) => {
+    // eslint-disable-next-line no-console
+    console.error("[main] renderer did-fail-load", { code, desc, url });
+  });
 
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();

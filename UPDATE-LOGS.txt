@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.4
+- **Fix:** Black window — turn off `nodeIntegration` in the shell (preload-only), relax `webSecurity` for packaged `file://`, load index via `pathToFileURL`. Tag **v1.2.4**.
+
 1.2.3
 - **Fix:** Black/blank window in packaged build — remove `crossorigin` from renderer `index.html` (Electron `file://` + module scripts). Tag **v1.2.3**.
 
