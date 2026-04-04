@@ -1,5 +1,17 @@
 AniVault Unvaulted — changelog
 
+3.1.0 (GUI rework — shell, nav, settings, cards)
+- **Sidebar:** gradient wash + **deeper shadow**; **nav items** use **icon wells**, **rounded-xl** rows, **left accent** on active, clearer hover.
+- **Main header:** **frosted bar** (`backdrop-blur` + tinted bg) for stronger separation from content.
+- **Settings:** intro block is an **elevated card** (`av-surface-raised`); **tab strip** is **pilled** with **ring + shadow** on active; panel surfaces use shared **raised** gradient.
+- **Home:** hero **wordmark** sits in a **glass-style card** with heavier shadow.
+- **Discover:** hero panel **richer gradient**, **ring**, **deeper shadow**.
+- **Title cards & empty states:** **gradient shells**, **stronger hover lift** on catalog cards; **empty states** get **radial glow**, **larger icon**, **tighter typography**.
+- **Shortcuts dialog:** **gradient + blur** panel.
+- **Command palette (Ctrl+Shift+P):** dialog shell matches the same **gradient + blur** treatment.
+
+Tag **`v3.1.0`**.
+
 3.0.1 (quality sweep — shortcuts, motion, images, scroll)
 - **Global playback:** **Ctrl+Space** toggles the **mini player** (play / pause / resume) when you are **not** on the Watch page — same logic as the bar, via shared **`toggleNowPlayingPlayback`** (`renderer/lib/now-playing-playback.ts`).
 - **Keyboard docs:** shortcut listed in **Settings → Shortcuts** and the **Ctrl+/** dialog.

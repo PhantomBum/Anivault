@@ -18,7 +18,7 @@ export function KeyboardShortcutsDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-text)] sm:max-w-md">
+      <DialogContent className="max-h-[85vh] overflow-y-auto border-[var(--av-border)]/90 bg-[linear-gradient(165deg,rgba(22,22,28,0.98)_0%,rgba(10,10,12,0.99)_100%)] text-[var(--av-text)] shadow-[0_24px_64px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
           <DialogDescription className="text-[var(--av-muted)]">

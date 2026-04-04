@@ -338,10 +338,12 @@ export function WelcomePage() {
       />
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-10 md:gap-12 md:px-8 md:pt-14">
         <header className="flex flex-col items-center gap-5 text-center">
-          <AniVaultWordmark size="hero" className="justify-center" />
-          <p className="m-0 text-[0.75rem] font-medium uppercase tracking-[0.18em] text-[var(--av-muted-foreground)]">
-            Unvaulted
-          </p>
+          <div className="av-surface-raised w-full max-w-xl rounded-3xl border border-[var(--av-border)]/85 px-8 py-10 shadow-[0_20px_56px_rgba(0,0,0,0.42)] md:px-12 md:py-12">
+            <AniVaultWordmark size="hero" className="justify-center" />
+            <p className="m-0 mt-4 text-[0.75rem] font-medium uppercase tracking-[0.2em] text-[var(--av-muted-foreground)]">
+              Unvaulted
+            </p>
+          </div>
           <p className="max-w-lg text-sm leading-relaxed text-[var(--av-muted)]">
             Desktop streaming powered by{" "}
             <button

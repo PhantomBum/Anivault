@@ -152,8 +152,8 @@ export function DiscoverPage() {
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-3 text-[var(--av-text)] md:px-5 md:py-5">
-      <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)]/35 p-4 shadow-av-sm md:p-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.06),transparent_55%)]" />
+      <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)]/90 bg-[linear-gradient(155deg,rgba(28,28,34,0.95)_0%,rgba(14,14,18,0.98)_55%,rgba(10,10,12,1)_100%)] p-4 shadow-[0_16px_48px_rgba(0,0,0,0.4)] ring-1 ring-white/[0.04] md:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.08),transparent_55%)]" />
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-xs">

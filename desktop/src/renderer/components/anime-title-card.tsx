@@ -81,8 +81,8 @@ export function AnimeTitleCard({
       <ContextMenuTrigger asChild>
         <div
           className={cn(
-            "group flex flex-col overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 shadow-av-sm transition-all duration-300 ease-out",
-            "hover:border-[var(--av-accent-dim)] hover:shadow-av-md hover:-translate-y-0.5",
+            "group flex flex-col overflow-hidden rounded-3xl border border-[var(--av-border)]/95 bg-[linear-gradient(180deg,rgba(22,22,28,0.95)_0%,rgba(14,14,18,0.98)_100%)] shadow-av-sm transition-all duration-300 ease-out",
+            "hover:border-[var(--av-accent-dim)]/80 hover:shadow-[0_12px_36px_rgba(0,0,0,0.45)] hover:-translate-y-1",
             className
           )}
         >

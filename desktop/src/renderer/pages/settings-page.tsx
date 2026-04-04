@@ -193,8 +193,8 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-1 pb-10 text-[var(--av-text)]">
-      <div className="border-b border-[var(--av-border)] pb-6">
+    <div className="mx-auto max-w-5xl space-y-8 px-2 pb-12 text-[var(--av-text)] md:px-3">
+      <div className="av-surface-raised rounded-2xl border border-[var(--av-border)]/85 p-6 md:p-8">
         <h2 className="text-2xl font-bold tracking-tight text-[var(--av-text)] md:text-[1.75rem]">
           {translate("settings.title")}
         </h2>
@@ -288,7 +288,7 @@ export function SettingsPage() {
         }}
         className="w-full min-h-[40rem]"
       >
-        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1.5 rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1.5">
+        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1.5 rounded-2xl border border-[var(--av-border)]/90 bg-[var(--av-surface)]/80 p-1.5 shadow-inner backdrop-blur-sm">
           <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
           </TabsTrigger>

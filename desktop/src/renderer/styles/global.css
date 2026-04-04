@@ -29,6 +29,8 @@
   --av-accent-muted: rgba(255, 255, 255, 0.055);
   --av-nav-active-bg: rgba(255, 255, 255, 0.075);
   --av-nav-active-edge: #c4c4cc;
+  /* GUI depth: header glass tint */
+  --av-shell-header-blur: rgba(8, 8, 10, 0.78);
   --av-sidebar-w: 256px;
   --av-shell-header-title: 1.15rem;
   --av-shell-header-sub: 0.8125rem;
@@ -56,6 +58,22 @@
 .anivault-shell {
   background-color: var(--av-bg);
   background-image: var(--av-bg-gradient);
+}
+
+/* Deeper surfaces — cards, strips (opt-in via class) */
+@layer components {
+  .av-surface-raised {
+    background: linear-gradient(165deg, rgba(22, 22, 28, 0.98) 0%, rgba(14, 14, 18, 0.99) 100%);
+    border: 1px solid color-mix(in srgb, var(--av-border) 100%, transparent);
+    box-shadow: var(--av-shadow-md), var(--av-shadow-inset);
+  }
+
+  .av-pill-active {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.07),
+      0 4px 18px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.1.0
+- **GUI rework:** sidebar + nav, frosted header, Settings/home/discover/cards/empty states, shortcuts dialog. **Tag v3.1.0**.
+
 3.0.1
 - **Quality sweep:** Ctrl+Space mini player, overscroll + motion polish, selection + smooth scroll, lazy gallery images, shared playback helper. **Tag v3.0.1**.
 
