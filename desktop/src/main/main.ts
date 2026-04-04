@@ -1,7 +1,8 @@
 import "@/main/squirrel-bootstrap";
 
-import { BrowserWindow, app, nativeImage, net, protocol } from "electron";
+import { BrowserWindow, app, nativeImage, protocol } from "electron";
 import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -28,6 +29,26 @@ protocol.registerSchemesAsPrivileged([
 registerMainCrashGuards();
 
 const PRODUCT_NAME = APP_DISPLAY_NAME;
+
+/** Custom `anivault://` responses must use correct MIME types or module scripts won't execute (black window). */
+const ANIVAULT_MIME: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".map": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+};
 
 /**
  * Taskbar / window icon. Packaged: `public` is inside `app.asar`.
@@ -123,7 +144,7 @@ app.on("ready", () => {
   if (app.isPackaged) {
     const rendererRoot = path.join(__dirname, "..", "renderer", MAIN_WINDOW_VITE_NAME);
     const rootNorm = path.normalize(rendererRoot);
-    protocol.handle("anivault", (request) => {
+    protocol.handle("anivault", async (request) => {
       const u = new URL(request.url);
       let pathname = u.pathname || "/";
       if (pathname === "/" || pathname === "") pathname = "/index.html";
@@ -136,7 +157,22 @@ app.on("ready", () => {
       if (relCheck.startsWith("..") || path.isAbsolute(relCheck)) {
         return new Response(null, { status: 403 });
       }
-      return net.fetch(pathToFileURL(filePath).href);
+      if (!fs.existsSync(filePath)) {
+        return new Response(null, { status: 404 });
+      }
+      try {
+        const ext = path.extname(filePath).toLowerCase();
+        const mime = ANIVAULT_MIME[ext] ?? "application/octet-stream";
+        const body = await fsPromises.readFile(filePath);
+        return new Response(body, {
+          status: 200,
+          headers: { "Content-Type": mime, "Cache-Control": "no-store" },
+        });
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("[main] anivault protocol read failed", filePath, e);
+        return new Response(null, { status: 500 });
+      }
     });
   }
 

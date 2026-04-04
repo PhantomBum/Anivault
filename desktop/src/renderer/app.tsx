@@ -133,7 +133,17 @@ export default function App() {
   );
 }
 
-void initI18n();
-
-const root = createRoot(document.getElementById("app"));
-root.render(<App />);
+/**
+ * i18n must finish before the first render: `App` calls `useTranslation()`, and
+ * mounting before `init` completes can leave the shell blank (no Suspense fallback).
+ */
+void initI18n().then(() => {
+  const el = document.getElementById("app");
+  if (!el) {
+    // eslint-disable-next-line no-console
+    console.error("[renderer] Missing #app — index.html not loaded correctly.");
+    return;
+  }
+  const root = createRoot(el);
+  root.render(<App />);
+});

@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+2.0.5
+- **Hotfix black window:** wait for **i18n** before first React render; **`anivault://`** serves correct **MIME** types for JS/CSS. **Tag v2.0.5**.
+
 2.0.4
 - **62-item verified catalog** in the bundled log (numbered audit of all 2.0.x capabilities). **Command palette:** Request a show, Legal, Account. **Tag v2.0.4**.
 
