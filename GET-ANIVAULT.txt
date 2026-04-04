@@ -1,64 +1,61 @@
-GET ANIVAULT (Windows)
-========================
+GET ANIVAULT UNVAULTED (Windows)
+================================
 
-DOWNLOAD THE INSTALLER
-----------------------
-Official repo (use this URL, not a fork):
+WHERE TO DOWNLOAD
+-----------------
+Official repo (bookmark this; forks may not have builds):
+
   https://github.com/PhantomBum/Anivault/releases
 
-Under "Assets" you want:
-  - AniVaultSetup.exe   ← main Windows installer
-  - AniVaultSetup.exe, latest.yml  ← needed for in-app auto-update (NSIS)
+Open the latest release. Under Assets you want at least:
 
-If you only see "Source code (zip)" and "Source code (tar.gz)", that release did NOT finish
-building on GitHub Actions — there is no installer yet. Pick another release or wait for CI
-(see "Release a new version" below).
+  AniVaultUnvaultedSetup.exe     — run this to install
 
+You’ll also see Squirrel updater files on the same release (e.g. *-full.nupkg, RELEASES, latest.yml).
+The in-app updater expects those to live alongside the setup on GitHub.
 
-RELEASE A NEW VERSION (puts AniVaultSetup.exe on GitHub for everyone)
------------------------------------------------------------------------
-On your PC, in PowerShell, from the anivault repo folder:
-
-  cd C:\Users\rdw16\anivault
-  .\scripts\release-desktop.ps1 1.0.0-alpha.5
-
-(Change the version number each time; it must be higher than the last release for updates.)
-
-Then:
-  1) Open https://github.com/PhantomBum/Anivault/actions
-  2) Wait until "Release desktop (Windows)" is GREEN (checkmark), not red.
-  3) Open https://github.com/PhantomBum/Anivault/releases — your new tag should list the .exe.
-
-If the workflow is RED: open the failed run → read the error in the step
-"Build installers (dry-run)" or "Upload to GitHub Release". Fix the error, then either:
-  - push a new tag with a higher version, or
-  - GitHub → Actions → "Release desktop (Windows)" → "Run workflow" on main (rebuilds from
-    current desktop/package.json version).
+If Assets only shows “Source code (zip/tar.gz)”, that tag never got a successful Windows build.
+Pick another release or check Actions for a red run.
 
 
-MANUAL RUN ON GITHUB (no new tag)
----------------------------------
-GitHub → Actions → "Release desktop (Windows)" → "Run workflow" → Branch: main → Run.
-Uses whatever version is already in desktop/package.json on main.
+SHIP A NEW VERSION (maintainers)
+--------------------------------
+From the repo root in PowerShell:
+
+  .\scripts\release-desktop.ps1 1.2.5
+
+Use a new version number each time. That bumps desktop/package.json, commits, pushes main, tags
+v1.2.5, and pushes the tag. Wait for “Release desktop (Windows)” to go green, then refresh the
+Releases page — the .exe and updater files should be attached.
+
+You can also bump package.json yourself, push main, then:
+
+  git tag v1.2.5
+  git push origin v1.2.5
 
 
-TEST AUTO-UPDATE ON YOUR PC
+RE-RUN CI WITHOUT A NEW TAG
 ---------------------------
-1) Install an OLD release from GitHub (e.g. v1.0.0-alpha.3) using AniVaultSetup.exe.
-2) Publish a NEWER release with CI green (higher version in package.json + assets on that release).
-3) Open the OLD app → Settings → Updates → "Check for updates".
-4) Optional: run the installed app from cmd with logging:
-     set ANIVAULT_UPDATER_DEBUG=1
-     "C:\Users\<you>\AppData\Local\AniVault\AniVault.exe"
-   (path may vary; use Start menu shortcut → right-click → open file location.)
+GitHub → Actions → “Release desktop (Windows)” → Run workflow → branch main.
+Builds whatever version is already in desktop/package.json on that branch.
 
 
-THERE IS NO "PATH" TO TYPE IN GITHUB FOR UPDATES
-------------------------------------------------
-Pushing code to the "main" branch only updates the source code. Installers appear when the
-"Release desktop (Windows)" action succeeds — usually after you push a version tag (the script
-above does that for you).
+TEST IN-APP UPDATES LOCALLY
+---------------------------
+1) Install an older release from GitHub.
+2) Publish a newer release with CI green and a higher version.
+3) Open the old app → Settings → Updates → check for updates.
+
+Optional logging:
+
+  set ANIVAULT_UPDATER_DEBUG=1
+  (then launch the installed exe from that same cmd window)
+
+Install path is usually under %LOCALAPPDATA% for Squirrel apps; Start menu shortcut →
+open file location is the lazy way to find it.
 
 
-Older direct link example (replace tag if needed):
-  https://github.com/PhantomBum/Anivault/releases/download/v1.0.0-alpha.3/AniVaultSetup.exe
+REMINDER
+--------
+Pushing to main only updates source. Installers show up after a green release workflow — almost
+always tied to a version tag like the steps above.

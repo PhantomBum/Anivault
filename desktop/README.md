@@ -1,54 +1,55 @@
 # AniVault Unvaulted (desktop)
 
-Electron app using **ani-cli** for playback — **stable (1.0.0+)** line, branded **AniVault Unvaulted** (formerly alpha “AniVault” builds).
+Electron + Vite. The interesting bit is the bridge to **ani-cli** for streams; the rest is layout, settings, watch UI, and the usual desktop glue.
 
-**Positioning:** AniVault Unvaulted is a **desktop client** for titles resolved through ani-cli sources—local watchlists, optional companion AniVault server features (account, social), calendar, and a focused watch UI. It is **not** a licensed subscription service; availability depends on upstream providers.
+## Install (you’re not cloning this)
 
-## Install
+[Releases](https://github.com/PhantomBum/Anivault/releases/latest) → download **`AniVaultUnvaultedSetup.exe`** → run it. Squirrel install; no Node on your machine required.
 
-**[GitHub Releases](https://github.com/PhantomBum/Anivault/releases)** → **AniVaultUnvaultedSetup.exe** → run. No clone or Node required for installs.
-
-Changelog: [UPDATE-LOGS.txt](../UPDATE-LOGS.txt) (bundled copy in Settings → Updates).
+Changelog: repo root [`UPDATE-LOGS.txt`](../UPDATE-LOGS.txt) (also surfaced in the app).
 
 ---
 
-## Development
+## Dev setup
 
-Node.js 20+, npm, Windows (for Squirrel `npm run make`).
+- Node 20+, npm
+- Windows if you want to build the real installer (`npm run make` uses Squirrel)
 
 ```bash
 cd desktop
 npm install
 npm start
-npm run make   # → out/make/squirrel.windows/x64/AniVaultUnvaultedSetup.exe (+ latest.yml)
 ```
 
-If `make` fails with **EPERM** on `anivault-unvaulted.exe`, quit the app, then `npm run make:clean`.
-
----
-
-## Release (maintainers)
-
-1. Bump **`version`** in `package.json` (must match the Git tag).
-2. Commit and push `main`.
-3. Tag and push:
+Production-ish build:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+npm run make
 ```
 
-See [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
+Output lands under `out/make/squirrel.windows/x64/` — `AniVaultUnvaultedSetup.exe`, `*-full.nupkg`, `RELEASES`, `latest.yml`, etc.
+
+If `make` complains about **EPERM** on `anivault-unvaulted.exe`, close the running app and try again; `npm run make:clean` clears `out/` first if you want a cold build.
 
 ---
 
-## Scripts
+## Cutting a release (maintainers)
 
-| Command | Purpose |
-|---------|---------|
-| `npm start` | Dev |
-| `npm test` | Unit tests (Vitest) |
-| `npm run make` | Build installer |
-| `npm run clean` | Remove `out/` |
+1. Bump `version` in `package.json` (must match the tag you’re about to ship).
+2. Commit and push `main`.
+3. Tag and push, e.g. `git tag v1.2.4 && git push origin v1.2.4`
+
+Or from repo root: `.\scripts\release-desktop.ps1 1.2.4` (PowerShell). CI workflow: [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
+
+---
+
+## Scripts (the ones people actually use)
+
+| Command | What it does |
+|--------|----------------|
+| `npm start` | Dev with hot reload |
+| `npm test` | Vitest |
+| `npm run make` | Installer assets + Squirrel build |
+| `npm run clean` | Delete `out/` |
 | `npm run make:clean` | `clean` then `make` |
-| `npm run publish` | Build + upload (local `GITHUB_TOKEN`; CI uses the repo token) |
+| `npm run publish` | Forge publish (needs `GITHUB_TOKEN` locally; CI uses the repo token) |
