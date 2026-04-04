@@ -1,5 +1,17 @@
 AniVault Unvaulted — changelog
 
+3.3.1 (Quality patch — enrichment, catalog bridge, UX edge cases)
+- **AniList enrichment:** `useAnilistEnrichment` now uses the **`concurrency` argument** (was hard-coded `12`); effect deps use **`sig`** + a **`shows` ref** to avoid redundant runs when the array reference changes but IDs do not.
+- **Browse:** Uses **`getAniCli()`** instead of bare **`window.aniCli`** (clear error if the bridge is not ready). **Quick play** shows a toast on episode load failure (same as Discover / Find shows).
+- **Find shows (list view):** `VariableSizeList` **`resetAfterIndex`** also runs when **result rows** change (stable id signature), not only expand/episodes state.
+- **Watch:** Deep-link hydration effect depends on a **stable query string key** (not `searchParams` identity); hydration errors **set `error`** instead of failing silently.
+- **Settings:** Tab derivation uses **`tabParam` string** deps instead of the **`searchParams` object** (fewer spurious recomputes).
+- **Home:** **Continue** / **progress stats** retry once after **~450ms** if the **watchProgress** bridge was not ready on first paint; **spotlight hero** index tracks **`spotlightVisible` content**, not only its length.
+- **i18n:** `catalog.toastEpisodesFailed` (en / pt_BR).
+- **Session cache:** In-flight episode/details lookups use **`inflight !== undefined`** (clearer than truthiness on a `Promise`).
+
+Tag **`v3.3.1`**.
+
 3.3.0 (Refresh update — catalog cache bypass)
 - **Refresh catalog:** Clears the **ani-cli session caches** (search + recent) and **re-fetches** Discover rows, Find shows results, and Home search / spotlight / fresh picks — no app restart.
 - **UI:** **Refresh catalog** buttons on **Home**, **Discover**, and **Find shows**; toast confirms the refresh.

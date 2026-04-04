@@ -163,7 +163,7 @@ export function AppGate({ children }: { children: React.ReactNode }) {
 
   if (mode === "main") {
     return (
-      <div className="animate-in fade-in zoom-in-95 duration-500 ease-out">
+      <div className="animate-in fade-in zoom-in-95 duration-500 ease-out flex h-full min-h-0 flex-1 flex-col overflow-hidden">
         {children}
       </div>
     );

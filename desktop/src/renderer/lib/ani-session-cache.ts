@@ -97,7 +97,7 @@ export async function cachedGetEpisodes(
   if (hit && now - hit.at < ttlMs) return hit.data;
 
   const inflight = episodesInflight.get(k);
-  if (inflight) return inflight;
+  if (inflight !== undefined) return inflight;
 
   const p = (async () => {
     try {
@@ -127,7 +127,7 @@ export async function cachedGetShowDetails(
   if (hit && now - hit.at < ttlMs) return hit.data;
 
   const inflight = detailsInflight.get(showId);
-  if (inflight) return inflight;
+  if (inflight !== undefined) return inflight;
 
   const p = (async () => {
     try {

@@ -611,10 +611,10 @@ export function AnimeSearchPage() {
           },
         });
       } catch {
-        /* ignore */
+        showToast(t("catalog.toastEpisodesFailed"));
       }
     },
-    [navigate]
+    [navigate, t]
   );
 
   const addToMyLists = useCallback(
@@ -640,9 +640,14 @@ export function AnimeSearchPage() {
 
   const getItemSize = useCallback((index: number) => rowHeightFor(index, listData), [listData]);
 
+  const orderedResultsRowSig = useMemo(
+    () => orderedResults.map((r) => r.id).join("\u0001"),
+    [orderedResults]
+  );
+
   useEffect(() => {
     listRef.current?.resetAfterIndex(0, true);
-  }, [expandedId, episodesByShowId]);
+  }, [expandedId, episodesByShowId, orderedResultsRowSig]);
 
   const listHeight = Math.min(560, Math.max(200, Math.min(orderedResults.length, 12) * 56 + 8));
 

@@ -150,7 +150,7 @@ export function AniVaultNav({
   const hubTitles = HUB_ITEMS.map((i) => t(i.titleKey));
 
   return (
-    <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Main">
+    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto" aria-label="Main">
       <NavSection
         label={t("nav.sectionLibrary")}
         items={LIBRARY_ITEMS}

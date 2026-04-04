@@ -136,6 +136,13 @@ export function WatchPage() {
 
   const [currentEpisode, setCurrentEpisode] = useState<string>(initialEpisode);
 
+  const watchHydrationQueryKey = useMemo(() => {
+    const id = searchParams.get("id");
+    const mode = searchParams.get("mode");
+    const ep = searchParams.get("ep");
+    return `${id ?? ""}\u0001${mode ?? ""}\u0001${ep ?? ""}`;
+  }, [searchParams.toString()]);
+
   useEffect(() => {
     if (state?.anime) return;
     if (hydratedFromQueryRef.current) return;
@@ -164,14 +171,15 @@ export function WatchPage() {
             currentEpisode: nextEp,
           },
         });
-      } catch {
+      } catch (e) {
         hydratedFromQueryRef.current = false;
+        setError(e instanceof Error ? e.message : "Could not open from link");
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [state?.anime, searchParams, navigate]);
+  }, [state?.anime, watchHydrationQueryKey, navigate]);
 
   useEffect(() => {
     const s = location.state as WatchState | null;

@@ -159,10 +159,10 @@ export function DiscoverPage() {
           },
         });
       } catch {
-        /* ignore */
+        showToast(t("catalog.toastEpisodesFailed"));
       }
     },
-    [navigate]
+    [navigate, t]
   );
 
   const addToMyLists = useCallback((r: AnimeSearchResult, tile?: AniListSearchTile | null) => {

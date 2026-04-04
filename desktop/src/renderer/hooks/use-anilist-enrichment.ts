@@ -22,19 +22,23 @@ export function useAnilistEnrichment(
 
   const sig = useMemo(() => shows.map((s) => s.id).join("\u0001"), [shows]);
 
+  const showsRef = useRef(shows);
+  showsRef.current = shows;
+
   useEffect(() => {
     startedRef.current.clear();
     setEnrichMap({});
   }, [resetKey]);
 
   useEffect(() => {
+    const shows = showsRef.current;
     if (shows.length === 0) return;
     const gen = ++genRef.current;
     let cancelled = false;
     const slice =
       limit != null && limit < shows.length ? shows.slice(0, limit) : shows;
     void (async () => {
-      await forEachWithConcurrency(slice, 12, async (a) => {
+      await forEachWithConcurrency(slice, concurrency, async (a) => {
         if (cancelled || gen !== genRef.current) return;
         if (startedRef.current.has(a.id)) return;
         startedRef.current.add(a.id);
@@ -46,7 +50,7 @@ export function useAnilistEnrichment(
     return () => {
       cancelled = true;
     };
-  }, [shows, limit, concurrency, sig, resetKey]);
+  }, [sig, limit, concurrency, resetKey]);
 
   return enrichMap;
 }

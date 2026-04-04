@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.3.1
+- **Quality patch:** AniList concurrency + deps; Browse → `getAniCli()`; list virtualizer reset; Watch deep-link deps + error; Settings tab deps; Home continue/stats retry + spotlight hero; episode toasts; session cache inflight check. **Tag v3.3.1**.
+
 3.3.0
 - **Refresh update:** Invalidate search/recent session cache; **Refresh catalog** buttons + **Ctrl+Shift+R** on Home / Discover / Find shows; toast + shortcuts docs. **Tag v3.3.0**.
 

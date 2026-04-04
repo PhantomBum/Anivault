@@ -279,6 +279,9 @@
     "toast": "Catalog refreshed from source",
     "button": "Refresh catalog"
   },
+  "catalog": {
+    "toastEpisodesFailed": "Could not load episodes. Try again."
+  },
   "communityHub": {
     "localThreadsTitle": "Local threads (this device)",
     "localThreadsHint": "Stored in this app only—not synced to the companion server. Use General or pick a hub when the API lists servers.",

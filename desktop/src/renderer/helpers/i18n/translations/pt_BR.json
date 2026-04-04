@@ -279,6 +279,9 @@
     "toast": "Catálogo atualizado da fonte",
     "button": "Atualizar catálogo"
   },
+  "catalog": {
+    "toastEpisodesFailed": "Não foi possível carregar os episódios. Tente de novo."
+  },
   "communityHub": {
     "localThreadsTitle": "Tópicos locais (neste dispositivo)",
     "localThreadsHint": "Armazenados só neste app—não sincronizados com o servidor companion. Use Geral ou um hub quando a API listar servidores.",

@@ -9,6 +9,7 @@ import {
 import type { AniListSearchTile } from "@/renderer/lib/anilist";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
+import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
 import { recordPerfEvent } from "@/renderer/lib/telemetry";
 import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
@@ -44,9 +45,8 @@ export function BrowsePage() {
     setErr(null);
     void (async () => {
       try {
-        const lists = await Promise.all(
-          BROWSE_PROBE_QUERIES.map((q) => window.aniCli.search(q))
-        );
+        const aniCli = getAniCli();
+        const lists = await Promise.all(BROWSE_PROBE_QUERIES.map((q) => aniCli.search(q)));
         if (cancelled) return;
         const byId = new Map<string, AnimeSearchResult>();
         for (const list of lists) {
@@ -114,7 +114,7 @@ export function BrowsePage() {
   const quickPlay = useCallback(
     async (anime: AnimeSearchResult) => {
       try {
-        const episodes = await window.aniCli.getEpisodes(anime.id, anime.mode);
+        const episodes = await getAniCli().getEpisodes(anime.id, anime.mode);
         if (episodes.length === 0) return;
         navigate("/watch", {
           state: {
@@ -124,10 +124,10 @@ export function BrowsePage() {
           },
         });
       } catch {
-        /* ignore */
+        showToast(t("catalog.toastEpisodesFailed"));
       }
     },
-    [navigate]
+    [navigate, t]
   );
 
   return (

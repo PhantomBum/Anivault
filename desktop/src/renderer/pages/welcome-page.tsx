@@ -117,11 +117,31 @@ export function WelcomePage() {
   const [continueDetails, setContinueDetails] = useState<Record<string, ShowDetailsSummary>>({});
 
   useEffect(() => {
-    if (!window.watchProgress?.listContinue) return;
-    void window.watchProgress
-      .listContinue(10)
-      .then(setContinueItems)
-      .catch(() => setContinueItems([]));
+    let cancelled = false;
+    const load = () => {
+      if (!window.watchProgress?.listContinue) return false;
+      void window.watchProgress
+        .listContinue(10)
+        .then((items) => {
+          if (!cancelled) setContinueItems(items);
+        })
+        .catch(() => {
+          if (!cancelled) setContinueItems([]);
+        });
+      return true;
+    };
+    if (load()) {
+      return () => {
+        cancelled = true;
+      };
+    }
+    const t = window.setTimeout(() => {
+      if (!cancelled) load();
+    }, 450);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
   }, []);
 
   useEffect(() => {
@@ -209,8 +229,31 @@ export function WelcomePage() {
   }, [spotlight]);
 
   useEffect(() => {
-    if (!window.watchProgress) return;
-    void window.watchProgress.stats().then(setProgressStats).catch(() => setProgressStats(null));
+    let cancelled = false;
+    const load = () => {
+      if (!window.watchProgress) return false;
+      void window.watchProgress
+        .stats()
+        .then((s) => {
+          if (!cancelled) setProgressStats(s);
+        })
+        .catch(() => {
+          if (!cancelled) setProgressStats(null);
+        });
+      return true;
+    };
+    if (load()) {
+      return () => {
+        cancelled = true;
+      };
+    }
+    const t = window.setTimeout(() => {
+      if (!cancelled) load();
+    }, 450);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
   }, []);
 
   useEffect(() => {
@@ -273,7 +316,7 @@ export function WelcomePage() {
     setSpotlightHero((i) =>
       spotlightVisible.length === 0 ? 0 : Math.min(i, spotlightVisible.length - 1)
     );
-  }, [spotlightVisible.length]);
+  }, [spotlightVisible]);
 
   const openAniCliRepo = useCallback(() => {
     const url = "https://github.com/pystardust/ani-cli";

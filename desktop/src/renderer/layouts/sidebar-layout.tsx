@@ -200,7 +200,7 @@ export default function SidebarLayout() {
 
   return (
     <div
-      className="anivault-shell min-h-screen text-[var(--av-text)]"
+      className="anivault-shell flex h-full min-h-0 flex-1 flex-col overflow-hidden text-[var(--av-text)]"
       data-density="comfortable"
       data-sidebar={railCollapsed ? "collapsed" : "expanded"}
       data-shell-effects="standard"
@@ -231,10 +231,10 @@ export default function SidebarLayout() {
         />
       ) : null}
 
-      <div className="flex w-full pt-12">
+      <div className="flex min-h-0 w-full flex-1 pt-12">
         <aside
           className={cn(
-            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col border-r border-[var(--av-border)] pb-3 pt-3 shadow-[4px_0_32px_rgba(0,0,0,0.35)] transition-[width,transform] duration-300 ease-out md:translate-x-0",
+            "fixed bottom-0 left-0 top-12 z-[58] flex min-h-0 w-[var(--av-sidebar-w)] flex-col overflow-hidden border-r border-[var(--av-border)] pb-3 pt-3 shadow-[4px_0_32px_rgba(0,0,0,0.35)] transition-[width,transform] duration-300 ease-out md:translate-x-0",
             "bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,transparent_46%),var(--av-bg-elevated)]",
             railCollapsed ? "px-2" : "px-3",
             mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -302,7 +302,7 @@ export default function SidebarLayout() {
           </div>
         </aside>
 
-        <div className="av-shell-main flex min-h-[calc(100vh-3rem)] min-w-0 flex-1 flex-col md:ml-[var(--av-sidebar-w)]">
+        <div className="av-shell-main flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:ml-[var(--av-sidebar-w)]">
           <header
             className={cn(
               "av-shell-header flex flex-wrap items-center gap-3 border-b border-[var(--av-border)]/90 py-3.5 pl-14 pr-[var(--av-page-pad-x)] md:pl-6",
@@ -389,7 +389,7 @@ export default function SidebarLayout() {
               isHome && "px-0 py-0"
             )}
           >
-            <main className="w-full min-w-0">
+            <main className="min-h-full w-full min-w-0">
               <RouteErrorBoundary key={location.pathname}>
                 <div
                   key={location.pathname}

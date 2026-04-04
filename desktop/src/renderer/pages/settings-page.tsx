@@ -35,11 +35,11 @@ export function SettingsPage() {
   const { refresh } = useAnivaultConfig();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab") ?? "";
   const findFieldRef = useRef<HTMLInputElement | null>(null);
   const findWrapRef = useRef<HTMLDivElement | null>(null);
 
   const activeTab = useMemo((): SettingsTab => {
-    const tabParam = searchParams.get("tab") ?? "";
     if (SETTINGS_TABS.includes(tabParam as SettingsTab)) {
       return tabParam as SettingsTab;
     }
@@ -52,7 +52,7 @@ export function SettingsPage() {
       /* ignore */
     }
     return "playback";
-  }, [searchParams]);
+  }, [tabParam]);
 
   const [cfg, setCfg] = useState<AnivaultStoreSchema | null>(null);
   const [saved, setSaved] = useState(false);
@@ -65,8 +65,7 @@ export function SettingsPage() {
   const searchHits = useMemo(() => filterSettingsSearch(findQuery), [findQuery]);
 
   useEffect(() => {
-    const raw = searchParams.get("tab") ?? "";
-    if (SETTINGS_TABS.includes(raw as SettingsTab)) return;
+    if (SETTINGS_TABS.includes(tabParam as SettingsTab)) return;
     try {
       const stored = sessionStorage.getItem(SETTINGS_LAST_TAB_KEY);
       if (stored && SETTINGS_TABS.includes(stored as SettingsTab)) {
@@ -75,7 +74,7 @@ export function SettingsPage() {
     } catch {
       /* ignore */
     }
-  }, [searchParams, setSearchParams]);
+  }, [tabParam, setSearchParams]);
 
   useEffect(() => {
     try {

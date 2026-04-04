@@ -220,6 +220,23 @@
 }
 
 @layer base {
+  /* Electron / embedded webview: establish height so flex + overflow-y-auto chains work app-wide. */
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  #app {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
   * {
     @apply border-border outline-ring/50;
     scrollbar-color: hsl(var(--muted-foreground) / 0.45) hsl(var(--muted));

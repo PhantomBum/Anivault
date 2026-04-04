@@ -91,44 +91,48 @@ export default function App() {
 
   return (
     <AnivaultConfigProvider>
-      <SmoothCursorHost />
-      <AvToastHost />
-      <AppGate>
-        <RendererErrorBoundary>
-          <HashRouter>
-            <UpdateAvailableDialog />
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route
-                  element={
-                    <NowPlayingProvider>
-                      <SidebarLayout />
-                    </NowPlayingProvider>
-                  }
-                >
-                  <Route path="/" element={<WelcomePage />} />
-                  <Route path="/discover" element={<DiscoverPage />} />
-                  <Route path="/browse" element={<BrowsePage />} />
-                  <Route path="/explore" element={<Navigate to="/discover" replace />} />
-                  <Route path="/schedule" element={<SchedulePage />} />
-                  <Route path="/request-series" element={<RequestSeriesPage />} />
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/anime/:id" element={<AnimeDetailsPage />} />
-                  <Route path="/anime" element={<AnimeSearchPage />} />
-                  <Route path="/watch" element={<WatchPage />} />
-                  <Route path="/player" element={<PlayerPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/community" element={<CommunityPage />} />
-                  <Route path="/gallery" element={<GalleryPage />} />
-                  <Route path="/clips" element={<ClipsPage />} />
-                  <Route path="/lists" element={<ListsPage />} />
-                  <Route path="/account" element={<AccountPage />} />
-                </Route>
-              </Routes>
-            </Suspense>
-          </HashRouter>
-        </RendererErrorBoundary>
-      </AppGate>
+      <div className="flex h-full min-h-0 flex-1 flex-col">
+        <SmoothCursorHost />
+        <AvToastHost />
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <AppGate>
+            <RendererErrorBoundary>
+              <HashRouter>
+                <UpdateAvailableDialog />
+                <Suspense fallback={<RouteFallback />}>
+                  <Routes>
+                    <Route
+                      element={
+                        <NowPlayingProvider>
+                          <SidebarLayout />
+                        </NowPlayingProvider>
+                      }
+                    >
+                      <Route path="/" element={<WelcomePage />} />
+                      <Route path="/discover" element={<DiscoverPage />} />
+                      <Route path="/browse" element={<BrowsePage />} />
+                      <Route path="/explore" element={<Navigate to="/discover" replace />} />
+                      <Route path="/schedule" element={<SchedulePage />} />
+                      <Route path="/request-series" element={<RequestSeriesPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/anime/:id" element={<AnimeDetailsPage />} />
+                      <Route path="/anime" element={<AnimeSearchPage />} />
+                      <Route path="/watch" element={<WatchPage />} />
+                      <Route path="/player" element={<PlayerPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/community" element={<CommunityPage />} />
+                      <Route path="/gallery" element={<GalleryPage />} />
+                      <Route path="/clips" element={<ClipsPage />} />
+                      <Route path="/lists" element={<ListsPage />} />
+                      <Route path="/account" element={<AccountPage />} />
+                    </Route>
+                  </Routes>
+                </Suspense>
+              </HashRouter>
+            </RendererErrorBoundary>
+          </AppGate>
+        </div>
+      </div>
     </AnivaultConfigProvider>
   );
 }
