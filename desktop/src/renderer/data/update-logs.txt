@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.2.5
+- **Fix:** Packaged app loading — main window uses custom **`anivault://`** protocol for the renderer (avoids fragile `file://` module/CSS loads). **Find shows / home search** no longer **disables the field while loading** (you can keep typing); spinner beside the field instead. **Sort:** A→Z / Z→A, episode count both ways, **AniList score**, **year** (newest/oldest). Tag **v1.2.5**.
+
 1.2.4
 - **Fix:** **Blank black window** — `nodeIntegration: true` with `contextIsolation: true` breaks the renderer on current Electron (known upstream issue). Renderer now uses **`nodeIntegration: false`** (APIs via preload only). Packaged builds also use **`webSecurity: false`** for reliable `file://` loading, and **`loadURL(pathToFileURL(...))`** for the HTML entry. Tag **v1.2.4**.
 

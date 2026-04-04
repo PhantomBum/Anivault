@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.5
+- **Fix:** `anivault://` renderer URL in production; search inputs stay editable while results load; richer sort options. Tag **v1.2.5**.
+
 1.2.4
 - **Fix:** Black window — turn off `nodeIntegration` in the shell (preload-only), relax `webSecurity` for packaged `file://`, load index via `pathToFileURL`. Tag **v1.2.4**.
 

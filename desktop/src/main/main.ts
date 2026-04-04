@@ -1,6 +1,6 @@
 import "@/main/squirrel-bootstrap";
 
-import { BrowserWindow, app, nativeImage } from "electron";
+import { BrowserWindow, app, nativeImage, net, protocol } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -10,6 +10,20 @@ import { setupAutoUpdater } from "@/main/auto-updater-setup";
 import { registerListeners, unregisterListeners } from "@/main/ipc/listeners";
 import { startStreamProxy } from "@/main/stream-proxy";
 import { APP_DISPLAY_NAME } from "@/shared/app-brand";
+
+/** Lets the packaged renderer load over `anivault://` so module/CSS fetches aren’t tied to brittle `file://` behavior. */
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "anivault",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+    },
+  },
+]);
 
 registerMainCrashGuards();
 
@@ -87,6 +101,8 @@ const createWindow = () => {
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     void mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  } else if (app.isPackaged) {
+    void mainWindow.loadURL("anivault:///index.html");
   } else {
     const indexHtml = path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`);
     void mainWindow.loadURL(pathToFileURL(indexHtml).href);
@@ -103,6 +119,26 @@ const createWindow = () => {
 };
 
 app.on("ready", () => {
+  if (app.isPackaged) {
+    const rendererRoot = path.join(__dirname, "..", "renderer", MAIN_WINDOW_VITE_NAME);
+    const rootNorm = path.normalize(rendererRoot);
+    protocol.handle("anivault", (request) => {
+      const u = new URL(request.url);
+      let pathname = u.pathname || "/";
+      if (pathname === "/" || pathname === "") pathname = "/index.html";
+      const rel = pathname.replace(/^\/+/, "");
+      if (!rel || rel.includes("..")) {
+        return new Response(null, { status: 403 });
+      }
+      const filePath = path.normalize(path.join(rootNorm, rel));
+      const relCheck = path.relative(rootNorm, filePath);
+      if (relCheck.startsWith("..") || path.isAbsolute(relCheck)) {
+        return new Response(null, { status: 403 });
+      }
+      return net.fetch(pathToFileURL(filePath).href);
+    });
+  }
+
   app.setName(PRODUCT_NAME);
   if (process.platform === "win32") {
     // Match NSIS / electron-builder `appId` in forge.config.ts (taskbar + jump list).

@@ -28,11 +28,27 @@ import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
 import { cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
+import { cn } from "@/renderer/lib/utils";
 import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
+import {
+  normalizeSearchSortMode,
+  sortAnimeSearchResults,
+  type SearchSortMode,
+} from "@/renderer/lib/search-result-sort";
 import { seriesFingerprint } from "@/renderer/lib/series-fingerprint";
 import type { AnimeSearchResult } from "@/shared/anime-result";
-import { ChevronDown, ChevronRight, Filter, LayoutGrid, List, Play, Search, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Filter,
+  LayoutGrid,
+  List,
+  Loader2,
+  Play,
+  Search,
+  X,
+} from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -48,7 +64,7 @@ type SearchPrefs = {
   viewMode?: "grid" | "list";
   groupBySeries?: boolean;
   filterMode?: "all" | "sub" | "dub";
-  sortMode?: "match" | "name" | "episodes";
+  sortMode?: SearchSortMode;
 };
 
 function loadSearchPrefs(): Partial<SearchPrefs> {
@@ -237,8 +253,8 @@ export function AnimeSearchPage() {
   const [filterMode, setFilterMode] = useState<"all" | "sub" | "dub">(
     () => loadSearchPrefs().filterMode ?? "all"
   );
-  const [sortMode, setSortMode] = useState<"match" | "name" | "episodes">(
-    () => loadSearchPrefs().sortMode ?? "match"
+  const [sortMode, setSortMode] = useState<SearchSortMode>(() =>
+    normalizeSearchSortMode(loadSearchPrefs().sortMode)
   );
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => loadSearchPrefs().viewMode ?? "grid");
   const [groupBySeries, setGroupBySeries] = useState(() => loadSearchPrefs().groupBySeries ?? false);
@@ -320,20 +336,20 @@ export function AnimeSearchPage() {
     });
   }, [debouncedQuery, loading, error, apiResults.length]);
 
-  const audioSorted = useMemo(() => {
+  const audioFiltered = useMemo(() => {
     let list = [...apiResults];
     if (filterMode === "sub") {
       list = list.filter((a) => a.mode === "sub" || a.hasSub);
     } else if (filterMode === "dub") {
       list = list.filter((a) => a.mode === "dub" || a.hasDub);
     }
-    if (sortMode === "name") {
-      list.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortMode === "episodes") {
-      list.sort((a, b) => b.episodeCount - a.episodeCount);
-    }
     return list;
-  }, [apiResults, filterMode, sortMode]);
+  }, [apiResults, filterMode]);
+
+  const searchOrderMap = useMemo(
+    () => new Map(apiResults.map((a, i) => [a.id, i])),
+    [apiResults]
+  );
 
   const needsAniMeta = useMemo(() => {
     return (
@@ -351,9 +367,9 @@ export function AnimeSearchPage() {
 
   useEffect(() => {
     let cancelled = false;
-    if (audioSorted.length === 0) return;
+    if (audioFiltered.length === 0) return;
     void mergeShowThumbnailsFromShowDetails(
-      audioSorted,
+      audioFiltered,
       SHOW_DETAILS_FETCH_CONCURRENCY,
       setThumbById,
       () => cancelled
@@ -361,12 +377,12 @@ export function AnimeSearchPage() {
     return () => {
       cancelled = true;
     };
-  }, [audioSorted]);
+  }, [audioFiltered]);
 
-  const enrichMap = useAnilistEnrichment(audioSorted, debouncedQuery, needsAniMeta ? 96 : 32);
+  const enrichMap = useAnilistEnrichment(audioFiltered, debouncedQuery, needsAniMeta ? 96 : 32);
 
   const results = useMemo(() => {
-    return audioSorted.filter((a) => {
+    return audioFiltered.filter((a) => {
       const t = enrichMap[a.id];
       const rating = inferMatureRating(a.name, t?.genres);
       if (isMatureContentBlocked(allowMatureGlobal, rating)) return false;
@@ -409,12 +425,17 @@ export function AnimeSearchPage() {
     maturityFilter,
   ]);
 
+  const orderedResults = useMemo(
+    () => sortAnimeSearchResults(results, sortMode, enrichMap, searchOrderMap),
+    [results, sortMode, enrichMap, searchOrderMap]
+  );
+
   const displayGroups = useMemo(() => {
     if (!groupBySeries) {
-      return results.map((r) => ({ key: r.id, items: [r] }));
+      return orderedResults.map((r) => ({ key: r.id, items: [r] }));
     }
     const m = new Map<string, AnimeSearchResult[]>();
-    for (const r of results) {
+    for (const r of orderedResults) {
       const fp = seriesFingerprint(r.name);
       let bucket = m.get(fp);
       if (!bucket) {
@@ -424,7 +445,7 @@ export function AnimeSearchPage() {
       bucket.push(r);
     }
     return [...m.entries()].map(([fp, items]) => ({ key: fp, items }));
-  }, [results, groupBySeries]);
+  }, [orderedResults, groupBySeries]);
 
   useEffect(() => {
     const q = debouncedQuery.trim();
@@ -586,14 +607,14 @@ export function AnimeSearchPage() {
 
   const listData = useMemo<SearchRowData>(
     () => ({
-      results,
+      results: orderedResults,
       expandedId,
       episodesByShowId,
       toggleExpand,
       playEpisode,
       playingEpisode,
     }),
-    [results, expandedId, episodesByShowId, toggleExpand, playEpisode, playingEpisode]
+    [orderedResults, expandedId, episodesByShowId, toggleExpand, playEpisode, playingEpisode]
   );
 
   const getItemSize = useCallback((index: number) => rowHeightFor(index, listData), [listData]);
@@ -602,7 +623,7 @@ export function AnimeSearchPage() {
     listRef.current?.resetAfterIndex(0, true);
   }, [expandedId, episodesByShowId]);
 
-  const listHeight = Math.min(560, Math.max(200, Math.min(results.length, 12) * 56 + 8));
+  const listHeight = Math.min(560, Math.max(200, Math.min(orderedResults.length, 12) * 56 + 8));
 
   const toggleGenre = (g: string) => {
     setSelectedGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -648,9 +669,24 @@ export function AnimeSearchPage() {
             placeholder="e.g. one piece, spy x family"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg-elevated)] pl-9 pr-10 text-[var(--av-text)] placeholder:text-[var(--av-muted-foreground)]"
-            disabled={loading}
+            aria-busy={loading}
+            className={cn(
+              "rounded-2xl border-[var(--av-border)] bg-[var(--av-bg-elevated)] pl-9 text-[var(--av-text)] placeholder:text-[var(--av-muted-foreground)]",
+              loading && query.trim().length > 0
+                ? "pr-24"
+                : loading
+                  ? "pr-14"
+                  : query.trim().length > 0
+                    ? "pr-10"
+                    : "pr-4"
+            )}
           />
+          {loading ? (
+            <Loader2
+              className="pointer-events-none absolute right-10 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[var(--av-muted)]"
+              aria-hidden
+            />
+          ) : null}
           {query.trim().length > 0 ? (
             <button
               type="button"
@@ -745,14 +781,22 @@ export function AnimeSearchPage() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Sort</p>
-                  <Select value={sortMode} onValueChange={(v) => setSortMode(v as typeof sortMode)}>
+                  <Select
+                    value={sortMode}
+                    onValueChange={(v) => setSortMode(normalizeSearchSortMode(v))}
+                  >
                     <SelectTrigger className="h-9 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs">
                       <SelectValue placeholder="Sort" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="match">Source order</SelectItem>
-                      <SelectItem value="name">Title A–Z</SelectItem>
-                      <SelectItem value="episodes">Episode count</SelectItem>
+                      <SelectItem value="name">Title A→Z</SelectItem>
+                      <SelectItem value="name-desc">Title Z→A</SelectItem>
+                      <SelectItem value="episodes">Episodes (most)</SelectItem>
+                      <SelectItem value="episodes-asc">Episodes (fewest)</SelectItem>
+                      <SelectItem value="score">AniList score</SelectItem>
+                      <SelectItem value="year">Year (newest)</SelectItem>
+                      <SelectItem value="year-asc">Year (oldest)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -874,7 +918,7 @@ export function AnimeSearchPage() {
         </div>
       ) : null}
 
-      {viewMode === "list" && results.length > VIRTUAL_THRESHOLD ? (
+      {viewMode === "list" && orderedResults.length > VIRTUAL_THRESHOLD ? (
         <div
           ref={containerRef}
           className="min-h-[200px] w-full rounded-xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/40"
@@ -884,7 +928,7 @@ export function AnimeSearchPage() {
               ref={listRef}
               height={listHeight}
               width={listWidth}
-              itemCount={results.length}
+              itemCount={orderedResults.length}
               itemSize={getItemSize}
               itemData={listData}
               overscanCount={4}
@@ -895,9 +939,9 @@ export function AnimeSearchPage() {
         </div>
       ) : null}
 
-      {viewMode === "list" && results.length > 0 && results.length <= VIRTUAL_THRESHOLD ? (
+      {viewMode === "list" && orderedResults.length > 0 && orderedResults.length <= VIRTUAL_THRESHOLD ? (
         <ul className="max-h-[min(70vh,560px)] divide-y divide-[var(--av-border)] overflow-y-auto rounded-xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/40">
-          {results.map((anime) => {
+          {orderedResults.map((anime) => {
             const isExpanded = expandedId === anime.id;
             const episodesState = episodesByShowId[anime.id] ?? { status: "idle" as const };
             const mature = inferMatureRating(anime.name);
@@ -967,7 +1011,7 @@ export function AnimeSearchPage() {
         </ul>
       ) : null}
 
-      {!loading && results.length === 0 && debouncedQuery.trim() && !error && (
+      {!loading && orderedResults.length === 0 && debouncedQuery.trim() && !error && (
         <p className="text-sm text-[var(--av-muted)]">No results found.</p>
       )}
     </div>

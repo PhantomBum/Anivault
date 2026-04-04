@@ -5,16 +5,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/renderer/components/ui/select";
+import {
+  normalizeSearchSortMode,
+  type SearchSortMode,
+} from "@/renderer/lib/search-result-sort";
 import { cn } from "@/renderer/lib/utils";
 import React from "react";
 
+export type { SearchSortMode };
 export type SearchFilterMode = "all" | "sub" | "dub";
-export type SearchSortMode = "match" | "name" | "episodes";
 
 const AUDIO_MODES: { id: SearchFilterMode; label: string }[] = [
   { id: "all", label: "All" },
   { id: "sub", label: "Sub" },
   { id: "dub", label: "Dub" },
+];
+
+const SORT_ITEMS: { value: SearchSortMode; label: string }[] = [
+  { value: "match", label: "Source order" },
+  { value: "name", label: "Title A→Z" },
+  { value: "name-desc", label: "Title Z→A" },
+  { value: "episodes", label: "Episodes (most)" },
+  { value: "episodes-asc", label: "Episodes (fewest)" },
+  { value: "score", label: "AniList score" },
+  { value: "year", label: "Year (newest)" },
+  { value: "year-asc", label: "Year (oldest)" },
 ];
 
 type SearchFiltersBarProps = {
@@ -81,13 +96,13 @@ export function SearchFiltersBar({
         ))}
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center gap-2 sm:max-w-[220px]">
+      <div className="flex min-w-0 flex-1 items-center gap-2 sm:max-w-[240px]">
         <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-[var(--av-muted-foreground)]">
           Sort
         </span>
         <Select
           value={sortMode}
-          onValueChange={(v) => onSortChange(v as SearchSortMode)}
+          onValueChange={(v) => onSortChange(normalizeSearchSortMode(v))}
         >
           <SelectTrigger
             className={cn(
@@ -98,9 +113,11 @@ export function SearchFiltersBar({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="match">Source order</SelectItem>
-            <SelectItem value="name">Title A–Z</SelectItem>
-            <SelectItem value="episodes">Episode count</SelectItem>
+            {SORT_ITEMS.map((s) => (
+              <SelectItem key={s.value} value={s.value}>
+                {s.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

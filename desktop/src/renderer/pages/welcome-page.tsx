@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/renderer/components/ui/select";
 import { cn } from "@/renderer/lib/utils";
+import { useAnilistEnrichment } from "@/renderer/hooks/use-anilist-enrichment";
 import { useDebouncedValue } from "@/renderer/hooks/use-debounced-value";
 import { useWelcomeSearch } from "@/renderer/hooks/use-welcome-search";
 import { useWelcomeRecentlyWatched } from "@/renderer/hooks/use-welcome-recently-watched";
@@ -51,6 +52,11 @@ import {
   type ShowDetailsSummary,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
+import {
+  normalizeSearchSortMode,
+  sortAnimeSearchResults,
+  type SearchSortMode,
+} from "@/renderer/lib/search-result-sort";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
 import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
@@ -86,7 +92,7 @@ export function WelcomePage() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const [filterMode, setFilterMode] = useState<"all" | "sub" | "dub">("all");
-  const [sortMode, setSortMode] = useState<"match" | "name" | "episodes">("match");
+  const [sortMode, setSortMode] = useState<SearchSortMode>("match");
 
   const { results: rawResults, loading, error, searchThumbnails } = useWelcomeSearch(debouncedQuery);
   const { recentlyWatched, recentlyWatchedLoading, recentlyWatchedDetails, clearRecentlyWatched } =
@@ -190,22 +196,41 @@ export function WelcomePage() {
     setSpotlightPosterFailed({});
   }, [spotlight]);
 
-  const results = useMemo(() => {
+  const audioFiltered = useMemo(() => {
     let list = [...rawResults];
     if (filterMode === "sub") {
       list = list.filter((a) => a.mode === "sub" || a.hasSub);
     } else if (filterMode === "dub") {
       list = list.filter((a) => a.mode === "dub" || a.hasDub);
     }
-    if (sortMode === "name") {
-      list.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortMode === "episodes") {
-      list.sort((a, b) => b.episodeCount - a.episodeCount);
-    }
-    return list.filter(
-      (a) => !isMatureContentBlocked(allowMature, inferMatureRating(a.name))
-    );
-  }, [rawResults, filterMode, sortMode, allowMature]);
+    return list;
+  }, [rawResults, filterMode]);
+
+  const matureFiltered = useMemo(
+    () =>
+      audioFiltered.filter(
+        (a) => !isMatureContentBlocked(allowMature, inferMatureRating(a.name))
+      ),
+    [audioFiltered, allowMature]
+  );
+
+  const welcomeSearchOrder = useMemo(
+    () => new Map(rawResults.map((a, i) => [a.id, i])),
+    [rawResults]
+  );
+
+  const welcomeEnrichMap = useAnilistEnrichment(matureFiltered, debouncedQuery, 32);
+
+  const results = useMemo(
+    () =>
+      sortAnimeSearchResults(
+        matureFiltered,
+        sortMode,
+        welcomeEnrichMap,
+        welcomeSearchOrder
+      ),
+    [matureFiltered, sortMode, welcomeEnrichMap, welcomeSearchOrder]
+  );
 
   const spotlightVisible = useMemo(
     () =>
@@ -667,14 +692,22 @@ export function WelcomePage() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Sort</p>
-                  <Select value={sortMode} onValueChange={(v) => setSortMode(v as typeof sortMode)}>
+                  <Select
+                    value={sortMode}
+                    onValueChange={(v) => setSortMode(normalizeSearchSortMode(v))}
+                  >
                     <SelectTrigger className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs shadow-av-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="match">Source order</SelectItem>
-                      <SelectItem value="name">Title A–Z</SelectItem>
-                      <SelectItem value="episodes">Episode count</SelectItem>
+                      <SelectItem value="name">Title A→Z</SelectItem>
+                      <SelectItem value="name-desc">Title Z→A</SelectItem>
+                      <SelectItem value="episodes">Episodes (most)</SelectItem>
+                      <SelectItem value="episodes-asc">Episodes (fewest)</SelectItem>
+                      <SelectItem value="score">AniList score</SelectItem>
+                      <SelectItem value="year">Year (newest)</SelectItem>
+                      <SelectItem value="year-asc">Year (oldest)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
