@@ -45,7 +45,7 @@ export function AnivaultConfigProvider({ children }: { children: React.ReactNode
     } catch {
       /* ignore — non-Electron test environments */
     }
-  }, [config, config.windowAlwaysOnTop]);
+  }, [config, config?.windowAlwaysOnTop]);
 
   const value = useMemo(() => ({ config, refresh }), [config, refresh]);
 

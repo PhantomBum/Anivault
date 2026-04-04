@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+2.0.6
+- **Fix:** null `config` + `windowAlwaysOnTop` dependency crash (black screen). **Tag v2.0.6**.
+
 2.0.5
 - **Hotfix black window:** wait for **i18n** before first React render; **`anivault://`** serves correct **MIME** types for JS/CSS. **Tag v2.0.5**.
 

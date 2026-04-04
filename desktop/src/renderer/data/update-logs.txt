@@ -1,5 +1,10 @@
 AniVault Unvaulted — changelog
 
+2.0.6 (hotfix — crash on `config.windowAlwaysOnTop` deps)
+- **`AnivaultConfigProvider`:** the **`useEffect`** dependency array used **`config.windowAlwaysOnTop`** while **`config` was still `null`**. React evaluates deps every render, so **`Cannot read properties of null (reading 'windowAlwaysOnTop')`** threw before the UI mounted. **Fix:** use **`config?.windowAlwaysOnTop`** in the dependency array.
+
+Tag **`v2.0.6`**.
+
 2.0.5 (hotfix — black window / UI never mounts)
 - **i18n init race:** the shell called **`void initI18n()`** then **immediately** **`createRoot().render(<App />)`**. **`App`** uses **`useTranslation()`** before **`i18n.init`** finished, which can prevent React from mounting at all (**solid black window**, no loading UI). **Fix:** **`await initI18n()`** then render; use **`i18n.use(initReactI18next)`** on the default instance explicitly.
 - **`anivault://` protocol:** responses now set **`Content-Type`** (**`application/javascript`** for **`.js`**, **`.css`**, etc.) instead of relying on **`net.fetch(file://)`** alone—some builds treat wrong MIME as non-executable modules.
