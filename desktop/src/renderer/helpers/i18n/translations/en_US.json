@@ -237,6 +237,30 @@
     "toastQueueOfflineAdded": "Added to offline queue",
     "toastLinkCopied": "Watch link copied (opens this episode from the URL)",
     "toastCopyFailed": "Could not copy link",
-    "copyLinkTitle": "Copy link to this episode"
+    "copyLinkTitle": "Copy link to this episode",
+    "saveFrame": "Save frame",
+    "saveFrameTitle": "Export current frame as PNG (browser download folder)",
+    "recordClip": "Record 10s clip",
+    "recordingClip": "Recording…",
+    "recordClipTitle": "Record ~10s of the current stream to a WebM file (experimental)",
+    "toastFrameSaved": "Frame saved (PNG download started)",
+    "toastFrameFailed": "Could not capture frame (stream may block canvas export)",
+    "toastClipSaved": "Clip saved (WebM download started)",
+    "toastClipFailed": "Could not record clip (source or codec not supported)"
+  },
+  "communityHub": {
+    "localThreadsTitle": "Local threads (this device)",
+    "localThreadsHint": "Stored in this app only—not synced to the companion server. Use General or pick a hub when the API lists servers.",
+    "spaceLabel": "Space",
+    "generalServer": "General",
+    "newThread": "New thread",
+    "newThreadTitlePh": "Title",
+    "newThreadBodyPh": "What do you want to discuss?",
+    "postThread": "Post thread",
+    "noThreads": "No threads yet—start one above.",
+    "replies": "replies",
+    "replyPh": "Write a reply…",
+    "postReply": "Reply",
+    "deleteThread": "Delete thread"
   }
 }

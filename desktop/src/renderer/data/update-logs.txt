@@ -1,5 +1,12 @@
 AniVault Unvaulted — changelog
 
+2.0.2 (local community threads + watch capture)
+- **Community → Local threads:** per-space discussion **stored on this device** (`localStorage`)—spaces include **General** plus each hub returned by the companion API. Create threads, reply, delete; not synced to the server yet.
+- **Watch → Playback assists:** **Save frame** exports the current video frame as **PNG** (browser download). **Record 10s clip** saves **WebM** from `captureStream` (experimental; depends on codec/source—may fail on some streams).
+- **i18n:** new strings under **`communityHub`** and **`watch`** (`en_US` / `pt_BR`).
+
+Tag **`v2.0.2`**.
+
 2.0.1 (hub routes — companion API UIs wired)
 - **Community** (`#/community`): **`CommunityPage`** — list companion **servers**, optional **report** when signed in (needs reachable API base URL; clear error if the server is offline).
 - **Gallery** (`#/gallery`): **`GalleryPage`** — moderated **art** grid, **clips** tab, **upload** when signed in, **moderation queue** for moderator accounts.

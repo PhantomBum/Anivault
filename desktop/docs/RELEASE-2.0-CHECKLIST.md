@@ -24,14 +24,21 @@ This file separates **what shipped in code** from **what is still roadmap**, so 
 | 3 | Windows **Squirrel** installer + updater artifacts on releases | Done |
 | 4 | Bundled **update log** (Settings → Updates) with milestone narrative | Done |
 
+## 2.0.2 — Local threads + watch capture (shipped)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | **Local threads** on Community — per-space (General + each API server), replies, delete; `localStorage` only | Done |
+| 2 | Watch: **Save frame** (PNG download) + **Record 10s clip** (WebM download, experimental) | Done |
+
 ## Still roadmap (not promised as “done” in 2.0.x)
 
 | # | Item | Notes |
 |---|------|--------|
-| R1 | Per-server **discussion threads** in Community | UI stub copy exists; needs API + product design |
-| R2 | **Clip capture** from Watch (trim, export) | Gallery can show server-approved clips; in-client capture is separate |
+| R1 | **Server-synced** threads (moderation, accounts) | Local threads ship in 2.0.2; API-backed sync is follow-up |
+| R2 | **Trim / export** clip editor, upload to Gallery from Watch | Raw WebM + PNG only; gallery upload remains separate flow |
 | R3 | Full **Crunchyroll-style** social graph | Out of scope; companion API is optional |
-| R4 | **Offline downloads** beyond experimental queue | Documented limits in Settings → Data |
+| R4 | **Offline downloads** beyond experimental queue (e.g. HLS transmux) | Documented limits in Settings → Data; queue + retry already in app |
 
 ## Verify before tagging
 

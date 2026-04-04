@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+2.0.2
+- **Community:** local-only per-space threads (device storage). **Watch:** save PNG frame + experimental 10s WebM clip. **Tag v2.0.2**.
+
 2.0.1
 - **Hub routes shipped:** `/community`, `/gallery`, `/clips`, and `/browse` load real pages (companion API for community/gallery; dense catalog browse). Sidebar **Community hub**, command palette entries, i18n subtitles. **Tag v2.0.1**.
 

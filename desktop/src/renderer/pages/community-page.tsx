@@ -1,6 +1,7 @@
-import { Hash, LayoutGrid, MessageCircle, RefreshCw } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import { Hash, LayoutGrid, RefreshCw } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import { CommunityLocalThreadsPanel } from "@/renderer/components/community-local-threads-panel";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
 import { anivaultFetch } from "@/renderer/lib/anivault-api";
@@ -31,6 +32,11 @@ export function CommunityPage() {
     void load();
   }, [load]);
 
+  const serverChips = useMemo(
+    () => servers.map((s) => ({ id: s.id, name: s.name })),
+    [servers]
+  );
+
   const reportServer = async (serverId: string) => {
     setReportMsg(null);
     const token = await window.anivault.getConfig("authToken");
@@ -58,8 +64,8 @@ export function CommunityPage() {
           </p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Servers & safety</h1>
           <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
-            Shared spaces backed by the companion AniVault API. Threading and richer feeds ship in a follow-up;
-            today you can browse hubs and flag issues for moderators.
+            Companion API lists hubs and reports when online. Local threads below work offline (stored only on
+            this device until server-backed sync exists).
           </p>
         </div>
         <Button
@@ -73,24 +79,7 @@ export function CommunityPage() {
         </Button>
       </header>
 
-      <section className="rounded-3xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/60 p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--av-accent-muted)] text-[var(--av-accent)]">
-              <MessageCircle className="h-5 w-5" aria-hidden />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--av-muted)]">
-                Threads (coming soon)
-              </h2>
-              <p className="mt-1 text-sm text-[var(--av-muted)]">
-                Per-server discussion will appear here with the same accent shell as the legacy HTML
-                shell. Moderation hooks already flow through reports and audit logs on the server.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CommunityLocalThreadsPanel servers={serverChips} />
 
       {loading ? (
         <p className="text-sm text-[var(--av-muted)]">Loading servers…</p>

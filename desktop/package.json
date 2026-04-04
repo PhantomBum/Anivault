@@ -1,7 +1,7 @@
 {
   "name": "anivault",
   "productName": "AniVault Unvaulted",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "AniVault Unvaulted 2.x — desktop anime client powered by pystardust/ani-cli (community release).",
   "repository": {
     "type": "git",

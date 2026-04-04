@@ -237,6 +237,30 @@
     "toastQueueOfflineAdded": "Adicionado à fila offline",
     "toastLinkCopied": "Link da reprodução copiado (abre este episódio pela URL)",
     "toastCopyFailed": "Não foi possível copiar o link",
-    "copyLinkTitle": "Copiar link deste episódio"
+    "copyLinkTitle": "Copiar link deste episódio",
+    "saveFrame": "Salvar quadro",
+    "saveFrameTitle": "Exportar quadro atual como PNG (pasta de downloads)",
+    "recordClip": "Gravar clipe (10s)",
+    "recordingClip": "Gravando…",
+    "recordClipTitle": "Gravar ~10s do stream em WebM (experimental)",
+    "toastFrameSaved": "Quadro salvo (download PNG iniciado)",
+    "toastFrameFailed": "Não foi possível capturar (stream pode bloquear exportação)",
+    "toastClipSaved": "Clipe salvo (download WebM iniciado)",
+    "toastClipFailed": "Não foi possível gravar (codec ou fonte não suportados)"
+  },
+  "communityHub": {
+    "localThreadsTitle": "Tópicos locais (neste dispositivo)",
+    "localThreadsHint": "Armazenados só neste app—não sincronizados com o servidor companion. Use Geral ou um hub quando a API listar servidores.",
+    "spaceLabel": "Espaço",
+    "generalServer": "Geral",
+    "newThread": "Novo tópico",
+    "newThreadTitlePh": "Título",
+    "newThreadBodyPh": "O que você quer discutir?",
+    "postThread": "Publicar tópico",
+    "noThreads": "Nenhum tópico ainda—comece acima.",
+    "replies": "respostas",
+    "replyPh": "Escreva uma resposta…",
+    "postReply": "Responder",
+    "deleteThread": "Excluir tópico"
   }
 }

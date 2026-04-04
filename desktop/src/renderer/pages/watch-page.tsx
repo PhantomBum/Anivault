@@ -1,8 +1,10 @@
 import {
   ArrowLeft,
+  Camera,
   ChevronDown,
   Copy,
   Download,
+  Image as ImageIcon,
   Link2,
   ListOrdered,
   MessageCircle,
@@ -46,6 +48,7 @@ import { isPlaybackUrlCopySafe } from "@/renderer/lib/playback-url-clipboard";
 import { cn } from "@/renderer/lib/utils";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { getRecentlyWatched } from "@/renderer/lib/recently-watched-bridge";
+import { recordVideoClipFromElement, saveVideoFrameAsPng } from "@/renderer/lib/watch-capture";
 import type { OfflineDownloadAddResult } from "@/shared/offline-downloads-types";
 
 /** How many automatic reconnects after a playback error before showing the manual overlay. */
@@ -182,6 +185,7 @@ export function WatchPage() {
   const [defaultPlaybackSpeed, setDefaultPlaybackSpeed] = useState(1);
   const [upNext, setUpNext] = useState<{ episode: string; sec: number } | null>(null);
   const [offlineQueueReady, setOfflineQueueReady] = useState(false);
+  const [clipRecording, setClipRecording] = useState(false);
 
   const autoPlayNextRef = useRef(true);
   const lastProgressSaveRef = useRef(0);
@@ -637,6 +641,25 @@ export function WatchPage() {
       });
   }, [anime, currentEpisode, offlineQueueReady, t]);
 
+  const handleSaveFrame = useCallback(async () => {
+    const v = videoRef.current;
+    if (!v || !playUrl || loadingEpisode) return;
+    const base = anime?.id ?? "frame";
+    const r = await saveVideoFrameAsPng(v, base);
+    if (r.ok) showToast(t("watch.toastFrameSaved"));
+    else showToast(t("watch.toastFrameFailed"), 4200);
+  }, [anime?.id, playUrl, loadingEpisode, t]);
+
+  const handleRecordClip = useCallback(async () => {
+    const v = videoRef.current;
+    if (!v || !playUrl || loadingEpisode || clipRecording) return;
+    setClipRecording(true);
+    const r = await recordVideoClipFromElement(v, 10_000);
+    setClipRecording(false);
+    if (r.ok) showToast(t("watch.toastClipSaved"));
+    else showToast(t("watch.toastClipFailed"), 4800);
+  }, [playUrl, loadingEpisode, clipRecording, t]);
+
   useWatchKeyboard(videoRef, Boolean(playUrl), playerSeekStepSec, episodeNav);
 
   useEffect(() => {
@@ -954,6 +977,30 @@ export function WatchPage() {
               >
                 <Download className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
                 {t("watch.queueOffline")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!playUrl || loadingEpisode}
+                className="rounded-xl border-white/15 bg-white/[0.06] text-zinc-200 hover:bg-white/10"
+                title={t("watch.saveFrameTitle")}
+                onClick={() => void handleSaveFrame()}
+              >
+                <ImageIcon className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                {t("watch.saveFrame")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!playUrl || loadingEpisode || clipRecording}
+                className="rounded-xl border-white/15 bg-white/[0.06] text-zinc-200 hover:bg-white/10 disabled:text-zinc-500"
+                title={t("watch.recordClipTitle")}
+                onClick={() => void handleRecordClip()}
+              >
+                <Camera className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                {clipRecording ? t("watch.recordingClip") : t("watch.recordClip")}
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
