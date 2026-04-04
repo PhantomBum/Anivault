@@ -40,6 +40,13 @@ This file separates **what shipped in code** from **what is still roadmap**, so 
 | 3 | **R4 (partial):** **Unencrypted HLS** → concat **`.ts`** for offline queue (AES / DRM still fail) | Done |
 | 4 | **R3** Full social graph | Still out of scope |
 
+## 2.0.4 — 62-item catalog + palette parity (shipped)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Bundled **`update-logs.txt`** includes **numbered 01–62** verified capability list (single audit view for 2.0.x) | Done |
+| 2 | **Command palette** group **Tools & account:** Request a show, Legal / terms, Account (`en_US` / `pt_BR`) | Done |
+
 ## Still roadmap (future)
 
 | # | Item | Notes |

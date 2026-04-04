@@ -13,15 +13,18 @@ import { SETTINGS_TABS, type SettingsTab } from "@/renderer/lib/settings-search-
 import {
   Calendar,
   Clapperboard,
+  FileText,
   Grid3x3,
   Home,
   ImageIcon,
   Keyboard,
   List,
+  MessageSquarePlus,
   PictureInPicture2,
   Search,
   Settings,
   Sparkles,
+  User,
   Users,
 } from "lucide-react";
 import React from "react";
@@ -119,6 +122,21 @@ export function AppCommandPalette({ open, onOpenChange, onOpenShortcuts }: Props
           <CommandItem onSelect={() => go("/clips")}>
             <Clapperboard className="mr-2 h-4 w-4" />
             {t("commandPalette.clips")}
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading={t("commandPalette.groupTools")}>
+          <CommandItem onSelect={() => go("/request-series")}>
+            <MessageSquarePlus className="mr-2 h-4 w-4" />
+            {t("commandPalette.requestSeries")}
+          </CommandItem>
+          <CommandItem onSelect={() => go("/terms")}>
+            <FileText className="mr-2 h-4 w-4" />
+            {t("commandPalette.terms")}
+          </CommandItem>
+          <CommandItem onSelect={() => go("/account")}>
+            <User className="mr-2 h-4 w-4" />
+            {t("commandPalette.account")}
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />

@@ -1,5 +1,78 @@
 AniVault Unvaulted — changelog
 
+2.0.4 (complete 62-item verified capability catalog)
+The list below is the **authoritative 62-point audit** for AniVault Unvaulted **2.0.x** (themes in **2.0.0** and follow-ups **2.0.1–2.0.3** map onto these items). Each line is one **testable** capability.
+
+01. Windows **Squirrel** installer **`AniVaultUnvaultedSetup.exe`** on GitHub Releases.
+02. **Branded** setup **icon** and **installing** splash **GIF**.
+03. **`electron-squirrel-startup`** handles install / update / uninstall events cleanly.
+04. **Updater bundle:** `*-full.nupkg`, **`RELEASES`**, **`latest.yml`** (Forge **postMake**).
+05. **CI** builds on **windows-latest** and uploads **verified** artifacts with **`gh release`**.
+06. **`app.setAppUserModelId('com.anivault.unvaulted')`** for Windows taskbar / toast identity.
+07. Packaged binary name **`anivault-unvaulted.exe`** (Forge **executableName**).
+08. Squirrel **NuGet id** **`AniVaultUnvaulted`** (no spaces in package id).
+09. **Stable** GitHub Releases (installer + updater metadata for electron-updater).
+10. **Fresh install** path: download **Setup.exe** from **Assets** (no source build required).
+
+11. **`anivault://`** protocol loads the **packaged** renderer (`anivault:///index.html`).
+12. **`protocol.handle`** serves **`renderer/main_window`** with **`..` traversal blocked**.
+13. **`registerSchemesAsPrivileged`** for **`anivault`** (fetch / CORS-capable loading).
+14. **Vite** **`transformIndexHtml`** strips **`crossorigin`** on built assets (Electron-safe).
+15. **No CSP `<meta>`** in shipped HTML (opaque **`'self'`** was blocking scripts on custom schemes).
+16. **`nodeIntegration: false`** + **`contextIsolation: true`** (preload-only surface).
+17. **`webSecurity: false`** when **packaged** (reliable local SPA + custom scheme).
+18. **`contextBridge`** exposes **config**, **windowControls**, **security**, **theme**, **ani-cli**, **watch progress**, **offline downloads**, etc.
+19. **`@/main/squirrel-bootstrap`** runs before the rest of **`main.ts`**.
+20. **Loopback stream proxy** HTTP server starts **before** **`BrowserWindow`** (playback-ready).
+21. **Main** crash guards + **`did-fail-load`** logging for failed navigations.
+22. **Renderer** **`RendererErrorBoundary`** with reload affordance on throw.
+23. **`ANIVAULT_DEVTOOLS=1`** opens **DevTools** on **packaged** builds.
+24. **`resolveWindowIcon`** searches **asar**, **renderer outDir**, and **`public`**.
+
+25. **Find shows:** search field **stays editable** while loading; **spinner** instead of disabling input.
+26. **Sort modes:** source order, **title A→Z / Z→A**, **episode count** both ways, **AniList score**, **season year**.
+27. **Home** search shares the **same sort pipeline** with **AniList enrichment**.
+28. **Debounced** **ani-cli** search with **session-scoped** **`cachedAniSearch`** cache.
+29. **Grid / list**, **group-by-series**, **virtualized list** for very large result sets.
+30. **Recent searches** + **session `q` restore** on Find shows.
+31. **URL `?q=`** stays in sync; **Discover** remembers tab in-session; **clear** search control.
+32. **Filters sheet:** audio, genres, format, minimum score/year, **maturity** (AniList-backed when available).
+33. **Thumbnails:** **`mergeShowThumbnails`** + **prefetch** while scrolling.
+34. **IPC** **`getShowDetails` / `getEpisodes`** with **timeouts** and failure paths (no infinite spin).
+
+35. **Watch** page: **mini player bar** persists when navigating away; **resume** from bar.
+36. **Shareable links** with **`id` / `mode` / `ep`**; **hydration** from URL or pasted hash link.
+37. **Breadcrumb** trail (Discover → series → episode).
+38. **Stream URL** resolution via IPC with **retries** after playback errors.
+39. **Always-on-top** main window (**Settings → Playback** → **`windowControls.setAlwaysOnTop`**).
+40. **Mature-content** badges + global **allow/deny** from config.
+41. **Continue watching** row + **remove from continue** (context action).
+42. **Local watchlist** + **duplicate detection** + **Add to My lists** from cards + **bulk remove** on Lists.
+
+43. **Settings** split into **tab panels** under **`pages/settings/`** (Appearance, Privacy, Shortcuts, Playback, Data, Updates, Studio, …).
+44. **Find in settings** search **jumps to anchors** in panels.
+45. **Privacy & diagnostics** copy + **opt-in telemetry** (no silent tracking story).
+46. **Command palette (`Ctrl+Shift+P`)**: **Go to** routes, **Settings** tabs, **Tools** (request / terms / account), **playback** actions, **copy diagnostics**.
+47. **Scroll restore** per route via **sessionStorage**; **`Alt+Left`** history back; **`Alt+,`** cycles Settings tabs.
+48. **`HashRouter`** for **`file://`** / **packaged** hash URLs.
+49. **`AvFutureSurface`** for **Studio** / roadmap marketing cards.
+50. **Update-available dialog** when **electron-updater** finds a newer release (installed builds).
+51. **`ani-session-cache`** **dedupes** overlapping **getShowDetails** / **getEpisodes** calls.
+52. **Vite `manualChunks`** for **react**, **react-router**, **i18next**.
+53. **Electron Fuses** in production: e.g. **no RunAsNode**, **ASAR integrity**, **cookie encryption**.
+54. **Type-safe IPC** channel constants shared across **main / preload / renderer**.
+
+55. **Offline queue (experimental):** **progressive** direct URLs stream to the chosen **download folder**.
+56. **Offline queue:** **unencrypted HLS** (**.m3u8**) **segment concat** to a **`.ts`** file; **AES-128** playlists fail with a **clear error** (no silent hang).
+57. **Schedule** page: **AniList**-backed grid where configured, with **local fallback** behavior.
+58. **`#/community`:** **companion API** server list + **report** flow when signed in.
+59. **`#/gallery`:** **moderated art**, **clips** tab, **upload**, **moderation queue** (roles) — **companion API**.
+60. **`#/clips`** and **`#/browse`:** **Clips** tab shortcut + **BrowsePage** dense **ani-cli** probe catalog.
+61. **Local community threads** (device **`localStorage`**) per **space** + **replies** + **JSON export/import** (merge or replace).
+62. **Watch assists:** **PNG** frame export, **WebM** clip (**5s / 10s / 30s**), **submit frame** to companion **gallery**; **Gallery `?tab=`** deep links (**browse** · **clips** · **upload** · **queue**).
+
+Tag **`v2.0.4`**.
+
 2.0.3 (roadmap polish: gallery from Watch, thread backup, HLS offline)
 - **Community local threads:** **Export JSON** / **Import (merge)** / **Import (replace all)** for backups and moving between machines.
 - **Watch:** **Submit frame to gallery** (companion API + signed-in account) opens **Gallery → Upload**; **clip length** selector **5s / 10s / 30s** for WebM capture.

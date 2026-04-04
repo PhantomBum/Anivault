@@ -70,6 +70,11 @@ export function UpdatesSettingsPanel({ appVersion, translate }: Props) {
       ) : null}
       <div className="space-y-3">
         <span className="text-sm font-medium text-[var(--av-muted)]">Update logs</span>
+        <p className="text-[11px] text-[var(--av-muted)]">
+          Section <strong className="text-[var(--av-muted-foreground)]">2.0.4</strong> is the numbered{" "}
+          <strong className="text-[var(--av-muted-foreground)]">62-item</strong> verified capability catalog for the 2.0
+          line; sections above/below add narrative and version tags.
+        </p>
         <pre className="max-h-80 overflow-auto rounded-xl border border-[var(--av-border)] bg-[var(--av-bg)] p-4 text-xs leading-relaxed text-[var(--av-muted-foreground)] whitespace-pre-wrap font-mono">
           {updateLogsText.trim()}
         </pre>
