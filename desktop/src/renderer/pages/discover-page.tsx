@@ -7,7 +7,14 @@ import {
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
-import { cachedAniRecent, cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
+import {
+  cachedAniRecent,
+  cachedAniSearch,
+  cachedGetEpisodes,
+  invalidateAniRecentCache,
+  invalidateAniSearchCache,
+} from "@/renderer/lib/ani-session-cache";
+import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import type { AniListSearchTile } from "@/renderer/lib/anilist";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
@@ -16,7 +23,7 @@ import { showToast } from "@/renderer/lib/av-toast";
 import { cn } from "@/renderer/lib/utils";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { AvEmptyState } from "@/renderer/components/av-empty-state";
-import { Compass, SearchX } from "lucide-react";
+import { Compass, RefreshCw, SearchX } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
@@ -62,8 +69,22 @@ export function DiscoverPage() {
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  const [catalogRefresh, setCatalogRefresh] = useState(0);
 
   const active = TABS.find((t) => t.id === tab) ?? TABS[0];
+
+  const bumpCatalogRefresh = useCallback(() => {
+    invalidateAniSearchCache();
+    invalidateAniRecentCache();
+    setCatalogRefresh((n) => n + 1);
+    showToast(t("refreshUpdate.toast"));
+  }, [t]);
+
+  useEffect(() => {
+    const on = () => bumpCatalogRefresh();
+    window.addEventListener(CATALOG_REFRESH_EVENT, on);
+    return () => window.removeEventListener(CATALOG_REFRESH_EVENT, on);
+  }, [bumpCatalogRefresh]);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,7 +110,7 @@ export function DiscoverPage() {
     return () => {
       cancelled = true;
     };
-  }, [active.id, active.query]);
+  }, [active.id, active.query, catalogRefresh]);
 
   const sig = useMemo(() => `${tab}:${rows.map((r) => r.id).join("\u0001")}`, [tab, rows]);
   const enrichMap = useAnilistEnrichment(rows, sig);
@@ -170,13 +191,24 @@ export function DiscoverPage() {
               </p>
             </div>
           </div>
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 shrink-0 rounded-2xl border-[var(--av-border)] px-5"
-          >
-            <Link to="/anime">Browse all</Link>
-          </Button>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-10 rounded-2xl border border-[var(--av-border)] px-4"
+              onClick={bumpCatalogRefresh}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+              {t("refreshUpdate.button")}
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-10 shrink-0 rounded-2xl border-[var(--av-border)] px-5"
+            >
+              <Link to="/anime">Browse all</Link>
+            </Button>
+          </div>
         </div>
 
         <div className="relative mt-5 flex flex-wrap gap-2 border-t border-[var(--av-border)]/80 pt-4">

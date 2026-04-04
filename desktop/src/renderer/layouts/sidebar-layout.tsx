@@ -11,6 +11,7 @@ import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
 import { toggleNowPlayingPlayback } from "@/renderer/lib/now-playing-playback";
 import { getRouteHeading } from "@/renderer/lib/route-headings";
+import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import { cn } from "@/renderer/lib/utils";
 import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 import { ChevronLeft, ChevronRight, ChevronUp, Keyboard, Menu, Search, Settings } from "lucide-react";
@@ -133,6 +134,15 @@ export default function SidebarLayout() {
         if (isTypingTarget(e.target)) return;
         e.preventDefault();
         setCommandPaletteOpen(true);
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === "KeyR") {
+        if (isTypingTarget(e.target)) return;
+        const p = location.pathname;
+        if (p !== "/discover" && p !== "/anime" && p !== "/") return;
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent(CATALOG_REFRESH_EVENT));
         return;
       }
 

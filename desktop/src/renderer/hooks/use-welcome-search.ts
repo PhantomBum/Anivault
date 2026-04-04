@@ -10,7 +10,7 @@ import {
   mergeShowThumbnailsFromShowDetails,
 } from "@/renderer/lib/fetch-show-thumbnails";
 
-export function useWelcomeSearch(debouncedQuery: string) {
+export function useWelcomeSearch(debouncedQuery: string, refreshNonce = 0) {
   const [results, setResults] = useState<AnimeSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function useWelcomeSearch(debouncedQuery: string) {
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, refreshNonce]);
 
   useEffect(() => {
     let cancelled = false;

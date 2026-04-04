@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.3.0
+- **Refresh update:** Invalidate search/recent session cache; **Refresh catalog** buttons + **Ctrl+Shift+R** on Home / Discover / Find shows; toast + shortcuts docs. **Tag v3.3.0**.
+
 3.2.1
 - **Fix:** Find shows `audioFiltered` deps; main scroll layout; compact Find/Settings tabs. **Tag v3.2.1**.
 

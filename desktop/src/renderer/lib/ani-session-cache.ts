@@ -148,6 +148,11 @@ export function invalidateAniSearchCache(): void {
   searchCache.clear();
 }
 
+/** Discover “Fresh” tab uses `cachedAniRecent` — clear when forcing a catalog refresh. */
+export function invalidateAniRecentCache(): void {
+  recentCache.clear();
+}
+
 export function invalidateShowCachesForId(showId: string): void {
   detailsCache.delete(showId);
   detailsInflight.delete(showId);

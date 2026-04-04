@@ -25,7 +25,13 @@ import {
   SHOW_DETAILS_FETCH_CONCURRENCY,
 } from "@/renderer/lib/fetch-show-thumbnails";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
-import { cachedAniSearch, cachedGetEpisodes } from "@/renderer/lib/ani-session-cache";
+import {
+  cachedAniSearch,
+  cachedGetEpisodes,
+  invalidateAniRecentCache,
+  invalidateAniSearchCache,
+} from "@/renderer/lib/ani-session-cache";
+import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
 import { cn } from "@/renderer/lib/utils";
@@ -46,6 +52,7 @@ import {
   List,
   Loader2,
   Play,
+  RefreshCw,
   Search,
   X,
 } from "lucide-react";
@@ -270,6 +277,7 @@ export function AnimeSearchPage() {
   const [yearMin, setYearMin] = useState<number | null>(null);
   const [maturityFilter, setMaturityFilter] = useState<"all" | "none" | "ecchi" | "explicit">("all");
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
+  const [catalogRefresh, setCatalogRefresh] = useState(0);
   const { config } = useAnivaultConfig();
   const allowMatureGlobal = config?.allowMatureContent ?? false;
 
@@ -361,9 +369,22 @@ export function AnimeSearchPage() {
     );
   }, [selectedGenres.length, formatFilter, minScore, yearMin, maturityFilter]);
 
+  const bumpCatalogRefresh = useCallback(() => {
+    invalidateAniSearchCache();
+    invalidateAniRecentCache();
+    setCatalogRefresh((n) => n + 1);
+    showToast(t("refreshUpdate.toast"));
+  }, [t]);
+
+  useEffect(() => {
+    const on = () => bumpCatalogRefresh();
+    window.addEventListener(CATALOG_REFRESH_EVENT, on);
+    return () => window.removeEventListener(CATALOG_REFRESH_EVENT, on);
+  }, [bumpCatalogRefresh]);
+
   useEffect(() => {
     setThumbById({});
-  }, [debouncedQuery]);
+  }, [debouncedQuery, catalogRefresh]);
 
   useEffect(() => {
     let cancelled = false;
@@ -478,7 +499,7 @@ export function AnimeSearchPage() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, catalogRefresh]);
 
   useEffect(() => {
     if (apiResults.length === 0 || loading) return;
@@ -706,6 +727,17 @@ export function AnimeSearchPage() {
           ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 rounded-lg border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 text-xs"
+            onClick={bumpCatalogRefresh}
+            aria-label={t("refreshUpdate.button")}
+          >
+            <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+            {t("refreshUpdate.button")}
+          </Button>
           <div className="inline-flex rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] p-px">
             <Button
               type="button"

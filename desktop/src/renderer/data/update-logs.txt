@@ -1,5 +1,13 @@
 AniVault Unvaulted — changelog
 
+3.3.0 (Refresh update — catalog cache bypass)
+- **Refresh catalog:** Clears the **ani-cli session caches** (search + recent) and **re-fetches** Discover rows, Find shows results, and Home search / spotlight / fresh picks — no app restart.
+- **UI:** **Refresh catalog** buttons on **Home**, **Discover**, and **Find shows**; toast confirms the refresh.
+- **Shortcut:** **Ctrl+Shift+R** on **Home**, **Discover**, or **Find shows** (skipped when typing in inputs) — same behavior as the buttons.
+- **Docs:** Shortcut listed under **Settings → Shortcuts** and **Ctrl+/**.
+
+Tag **`v3.3.0`**.
+
 3.2.1 (Find shows crash + scroll + compact tabs)
 - **Fix:** `results` filter `useMemo` depended on **`audioSorted`** (undefined) — corrected to **`audioFiltered`** (fixes **Find shows** route error boundary).
 - **Scroll:** Main column **`<main>`** / route outlet no longer use **`flex-1` + nested flex** that could fight the scroll container — page content sizes naturally so **the main shell scrolls** (Find shows, Settings, etc.).

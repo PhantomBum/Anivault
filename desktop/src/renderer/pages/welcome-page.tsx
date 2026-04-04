@@ -6,6 +6,7 @@ import {
   Filter,
   LayoutList,
   Play,
+  RefreshCw,
   Search,
   Sparkles,
   Trash2,
@@ -43,7 +44,10 @@ import {
   cachedAniRecent,
   cachedAniSearch,
   cachedGetEpisodes,
+  invalidateAniRecentCache,
+  invalidateAniSearchCache,
 } from "@/renderer/lib/ani-session-cache";
+import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import {
   UNKNOWN_SERIES_LABEL,
   mergeShowDetailsByAnimeId,
@@ -91,10 +95,14 @@ export function WelcomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
+  const [catalogRefreshNonce, setCatalogRefreshNonce] = useState(0);
   const [filterMode, setFilterMode] = useState<"all" | "sub" | "dub">("all");
   const [sortMode, setSortMode] = useState<SearchSortMode>("match");
 
-  const { results: rawResults, loading, error, searchThumbnails } = useWelcomeSearch(debouncedQuery);
+  const { results: rawResults, loading, error, searchThumbnails } = useWelcomeSearch(
+    debouncedQuery,
+    catalogRefreshNonce
+  );
   const { recentlyWatched, recentlyWatchedLoading, recentlyWatchedDetails, clearRecentlyWatched } =
     useWelcomeRecentlyWatched();
 
@@ -131,6 +139,19 @@ export function WelcomePage() {
     };
   }, [continueItems]);
 
+  const bumpCatalogRefresh = useCallback(() => {
+    invalidateAniSearchCache();
+    invalidateAniRecentCache();
+    setCatalogRefreshNonce((n) => n + 1);
+    showToast(t("refreshUpdate.toast"));
+  }, [t]);
+
+  useEffect(() => {
+    const on = () => bumpCatalogRefresh();
+    window.addEventListener(CATALOG_REFRESH_EVENT, on);
+    return () => window.removeEventListener(CATALOG_REFRESH_EVENT, on);
+  }, [bumpCatalogRefresh]);
+
   useEffect(() => {
     let cancelled = false;
     void cachedAniSearch("one", () => getAniCli().search("one"))
@@ -143,7 +164,7 @@ export function WelcomePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [catalogRefreshNonce]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,7 +178,7 @@ export function WelcomePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [catalogRefreshNonce]);
 
   useEffect(() => {
     let cancelled = false;
@@ -659,6 +680,15 @@ export function WelcomePage() {
               autoFocus
             />
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+            onClick={bumpCatalogRefresh}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+            {t("refreshUpdate.button")}
+          </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Button

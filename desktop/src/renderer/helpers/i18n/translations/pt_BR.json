@@ -275,6 +275,10 @@
     "reconnectNotice": "Reconectando automaticamente — tentativa {{current}} de {{max}}",
     "playbackFailedAfterRetries": "A reprodução parou após falhas nas reconexões automáticas. Tente “Recarregar stream”, outro episódio ou verifique a rede."
   },
+  "refreshUpdate": {
+    "toast": "Catálogo atualizado da fonte",
+    "button": "Atualizar catálogo"
+  },
   "communityHub": {
     "localThreadsTitle": "Tópicos locais (neste dispositivo)",
     "localThreadsHint": "Armazenados só neste app—não sincronizados com o servidor companion. Use Geral ou um hub quando a API listar servidores.",
