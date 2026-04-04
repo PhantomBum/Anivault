@@ -9,6 +9,7 @@ import { SidebarProfileFooter } from "@/renderer/components/sidebar-profile-foot
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
+import { toggleNowPlayingPlayback } from "@/renderer/lib/now-playing-playback";
 import { getRouteHeading } from "@/renderer/lib/route-headings";
 import { cn } from "@/renderer/lib/utils";
 import { APP_DISPLAY_NAME } from "@/shared/app-brand";
@@ -119,6 +120,15 @@ export default function SidebarLayout() {
         return;
       }
 
+      if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
+        if (isTypingTarget(e.target)) return;
+        if (nowPlayingSession && location.pathname !== "/watch") {
+          e.preventDefault();
+          toggleNowPlayingPlayback(nowPlayingSession);
+          return;
+        }
+      }
+
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "p" || e.key === "P")) {
         if (isTypingTarget(e.target)) return;
         e.preventDefault();
@@ -157,7 +167,7 @@ export default function SidebarLayout() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [navigate, mobileOpen, closeMobile]);
+  }, [navigate, mobileOpen, closeMobile, nowPlayingSession, location.pathname]);
 
   useEffect(() => {
     closeMobile();
@@ -363,7 +373,7 @@ export default function SidebarLayout() {
             ref={mainScrollRef}
             onScroll={onMainScroll}
             className={cn(
-              "flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto py-[var(--av-page-pad-y)] pl-[var(--av-page-pad-x)] pr-[var(--av-page-pad-x)] md:px-6",
+              "flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain py-[var(--av-page-pad-y)] pl-[var(--av-page-pad-x)] pr-[var(--av-page-pad-x)] md:px-6",
               nowPlayingSession ? "pb-20" : "pb-6",
               isHome && "px-0 py-0"
             )}
@@ -372,7 +382,7 @@ export default function SidebarLayout() {
               <RouteErrorBoundary key={location.pathname}>
                 <div
                   key={location.pathname}
-                  className="motion-safe:animate-av-route-in flex min-h-0 w-full min-w-0 flex-1 flex-col"
+                  className="motion-safe:animate-av-route-in motion-reduce:animate-none flex min-h-0 w-full min-w-0 flex-1 flex-col"
                 >
                   <Outlet />
                 </div>

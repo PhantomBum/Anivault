@@ -87,7 +87,13 @@ export function ClipsLibraryPage() {
               className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-sm"
             >
               {it.imageUrl ? (
-                <img src={it.imageUrl} alt="" className="aspect-video w-full object-cover" />
+                <img
+                  src={it.imageUrl}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-video w-full object-cover"
+                />
               ) : (
                 <div className="flex aspect-video items-center justify-center bg-[var(--av-surface)] text-xs text-[var(--av-muted)]">
                   No thumbnail

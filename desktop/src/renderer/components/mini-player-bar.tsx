@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/renderer/components/ui/dropdown-menu";
 import { useNowPlaying } from "@/renderer/context/now-playing-context";
+import { toggleNowPlayingPlayback } from "@/renderer/lib/now-playing-playback";
 import { cn } from "@/renderer/lib/utils";
 import {
   Maximize2,
@@ -61,23 +62,7 @@ export function MiniPlayerBar() {
   }, [video, tick]);
 
   const togglePlay = useCallback(() => {
-    if (!session) return;
-    if (session.detached && session.resumeWatch) {
-      session.resumeWatch();
-      return;
-    }
-    const v = session.getVideo();
-    if (!v) {
-      session.resumeWatch?.();
-      return;
-    }
-    if (v.paused) {
-      void v.play().catch(() => {
-        /* ignore */
-      });
-    } else {
-      v.pause();
-    }
+    toggleNowPlayingPlayback(session);
     setTick((t) => t + 1);
   }, [session]);
 

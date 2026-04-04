@@ -4,6 +4,7 @@ export type KeyboardShortcutRow = { keys: string; action: string };
 
 export const KEYBOARD_SHORTCUT_ROWS: KeyboardShortcutRow[] = [
   { keys: "Ctrl K", action: "Open Find shows and focus search" },
+  { keys: "Ctrl Space", action: "Play / pause mini player (when not on Watch)" },
   { keys: "Ctrl Shift P", action: "Command palette (jump to pages, settings, actions)" },
   { keys: "Ctrl /", action: "Show this shortcuts list" },
   { keys: "N · B", action: "Next / previous episode (watch page)" },

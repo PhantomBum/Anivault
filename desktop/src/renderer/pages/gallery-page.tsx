@@ -221,6 +221,8 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
                     <img
                       src={it.imageUrl}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="aspect-[4/3] w-full object-cover"
                     />
                   ) : (
@@ -262,7 +264,13 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
                   className="overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)]"
                 >
                   {it.imageUrl ? (
-                    <img src={it.imageUrl} alt="" className="aspect-video w-full object-cover" />
+                    <img
+                      src={it.imageUrl}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-video w-full object-cover"
+                    />
                   ) : (
                     <div className="flex aspect-video items-center justify-center bg-[var(--av-surface)] text-xs">
                       No thumbnail
@@ -340,6 +348,8 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
                     <img
                       src={it.imageUrl}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-16 w-28 rounded-lg object-cover"
                     />
                   ) : null}

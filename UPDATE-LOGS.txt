@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.0.1
+- **Quality sweep:** Ctrl+Space mini player, overscroll + motion polish, selection + smooth scroll, lazy gallery images, shared playback helper. **Tag v3.0.1**.
+
 3.0.0
 - **Major:** **3.x** line — community/gallery/clips **gradient shells**, **Studio** hub + links + **62-item** pointer, **mini playbar** visual refresh. **Tag v3.0.0**.
 

@@ -212,7 +212,7 @@ export function DiscoverPage() {
           {Array.from({ length: 12 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-[2/3] animate-pulse rounded-2xl border border-[var(--av-border)]/60 bg-zinc-900/50"
+              className="aspect-[2/3] motion-safe:animate-pulse motion-reduce:animate-none rounded-2xl border border-[var(--av-border)]/60 bg-zinc-900/50"
             />
           ))}
         </div>

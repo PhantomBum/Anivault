@@ -58,6 +58,17 @@
   background-image: var(--av-bg-gradient);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.anivault-shell ::selection {
+  background: color-mix(in srgb, var(--av-accent-dim) 42%, transparent);
+  color: var(--av-text);
+}
+
 .av-shell-main {
   background: var(--av-main-gradient);
 }

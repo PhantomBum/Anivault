@@ -1,5 +1,15 @@
 AniVault Unvaulted — changelog
 
+3.0.1 (quality sweep — shortcuts, motion, images, scroll)
+- **Global playback:** **Ctrl+Space** toggles the **mini player** (play / pause / resume) when you are **not** on the Watch page — same logic as the bar, via shared **`toggleNowPlayingPlayback`** (`renderer/lib/now-playing-playback.ts`).
+- **Keyboard docs:** shortcut listed in **Settings → Shortcuts** and the **Ctrl+/** dialog.
+- **Layout:** main column uses **`overscroll-y-contain`** to reduce scroll chaining; route outlet respects **`motion-reduce:animate-none`** alongside existing reduced-motion rules.
+- **Shell:** **`::selection`** tint; **`html { scroll-behavior: smooth }`** when reduced motion is off.
+- **Discover:** loading skeletons use **`motion-safe:animate-pulse`** so pulsing stops under reduced motion.
+- **Gallery:** grid and queue thumbnails use **`loading=\"lazy\"`** + **`decoding=\"async\"`** for lighter scrolling.
+
+Tag **`v3.0.1`**.
+
 3.0.0 (major line — UI polish, Studio hub, playbar refresh)
 - **Major version:** **3.x** opens a focused cycle on **clearer community UI**, a **real Studio hub**, and a **refreshed mini playbar** while keeping the same core player and companion APIs.
 - **Community hub surfaces:** **`#/community`**, **`#/gallery`**, and **`#/clips`** use **`AvFutureSurface`** gradients (indigo / rose / cyan) so hub routes match the Studio visual language.
