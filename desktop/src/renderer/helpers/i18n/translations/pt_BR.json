@@ -112,7 +112,7 @@
     "dataBackupLead": "Sua lista fica armazenada localmente neste perfil. Exporte ou importe JSON em",
     "dataBackupTrail": "— útil ao trocar de máquina ou manter backup.",
     "dataDownloadsTitle": "Downloads offline (experimental)",
-    "dataDownloadsBody": "Enfileire episódios na página de assistir com esta opção ativa e uma pasta escolhida. URLs progressivas diretas são salvas; muitas fontes usam HLS (.m3u8), listado como falha até existir transmux. Veja docs/downloads-spike.md.",
+    "dataDownloadsBody": "Enfileire episódios na página de assistir com esta opção ativa e uma pasta escolhida. MP4/WebM progressivos são gravados em fluxo. HLS (.m3u8) sem criptografia tenta concatenar segmentos em um .ts (listas estilo VOD; AES ainda falha). Veja docs/downloads-spike.md.",
     "dataApiTitle": "Conexão com servidor companheiro (API AniVault)",
     "dataApiBody": "Testa /api/me na URL base em Reprodução → Servidor. Use para verificar se a API local ou remota está acessível antes de entrar na página Conta.",
     "testConnection": "Testar conexão",
@@ -240,13 +240,22 @@
     "copyLinkTitle": "Copiar link deste episódio",
     "saveFrame": "Salvar quadro",
     "saveFrameTitle": "Exportar quadro atual como PNG (pasta de downloads)",
-    "recordClip": "Gravar clipe (10s)",
+    "recordClip": "Gravar clipe",
     "recordingClip": "Gravando…",
-    "recordClipTitle": "Gravar ~10s do stream em WebM (experimental)",
+    "recordClipTitle": "Gravar o stream em WebM pelo tempo escolhido (experimental)",
     "toastFrameSaved": "Quadro salvo (download PNG iniciado)",
     "toastFrameFailed": "Não foi possível capturar (stream pode bloquear exportação)",
     "toastClipSaved": "Clipe salvo (download WebM iniciado)",
-    "toastClipFailed": "Não foi possível gravar (codec ou fonte não suportados)"
+    "toastClipFailed": "Não foi possível gravar (codec ou fonte não suportados)",
+    "clipDurationLabel": "Duração do clipe",
+    "clipDuration5": "5 segundos",
+    "clipDuration10": "10 segundos",
+    "clipDuration30": "30 segundos",
+    "submitFrameGallery": "Enviar quadro à galeria",
+    "submitFrameGalleryTitle": "Enviar quadro atual à galeria companion (login + API)",
+    "toastGalleryNeedAuth": "Entre em Conta e configure a URL da API para enviar à galeria.",
+    "toastGallerySubmitted": "Enviado para moderação — abrindo Galeria",
+    "toastGalleryFailed": "Falha no envio à galeria"
   },
   "communityHub": {
     "localThreadsTitle": "Tópicos locais (neste dispositivo)",
@@ -261,6 +270,12 @@
     "replies": "respostas",
     "replyPh": "Escreva uma resposta…",
     "postReply": "Responder",
-    "deleteThread": "Excluir tópico"
+    "deleteThread": "Excluir tópico",
+    "exportBackup": "Exportar JSON",
+    "importMerge": "Importar (mesclar)",
+    "importReplace": "Importar (substituir tudo)",
+    "importReplaceConfirm": "Substituir todos os tópicos locais neste dispositivo pelo backup? Não dá para desfazer.",
+    "toastExportOk": "Backup baixado",
+    "toastImportOk": "Tópicos importados"
   }
 }

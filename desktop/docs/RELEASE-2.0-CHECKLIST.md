@@ -31,14 +31,23 @@ This file separates **what shipped in code** from **what is still roadmap**, so 
 | 1 | **Local threads** on Community — per-space (General + each API server), replies, delete; `localStorage` only | Done |
 | 2 | Watch: **Save frame** (PNG download) + **Record 10s clip** (WebM download, experimental) | Done |
 
-## Still roadmap (not promised as “done” in 2.0.x)
+## 2.0.3 — Remaining roadmap items (shipped)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | **R1 (partial):** Thread **export / import (merge | replace)** JSON — backup & migration without a server | Done |
+| 2 | **R2 (partial):** **Submit frame to gallery** from Watch; **clip duration** 5 / 10 / 30s; Gallery **`?tab=`** deep link | Done |
+| 3 | **R4 (partial):** **Unencrypted HLS** → concat **`.ts`** for offline queue (AES / DRM still fail) | Done |
+| 4 | **R3** Full social graph | Still out of scope |
+
+## Still roadmap (future)
 
 | # | Item | Notes |
 |---|------|--------|
-| R1 | **Server-synced** threads (moderation, accounts) | Local threads ship in 2.0.2; API-backed sync is follow-up |
-| R2 | **Trim / export** clip editor, upload to Gallery from Watch | Raw WebM + PNG only; gallery upload remains separate flow |
-| R3 | Full **Crunchyroll-style** social graph | Out of scope; companion API is optional |
-| R4 | **Offline downloads** beyond experimental queue (e.g. HLS transmux) | Documented limits in Settings → Data; queue + retry already in app |
+| R1 | **Server-synced** threads (API persistence + moderation) | Needs companion server implementation |
+| R2 | **In-browser trim** of recorded WebM, or **upload WebM** to gallery | Frame + API image upload only today |
+| R3 | Full **Crunchyroll-style** social graph | Out of scope unless product scope changes |
+| R4 | **HLS AES** decryption / **transmux** to MP4 | Would require ffmpeg or keys; not in app |
 
 ## Verify before tagging
 

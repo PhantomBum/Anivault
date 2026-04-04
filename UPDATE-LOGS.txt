@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+2.0.3
+- **Gallery from Watch** (frame); **thread JSON import/export**; **HLS → .ts** offline attempt; **clip duration** presets. **Tag v2.0.3**.
+
 2.0.2
 - **Community:** local-only per-space threads (device storage). **Watch:** save PNG frame + experimental 10s WebM clip. **Tag v2.0.2**.
 

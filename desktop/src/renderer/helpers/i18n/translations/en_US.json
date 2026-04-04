@@ -112,7 +112,7 @@
     "dataBackupLead": "Your watchlist is stored locally in this browser profile. Export or import JSON from",
     "dataBackupTrail": "— useful when moving machines or keeping a backup.",
     "dataDownloadsTitle": "Offline downloads (spike)",
-    "dataDownloadsBody": "Queue episodes from the watch page when this section is enabled and a folder is chosen. Direct progressive URLs save to disk; many sources use HLS (.m3u8), which is listed as failed until a transmux step exists. See docs/downloads-spike.md for limits.",
+    "dataDownloadsBody": "Queue episodes from the watch page when this section is enabled and a folder is chosen. Progressive MP4/WebM URLs stream to disk. Unencrypted HLS (.m3u8) attempts a segment concat to a single .ts file (VOD-style playlists; AES-encrypted streams still fail). See docs/downloads-spike.md for limits.",
     "dataApiTitle": "Companion server connection (AniVault API)",
     "dataApiBody": "Pings /api/me on the base URL from Playback → Server. Use this to verify your local or remote API is reachable before signing in on the Account page.",
     "testConnection": "Test connection",
@@ -240,13 +240,22 @@
     "copyLinkTitle": "Copy link to this episode",
     "saveFrame": "Save frame",
     "saveFrameTitle": "Export current frame as PNG (browser download folder)",
-    "recordClip": "Record 10s clip",
+    "recordClip": "Record clip",
     "recordingClip": "Recording…",
-    "recordClipTitle": "Record ~10s of the current stream to a WebM file (experimental)",
+    "recordClipTitle": "Record the current stream to a WebM file for the length chosen (experimental)",
     "toastFrameSaved": "Frame saved (PNG download started)",
     "toastFrameFailed": "Could not capture frame (stream may block canvas export)",
     "toastClipSaved": "Clip saved (WebM download started)",
-    "toastClipFailed": "Could not record clip (source or codec not supported)"
+    "toastClipFailed": "Could not record clip (source or codec not supported)",
+    "clipDurationLabel": "Clip length",
+    "clipDuration5": "5 seconds",
+    "clipDuration10": "10 seconds",
+    "clipDuration30": "30 seconds",
+    "submitFrameGallery": "Submit frame to gallery",
+    "submitFrameGalleryTitle": "Send current frame to the companion gallery (sign in + API)",
+    "toastGalleryNeedAuth": "Sign in under Account and set the API URL to submit to the gallery.",
+    "toastGallerySubmitted": "Submitted for review — opening Gallery",
+    "toastGalleryFailed": "Gallery upload failed"
   },
   "communityHub": {
     "localThreadsTitle": "Local threads (this device)",
@@ -261,6 +270,12 @@
     "replies": "replies",
     "replyPh": "Write a reply…",
     "postReply": "Reply",
-    "deleteThread": "Delete thread"
+    "deleteThread": "Delete thread",
+    "exportBackup": "Export JSON",
+    "importMerge": "Import (merge)",
+    "importReplace": "Import (replace all)",
+    "importReplaceConfirm": "Replace all local threads on this device with the backup? This cannot be undone.",
+    "toastExportOk": "Backup downloaded",
+    "toastImportOk": "Threads imported"
   }
 }

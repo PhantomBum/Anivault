@@ -1,6 +1,6 @@
 import { ImageIcon, Loader2, RefreshCw, Scissors } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
@@ -29,6 +29,9 @@ export type GalleryPageProps = {
 };
 
 export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
+  const [searchParams] = useSearchParams();
+  const tabQuery = searchParams.get("tab");
+
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [pending, setPending] = useState<GalleryItem[]>([]);
   const [err, setErr] = useState<string | null>(null);
@@ -38,6 +41,17 @@ export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
   const [uploadBusy, setUploadBusy] = useState(false);
   const [uploadMsg, setUploadMsg] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
+
+  useEffect(() => {
+    if (
+      tabQuery === "browse" ||
+      tabQuery === "clips" ||
+      tabQuery === "upload" ||
+      tabQuery === "queue"
+    ) {
+      setActiveTab(tabQuery);
+    }
+  }, [tabQuery]);
 
   const loadApproved = useCallback(async () => {
     setErr(null);

@@ -119,6 +119,14 @@ export async function postShowComment(animeId: string, body: string) {
   });
 }
 
+/** Gallery art upload (same contract as Gallery → Upload). */
+export async function postGalleryUpload(title: string, imageBase64: string) {
+  return anivaultFetch<{ ok?: boolean }>("/api/gallery/upload", {
+    method: "POST",
+    body: JSON.stringify({ title: title.trim(), imageBase64 }),
+  });
+}
+
 /**
  * Quick reachability check for Settings / Data (phase 19). Does not validate full API surface.
  */

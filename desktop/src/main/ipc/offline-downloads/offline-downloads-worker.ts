@@ -8,6 +8,7 @@ import { anivaultStore } from "@/main/ipc/anivault/anivault-store";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import type { OfflineDownloadItem } from "@/shared/offline-downloads-types";
 
+import { downloadHlsVodToTs } from "@/main/ipc/offline-downloads/hls-offline-download";
 import {
   extensionFromMime,
   isLikelyHlsUrl,
@@ -79,15 +80,6 @@ async function runOne(item: OfflineDownloadItem): Promise<void> {
     return;
   }
 
-  if (isLikelyHlsUrl(remoteUrl)) {
-    patchOfflineDownloadItem(item.id, {
-      status: "failed",
-      error:
-        "This source uses HLS (.m3u8). Offline save supports direct video files only in this version.",
-    });
-    return;
-  }
-
   patchOfflineDownloadItem(item.id, { status: "downloading", error: undefined });
   currentDownloadingId = item.id;
 
@@ -100,6 +92,36 @@ async function runOne(item: OfflineDownloadItem): Promise<void> {
     };
     if (referer.trim().length > 0) {
       headers.Referer = referer;
+    }
+
+    if (isLikelyHlsUrl(remoteUrl)) {
+      const base = `${safeFileSegment(item.showName, 80)}__${safeFileSegment(item.episode, 40)}__${item.mode}`;
+      dest = uniqueDestPath(baseDir, base, ".ts");
+      try {
+        await downloadHlsVodToTs({
+          playlistUrl: remoteUrl,
+          headers,
+          destPath: dest,
+        });
+        patchOfflineDownloadItem(item.id, {
+          status: "complete",
+          localPath: dest,
+          bytesWritten: undefined,
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        patchOfflineDownloadItem(item.id, { status: "failed", error: msg });
+        if (dest && fs.existsSync(dest)) {
+          try {
+            fs.unlinkSync(dest);
+          } catch {
+            /* ignore */
+          }
+        }
+      } finally {
+        currentDownloadingId = null;
+      }
+      return;
     }
 
     const fetchRes = await fetch(remoteUrl, { headers });

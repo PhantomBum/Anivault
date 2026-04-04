@@ -1,5 +1,26 @@
 /** Save a video frame or short screen recording from the Watch `<video>` element. */
 
+/**
+ * PNG data URL of the current frame, or null if the canvas is tainted / not ready.
+ * Used for gallery upload without a separate file round-trip.
+ */
+export function getVideoFrameDataUrlPng(video: HTMLVideoElement): string | null {
+  const w = video.videoWidth;
+  const h = video.videoHeight;
+  if (!w || !h) return null;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  try {
+    ctx.drawImage(video, 0, 0);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return null;
+  }
+}
+
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   try {

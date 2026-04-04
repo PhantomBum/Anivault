@@ -5,6 +5,7 @@ import {
   Copy,
   Download,
   Image as ImageIcon,
+  ImagePlus,
   Link2,
   ListOrdered,
   MessageCircle,
@@ -36,6 +37,7 @@ import { useWatchKeyboard } from "@/renderer/hooks/use-watch-keyboard";
 import {
   getShowComments,
   getShowEngagement,
+  postGalleryUpload,
   postShowComment,
   postShowLike,
   type ShowCommentRow,
@@ -48,7 +50,11 @@ import { isPlaybackUrlCopySafe } from "@/renderer/lib/playback-url-clipboard";
 import { cn } from "@/renderer/lib/utils";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
 import { getRecentlyWatched } from "@/renderer/lib/recently-watched-bridge";
-import { recordVideoClipFromElement, saveVideoFrameAsPng } from "@/renderer/lib/watch-capture";
+import {
+  getVideoFrameDataUrlPng,
+  recordVideoClipFromElement,
+  saveVideoFrameAsPng,
+} from "@/renderer/lib/watch-capture";
 import type { OfflineDownloadAddResult } from "@/shared/offline-downloads-types";
 
 /** How many automatic reconnects after a playback error before showing the manual overlay. */
@@ -186,6 +192,7 @@ export function WatchPage() {
   const [upNext, setUpNext] = useState<{ episode: string; sec: number } | null>(null);
   const [offlineQueueReady, setOfflineQueueReady] = useState(false);
   const [clipRecording, setClipRecording] = useState(false);
+  const [clipDurationMs, setClipDurationMs] = useState(10_000);
 
   const autoPlayNextRef = useRef(true);
   const lastProgressSaveRef = useRef(0);
@@ -654,11 +661,34 @@ export function WatchPage() {
     const v = videoRef.current;
     if (!v || !playUrl || loadingEpisode || clipRecording) return;
     setClipRecording(true);
-    const r = await recordVideoClipFromElement(v, 10_000);
+    const r = await recordVideoClipFromElement(v, clipDurationMs);
     setClipRecording(false);
     if (r.ok) showToast(t("watch.toastClipSaved"));
     else showToast(t("watch.toastClipFailed"), 4800);
-  }, [playUrl, loadingEpisode, clipRecording, t]);
+  }, [playUrl, loadingEpisode, clipRecording, clipDurationMs, t]);
+
+  const handleSubmitFrameToGallery = useCallback(async () => {
+    const v = videoRef.current;
+    if (!v || !playUrl || loadingEpisode || !anime) return;
+    const token = await window.anivault.getConfig("authToken");
+    if (!token?.trim()) {
+      showToast(t("watch.toastGalleryNeedAuth"));
+      return;
+    }
+    const dataUrl = getVideoFrameDataUrlPng(v);
+    if (!dataUrl) {
+      showToast(t("watch.toastFrameFailed"), 4200);
+      return;
+    }
+    const title = `${anime.name} — ${currentEpisode}`.slice(0, 200);
+    const r = await postGalleryUpload(title, dataUrl);
+    if (r.ok) {
+      showToast(t("watch.toastGallerySubmitted"));
+      navigate("/gallery?tab=upload");
+    } else {
+      showToast(r.error ?? t("watch.toastGalleryFailed"), 4800);
+    }
+  }, [anime, currentEpisode, loadingEpisode, navigate, playUrl, t]);
 
   useWatchKeyboard(videoRef, Boolean(playUrl), playerSeekStepSec, episodeNav);
 
@@ -990,6 +1020,31 @@ export function WatchPage() {
                 <ImageIcon className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
                 {t("watch.saveFrame")}
               </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!playUrl || loadingEpisode}
+                className="rounded-xl border-emerald-500/30 bg-emerald-950/20 text-zinc-100 hover:bg-emerald-950/35"
+                title={t("watch.submitFrameGalleryTitle")}
+                onClick={() => void handleSubmitFrameToGallery()}
+              >
+                <ImagePlus className="mr-1.5 h-4 w-4 shrink-0" aria-hidden />
+                {t("watch.submitFrameGallery")}
+              </Button>
+              <label className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/30 px-2 py-1.5 text-[11px] text-zinc-400">
+                <span className="whitespace-nowrap">{t("watch.clipDurationLabel")}</span>
+                <select
+                  value={clipDurationMs}
+                  disabled={clipRecording}
+                  onChange={(e) => setClipDurationMs(Number(e.target.value))}
+                  className="max-w-[120px] rounded-md border border-white/15 bg-zinc-950 px-1.5 py-0.5 text-zinc-200"
+                >
+                  <option value={5000}>{t("watch.clipDuration5")}</option>
+                  <option value={10000}>{t("watch.clipDuration10")}</option>
+                  <option value={30000}>{t("watch.clipDuration30")}</option>
+                </select>
+              </label>
               <Button
                 type="button"
                 size="sm"

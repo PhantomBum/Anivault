@@ -1,14 +1,17 @@
-import { MessageCircle, Trash2 } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Download, MessageCircle, Trash2, Upload } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
+import { showToast } from "@/renderer/lib/av-toast";
 import {
   GENERAL_SERVER_ID,
   addLocalReply,
   addLocalThread,
   deleteLocalThread,
+  exportLocalThreadsJson,
+  importLocalThreadsJson,
   listLocalThreads,
   type LocalThread,
 } from "@/renderer/lib/community-local-threads";
@@ -35,6 +38,8 @@ export function CommunityLocalThreadsPanel({ servers }: { servers: ServerChip[] 
   const [newBody, setNewBody] = useState("");
   const [replyByThread, setReplyByThread] = useState<Record<string, string>>({});
   const [openId, setOpenId] = useState<string | null>(null);
+  const importModeRef = useRef<"merge" | "replace">("merge");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(() => {
     setThreads(listLocalThreads(serverId));
@@ -72,6 +77,46 @@ export function CommunityLocalThreadsPanel({ servers }: { servers: ServerChip[] 
     if (openId === threadId) setOpenId(null);
   };
 
+  const onExportBackup = () => {
+    const blob = new Blob([exportLocalThreadsJson()], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `anivault-local-threads-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast(t("communityHub.toastExportOk"));
+  };
+
+  const runImport = (raw: string, mode: "merge" | "replace") => {
+    const r = importLocalThreadsJson(raw, mode);
+    if (r.ok) {
+      showToast(t("communityHub.toastImportOk"));
+      refresh();
+    } else {
+      showToast(r.error, 4200);
+    }
+  };
+
+  const triggerImport = (mode: "merge" | "replace") => {
+    importModeRef.current = mode;
+    fileInputRef.current?.click();
+  };
+
+  const onFilePicked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const raw = typeof reader.result === "string" ? reader.result : "";
+      runImport(raw, importModeRef.current);
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)]/60 p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -85,6 +130,46 @@ export function CommunityLocalThreadsPanel({ servers }: { servers: ServerChip[] 
             </h2>
             <p className="mt-1 text-sm text-[var(--av-muted)]">{t("communityHub.localThreadsHint")}</p>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={onFilePicked}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-[var(--av-border)] text-xs"
+            onClick={onExportBackup}
+          >
+            <Download className="mr-1.5 h-3.5 w-3.5" />
+            {t("communityHub.exportBackup")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-[var(--av-border)] text-xs"
+            onClick={() => triggerImport("merge")}
+          >
+            <Upload className="mr-1.5 h-3.5 w-3.5" />
+            {t("communityHub.importMerge")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-[var(--av-border)] text-xs"
+            onClick={() => {
+              if (window.confirm(t("communityHub.importReplaceConfirm"))) triggerImport("replace");
+            }}
+          >
+            {t("communityHub.importReplace")}
+          </Button>
         </div>
       </div>
 

@@ -24,6 +24,28 @@ type StoreShape = {
   byServerId: Record<string, LocalThread[]>;
 };
 
+function isValidThread(t: unknown): t is LocalThread {
+  if (!t || typeof t !== "object") return false;
+  const o = t as Record<string, unknown>;
+  if (
+    typeof o.id !== "string" ||
+    typeof o.title !== "string" ||
+    typeof o.body !== "string" ||
+    typeof o.createdAt !== "number" ||
+    !Array.isArray(o.replies)
+  ) {
+    return false;
+  }
+  return o.replies.every(
+    (r) =>
+      r &&
+      typeof r === "object" &&
+      typeof (r as LocalReply).id === "string" &&
+      typeof (r as LocalReply).body === "string" &&
+      typeof (r as LocalReply).createdAt === "number"
+  );
+}
+
 function readStore(): StoreShape {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -95,4 +117,56 @@ export function deleteLocalThread(serverId: string, threadId: string): void {
   const list = s.byServerId[serverId] ?? [];
   s.byServerId[serverId] = list.filter((x) => x.id !== threadId);
   writeStore(s);
+}
+
+/** JSON backup for Settings → export or manual backup. */
+export function exportLocalThreadsJson(): string {
+  return JSON.stringify(readStore(), null, 2);
+}
+
+export function importLocalThreadsJson(
+  raw: string,
+  mode: "replace" | "merge"
+): { ok: true } | { ok: false; error: string } {
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object" || !("byServerId" in parsed)) {
+      return { ok: false, error: "Invalid backup file." };
+    }
+    const incoming = parsed as StoreShape;
+    if (typeof incoming.byServerId !== "object" || incoming.byServerId === null) {
+      return { ok: false, error: "Invalid backup file." };
+    }
+
+    if (mode === "replace") {
+      const clean: StoreShape = { byServerId: {} };
+      for (const [sid, threads] of Object.entries(incoming.byServerId)) {
+        if (!Array.isArray(threads)) continue;
+        const ok = threads.filter(isValidThread);
+        if (ok.length > 0) clean.byServerId[sid] = ok.slice(0, 200);
+      }
+      writeStore(clean);
+      return { ok: true };
+    }
+
+    const cur = readStore();
+    const merged: StoreShape = { byServerId: { ...cur.byServerId } };
+    for (const [sid, threads] of Object.entries(incoming.byServerId)) {
+      if (!Array.isArray(threads)) continue;
+      const existing = merged.byServerId[sid] ?? [];
+      const byId = new Map(existing.map((t) => [t.id, t]));
+      for (const t of threads) {
+        if (isValidThread(t)) {
+          byId.set(t.id, t);
+        }
+      }
+      merged.byServerId[sid] = [...byId.values()]
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 200);
+    }
+    writeStore(merged);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Invalid JSON." };
+  }
 }

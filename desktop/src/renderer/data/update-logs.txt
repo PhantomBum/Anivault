@@ -1,5 +1,14 @@
 AniVault Unvaulted — changelog
 
+2.0.3 (roadmap polish: gallery from Watch, thread backup, HLS offline)
+- **Community local threads:** **Export JSON** / **Import (merge)** / **Import (replace all)** for backups and moving between machines.
+- **Watch:** **Submit frame to gallery** (companion API + signed-in account) opens **Gallery → Upload**; **clip length** selector **5s / 10s / 30s** for WebM capture.
+- **Gallery:** `?tab=upload` (and other tabs) in the hash URL syncs the active tab (deep links from Watch).
+- **Offline downloads:** unencrypted **HLS (.m3u8)** attempts **segment concat** to a single **`.ts`** file (VOD-style playlists; **AES-128** and similar still fail with a clear error). Progressive MP4/WebM unchanged.
+- **i18n:** `settings.dataDownloadsBody` and new watch / community strings (`en_US` / `pt_BR`).
+
+Tag **`v2.0.3`**.
+
 2.0.2 (local community threads + watch capture)
 - **Community → Local threads:** per-space discussion **stored on this device** (`localStorage`)—spaces include **General** plus each hub returned by the companion API. Create threads, reply, delete; not synced to the server yet.
 - **Watch → Playback assists:** **Save frame** exports the current video frame as **PNG** (browser download). **Record 10s clip** saves **WebM** from `captureStream` (experimental; depends on codec/source—may fail on some streams).
