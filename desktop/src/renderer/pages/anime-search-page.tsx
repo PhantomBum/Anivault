@@ -414,7 +414,7 @@ export function AnimeSearchPage() {
       return true;
     });
   }, [
-    audioSorted,
+    audioFiltered,
     enrichMap,
     needsAniMeta,
     allowMatureGlobal,
@@ -630,7 +630,7 @@ export function AnimeSearchPage() {
   };
 
   return (
-    <div className="container flex max-w-[1600px] flex-col gap-6 bg-[var(--av-bg)] p-4 text-[var(--av-text)] sm:p-6">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 overflow-x-hidden bg-[var(--av-bg)] px-4 pb-10 pt-1 text-[var(--av-text)] sm:px-6 sm:pb-12">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Find shows</h1>
         <p className="mt-1 text-sm text-[var(--av-muted)]">
@@ -660,7 +660,7 @@ export function AnimeSearchPage() {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-stretch sm:gap-2">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--av-muted)]" />
           <Input
@@ -705,28 +705,28 @@ export function AnimeSearchPage() {
             </button>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-0.5">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
+          <div className="inline-flex rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)] p-px">
             <Button
               type="button"
               variant={viewMode === "grid" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-xl"
+              className="h-8 gap-1 rounded-md px-2.5 text-xs"
               onClick={() => setViewMode("grid")}
               aria-pressed={viewMode === "grid"}
             >
-              <LayoutGrid className="mr-1.5 h-4 w-4" />
+              <LayoutGrid className="h-3.5 w-3.5" />
               Grid
             </Button>
             <Button
               type="button"
               variant={viewMode === "list" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-xl"
+              className="h-8 gap-1 rounded-md px-2.5 text-xs"
               onClick={() => setViewMode("list")}
               aria-pressed={viewMode === "list"}
             >
-              <List className="mr-1.5 h-4 w-4" />
+              <List className="h-3.5 w-3.5" />
               List
             </Button>
           </div>
@@ -734,7 +734,7 @@ export function AnimeSearchPage() {
             type="button"
             variant={groupBySeries ? "secondary" : "outline"}
             size="sm"
-            className="rounded-2xl border-[var(--av-border)]"
+            className="h-8 rounded-lg border-[var(--av-border)] px-2.5 text-xs"
             onClick={() => setGroupBySeries((v) => !v)}
           >
             Group series
@@ -744,10 +744,11 @@ export function AnimeSearchPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)]"
+                size="sm"
+                className="h-8 rounded-lg border-[var(--av-border)] bg-[var(--av-surface)] px-2.5 text-xs"
                 aria-label="Filters"
               >
-                <Filter className="mr-2 h-4 w-4" />
+                <Filter className="mr-1.5 h-3.5 w-3.5" />
                 Filters
               </Button>
             </SheetTrigger>
@@ -940,7 +941,7 @@ export function AnimeSearchPage() {
       ) : null}
 
       {viewMode === "list" && orderedResults.length > 0 && orderedResults.length <= VIRTUAL_THRESHOLD ? (
-        <ul className="max-h-[min(70vh,560px)] divide-y divide-[var(--av-border)] overflow-y-auto rounded-xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/40">
+        <ul className="divide-y divide-[var(--av-border)] rounded-xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/40">
           {orderedResults.map((anime) => {
             const isExpanded = expandedId === anime.id;
             const episodesState = episodesByShowId[anime.id] ?? { status: "idle" as const };

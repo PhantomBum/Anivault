@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.2.1
+- **Fix:** Find shows `audioFiltered` deps; main scroll layout; compact Find/Settings tabs. **Tag v3.2.1**.
+
 3.2.0
 - **Watch + reliability + perf:** PiP shortcut, reconnect UI, media error detail, smarter stream errors, `content-visibility` grids, memo episode grid. **Tag v3.2.0**.
 

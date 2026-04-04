@@ -379,11 +379,11 @@ export default function SidebarLayout() {
               isHome && "px-0 py-0"
             )}
           >
-            <main className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
+            <main className="w-full min-w-0">
               <RouteErrorBoundary key={location.pathname}>
                 <div
                   key={location.pathname}
-                  className="motion-safe:animate-av-route-in motion-reduce:animate-none flex min-h-0 w-full min-w-0 flex-1 flex-col"
+                  className="motion-safe:animate-av-route-in motion-reduce:animate-none w-full min-w-0"
                 >
                   <Outlet />
                 </div>

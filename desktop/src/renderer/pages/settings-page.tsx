@@ -193,7 +193,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-2 pb-12 text-[var(--av-text)] md:px-3">
+    <div className="mx-auto max-w-5xl space-y-6 px-2 pb-12 text-[var(--av-text)] md:px-3">
       <div className="av-surface-raised rounded-2xl border border-[var(--av-border)]/85 p-6 md:p-8">
         <h2 className="text-2xl font-bold tracking-tight text-[var(--av-text)] md:text-[1.75rem]">
           {translate("settings.title")}
@@ -286,9 +286,9 @@ export function SettingsPage() {
           const next = SETTINGS_TABS.includes(v as SettingsTab) ? v : "playback";
           setSearchParams({ tab: next }, { replace: true });
         }}
-        className="w-full min-h-[40rem]"
+        className="w-full min-h-0"
       >
-        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1.5 rounded-2xl border border-[var(--av-border)]/90 bg-[var(--av-surface)]/80 p-1.5 shadow-inner backdrop-blur-sm">
+        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1 rounded-xl border border-[var(--av-border)]/90 bg-[var(--av-surface)]/80 p-1 shadow-inner backdrop-blur-sm">
           <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
           </TabsTrigger>

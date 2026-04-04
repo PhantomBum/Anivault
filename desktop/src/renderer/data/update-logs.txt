@@ -1,5 +1,13 @@
 AniVault Unvaulted — changelog
 
+3.2.1 (Find shows crash + scroll + compact tabs)
+- **Fix:** `results` filter `useMemo` depended on **`audioSorted`** (undefined) — corrected to **`audioFiltered`** (fixes **Find shows** route error boundary).
+- **Scroll:** Main column **`<main>`** / route outlet no longer use **`flex-1` + nested flex** that could fight the scroll container — page content sizes naturally so **the main shell scrolls** (Find shows, Settings, etc.).
+- **Find shows:** Tighter **Grid / List / Group / Filters** toolbar (`h-8`, `gap-1`, compact segment); short **list view** no longer uses a **max-height inner scroll** — list grows with the page.
+- **Settings:** **Tabs** list **gap/padding** reduced; tab triggers **shorter**; tab content **no forced 32rem min-height**; **Tabs** wrapper **no 40rem min-height**.
+
+Tag **`v3.2.1`**.
+
 3.2.0 (Watch UX, reliability, grid performance)
 - **Watch / player:** **P** opens **Picture-in-picture** (with **Space / arrows / F / M / N / B** unchanged); hint row updated; **playback failure overlay** uses light **backdrop blur**.
 - **Reliability:** **Automatic reconnect** now shows **“Reconnecting… attempt X of 5”** while buffering; final failure message includes **HTMLMediaError** detail (network / decode / unsupported) via **`describeMediaErrorSuffix`**; **fetch/stream errors** hint network when message matches.
