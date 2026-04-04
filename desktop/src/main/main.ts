@@ -93,7 +93,8 @@ const createWindow = () => {
        * Remote content is not loaded in the shell; APIs go through preload IPC.
        */
       webSecurity: !app.isPackaged,
-      devTools: !app.isPackaged,
+      /** Set `ANIVAULT_DEVTOOLS=1` when launching the installed .exe to inspect a blank screen. */
+      devTools: !app.isPackaged || process.env.ANIVAULT_DEVTOOLS === "1",
     },
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
     trafficLightPosition: process.platform === "darwin" ? { x: 16, y: 16 } : undefined,

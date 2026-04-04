@@ -1,5 +1,86 @@
 AniVault Unvaulted — changelog
 
+2.0.0 (community release — everything below is what you get today)
+This is the **2.0** milestone build: same Unvaulted desktop client you know, with startup reliability fixes that matter on real PCs, a fully detailed changelog for newcomers, and no change to the ani-cli streaming model (sources still come from upstream; we don’t host video).
+
+**Install, updates & GitHub**
+- **Windows installer:** Squirrel **`AniVaultUnvaultedSetup.exe`** with branded **setup icon** and **installing** splash GIF generated from the app icon.
+- **Squirrel lifecycle:** **`electron-squirrel-startup`** so `--squirrel-install`, update, and uninstall events finish cleanly instead of flashing a broken UI.
+- **Updater files on every release:** `*-full.nupkg`, **`RELEASES`**, and **`latest.yml`** (the Forge **postMake** hook writes `latest.yml` next to the nupkg for **electron-updater**).
+- **CI you can trust:** **Windows installer release** workflow builds on `windows-latest`, verifies setup + nupkg + `latest.yml`, then uploads with **`gh release`** (no fragile glob uploads).
+- **Taskbar / jump lists:** **`app.setAppUserModelId('com.anivault.unvaulted')`** on Windows so shortcuts and notifications match the app identity.
+- **Packaged binary name:** **`anivault-unvaulted.exe`** inside the Squirrel layout (Forge `executableName`).
+- **NuGet id without spaces:** Squirrel **`name: AniVaultUnvaulted`** so `npm run make` succeeds on CI (spaces break NuGet pack).
+- **GitHub Releases:** stable tags publish **installer + updater metadata**; **`prerelease: false`** on the Forge publisher for normal drops.
+- **Fresh install path:** new users only need **`AniVaultUnvaultedSetup.exe`** under **Assets** on the release—not a source zip.
+
+**Startup & “black window” reliability (read this if the UI was ever blank)**
+- **CSP removed from `index.html`:** the old **Content-Security-Policy** meta used `script-src 'self'`, which often **blocks the Vite bundle** when the shell loads from **`anivault://`** or other non-`https` origins (opaque **`'self'`**). Security stays in **preload + context isolation**, not a brittle meta tag.
+- **`anivault://` protocol:** packaged builds load **`anivault:///index.html`**; **`protocol.handle`** serves files from **`renderer/main_window`** with **`..` traversal blocked**.
+- **Privileged scheme:** **`registerSchemesAsPrivileged`** registers **`anivault`** with **fetch / CORS** privileges so **`net.fetch(fileURL)`** can stream those assets reliably.
+- **No rogue `crossorigin` on shipped HTML:** a Vite **post** `transformIndexHtml` step strips **`crossorigin`** so **`file://`** dev smoke and some packaged paths don’t silently skip JS/CSS.
+- **Electron webPreferences:** **`nodeIntegration: false`** + **`contextIsolation: true`** ( **`nodeIntegration: true`** with isolation is a known **blank-window** footgun on current Electron).
+- **`webSecurity: false` when packaged:** avoids **`file://` / custom-scheme** edge cases for the local SPA; remote pages are not loaded in the shell.
+- **Preload-only APIs:** **`contextBridge`** exposes **`window.anivault`**, **`windowControls`**, **`security`**, theme, ani-cli, watch progress, etc.—no raw Node in the renderer.
+- **First-line Squirrel import:** **`@/main/squirrel-bootstrap`** runs before the rest of **`main.ts`**.
+- **Main-window load order:** **stream proxy** starts, **IPC** registers, then the **BrowserWindow** (proxy ready for playback).
+- **Local stream proxy:** loopback **HTTP server** adds **Referer** / **User-Agent** behavior stream hosts expect.
+- **Crash visibility:** **main crash guards** log uncaught exceptions; **`did-fail-load`** logs failed navigations; **renderer error boundary** offers reload if React throws.
+- **Debug builds:** set **`ANIVAULT_DEVTOOLS=1`** before launching the installed exe to open **DevTools** on a packaged build.
+- **Multi-path window icon:** **`resolveWindowIcon`** searches **asar**, **renderer outDir**, and **`public`** for **ICO/PNG** assets.
+
+**Search, sort & discovery**
+- **Find shows** keeps the **search field enabled while results load** (no more focus-killing **`disabled={loading}`**); a **spinner** shows status instead.
+- **Sort modes:** **source order**, **title A→Z / Z→A**, **episode count** high→low and low→high, **AniList score**, **season year** newest/oldest—shared **`search-result-sort.ts`**.
+- **Home search** uses the same sort pipeline with **AniList enrichment** so score/year sorts aren’t empty promises.
+- **Debounced search** with **ani-cli** **`cachedAniSearch`** session cache.
+- **Grid vs list**, **group-by-series**, **virtualized list** when result counts get huge.
+- **Recent searches** and **session `q` restore** on Find shows.
+- **URL `?q=`** stays in sync with the debounced query (replace navigation, fewer history spam).
+- **Filters sheet:** audio, genres, format, minimum score, minimum year, maturity—**AniList**-backed when metadata exists.
+- **Discover** remembers its tab in-session; **Find shows** has a **clear** affordance.
+- **Thumbnails:** **mergeShowThumbnails** / **prefetch** paths keep posters warm as you scroll.
+
+**Watch & playback**
+- **Watch** page with **mini player**, transport, and **keyboard** shortcuts.
+- **Shareable links** copy **`id` / `mode` / `ep`**; opening them **rehydrates** the session.
+- **Breadcrumb** trail for orientation (Discover → title → episode).
+- **Stream IPC** resolves URLs with **timeouts** and **retries** so hung **ani-cli** calls don’t spin forever.
+- **Optional always-on-top** from **Settings → Playback** via **`windowControls.setAlwaysOnTop`**.
+- **Mature-content** badges and **global allow/deny** wiring from config.
+- **Continue watching** row with **remove-from-continue** context action.
+- **Local watchlist** with duplicate detection and **Add to My lists** from cards.
+
+**Settings, privacy & shell**
+- **Settings** split into real tabs under **`pages/settings/`** (Appearance, Privacy, Shortcuts, Playback, Studio, …).
+- **Find in settings** search index jumps to anchors.
+- **Privacy & diagnostics:** telemetry stance, export/diagnostics affordances (see in-app copy).
+- **Shortcuts & input** tab consolidates keyboard help and cross-links.
+- **Command palette (`Ctrl+Shift+P`)**: jump to **routes**, **Settings** subtabs, **resume watch**, **scroll to player**, **copy diagnostics**.
+- **Scroll restore** per route using **sessionStorage**; **Alt+Left** goes back in history; **Alt+,** cycles Settings tabs.
+- **HashRouter** for **`file://` / packaged** path compatibility.
+- **Studio / Community / Gallery / Clips** use shared **`AvFutureSurface`** visuals instead of empty stubs.
+- **Dialog `showCloseButton`** fixes hidden duplicate close controls on update + palette dialogs.
+- **i18n** strings for **`en_US`** / **`pt_BR`** on exposed chrome.
+- **This changelog** is **bundled** and shown under **Settings → Updates**.
+
+**Performance & engineering**
+- **`ani-session-cache`** **dedupes** overlapping **getShowDetails** / **getEpisodes** calls.
+- **Vite `manualChunks`** split **react**, **react-router**, **i18next** for better caching.
+- **Electron Fuses** (Forge): **no `RunAsNode`**, **embedded ASAR integrity**, **cookie encryption**, **disable node CLI** in production.
+- **Forge + Vite** pipeline: **main**, **preload**, **renderer** targets with **@/** alias.
+- **Type-safe IPC** channel constants across main/preload/renderer.
+- **Offline queue (experimental):** progressive URL capture for downloads lives in the stack from the **1.0.0** line—see in-app docs if enabled in your build.
+- **Telemetry:** opt-in posture surfaced under **Privacy** (no surprise tracking story).
+- **Schedule** page for seasonal browsing (AniList-backed where configured).
+- **Update dialog** when **electron-updater** finds a newer GitHub Release.
+
+**What hasn’t changed (honest)**
+- Streams still depend on **ani-cli** and upstream sources—**availability varies** by title/day.
+- **Not** a licensed subscription service; **don’t** expect every show worldwide.
+
+Tag **`v2.0.0`** — download **`AniVaultUnvaultedSetup.exe`** from [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
+
 1.2.5
 - **Fix:** Packaged app loading — main window uses custom **`anivault://`** protocol for the renderer (avoids fragile `file://` module/CSS loads). **Find shows / home search** no longer **disables the field while loading** (you can keep typing); spinner beside the field instead. **Sort:** A→Z / Z→A, episode count both ways, **AniList score**, **year** (newest/oldest). Tag **v1.2.5**.
 

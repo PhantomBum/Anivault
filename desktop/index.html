@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <title>AniVault Unvaulted</title>
     <link rel="icon" type="image/png" href="./icon-rounded.png" />
-    <!-- Allow local assets, AniList API/CDN, and blob/data thumbnails under file:// -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: http: https:; media-src 'self' blob: http: https:; connect-src 'self' http: https: ws: wss:; font-src 'self' data:;"
-    />
+    <!--
+      No CSP meta here: Electron loads this UI from file:// or anivault://; strict
+      script-src 'self' often blocks bundled scripts (opaque origin with custom schemes).
+      Security relies on contextIsolation + preload, not remote HTML in the shell.
+    -->
     <link rel="stylesheet" href="/src/renderer/styles/global.css" />
   </head>
   <body>
