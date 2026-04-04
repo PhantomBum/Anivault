@@ -13,7 +13,7 @@ import {
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -46,6 +46,7 @@ import {
 import { type ShowDetails, getAniCli } from "@/renderer/lib/ani-cli-bridge";
 import { cachedGetEpisodes, cachedGetShowDetails } from "@/renderer/lib/ani-session-cache";
 import { showToast } from "@/renderer/lib/av-toast";
+import { describeMediaErrorSuffix } from "@/renderer/lib/media-error";
 import { isPlaybackUrlCopySafe } from "@/renderer/lib/playback-url-clipboard";
 import { cn } from "@/renderer/lib/utils";
 import { sortEpisodeLabels } from "@/renderer/lib/episode-sort";
@@ -63,7 +64,7 @@ const MAX_AUTO_RECONNECT = 5;
 /** Show search when episode count exceeds this (Nexus-style dense grid). */
 const EPISODE_FILTER_THRESHOLD = 8;
 
-function EpisodePillGrid({
+const EpisodePillGrid = memo(function EpisodePillGrid({
   episodes,
   currentEpisode,
   loadingEpisode,
@@ -78,7 +79,7 @@ function EpisodePillGrid({
     return <p className="text-sm text-zinc-500">No matches.</p>;
   }
   return (
-    <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
+    <div className="av-poster-grid grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8">
       {episodes.map((ep) => {
         const active = ep === currentEpisode;
         return (
@@ -101,7 +102,7 @@ function EpisodePillGrid({
       })}
     </div>
   );
-}
+});
 
 interface WatchState {
   anime: { id: string; name: string; mode: "sub" | "dub" };
@@ -127,6 +128,8 @@ export function WatchPage() {
   const [, setLoading] = useState(true);
   const [loadingEpisode, setLoadingEpisode] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Shown while automatic stream reconnect runs (after media errors). */
+  const [reconnectNotice, setReconnectNotice] = useState<string | null>(null);
   const anime = state?.anime;
   const [episodes, setEpisodes] = useState<string[]>(() => state?.episodes ?? []);
   const initialEpisode = state?.currentEpisode ?? episodes[0] ?? "";
@@ -273,6 +276,7 @@ export function WatchPage() {
       setLoadingEpisode(true);
       setError(null);
       setPlaybackError(null);
+      setReconnectNotice(null);
       try {
         const aniCli = getAniCli();
         const { url, referer } = await aniCli.getStreamUrl(anime.id, ep, anime.mode);
@@ -287,7 +291,13 @@ export function WatchPage() {
           // Ignore - recording is best-effort
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load stream");
+        setReconnectNotice(null);
+        const msg = err instanceof Error ? err.message : "Failed to load stream";
+        setError(
+          /network|fetch|timeout|ECONNREFUSED/i.test(msg)
+            ? `${msg} — check your connection or try again.`
+            : msg
+        );
       } finally {
         setLoadingEpisode(false);
       }
@@ -554,6 +564,7 @@ export function WatchPage() {
     if (!currentEpisode) return;
     clearReconnectTimeout();
     autoReconnectAttemptRef.current = 0;
+    setReconnectNotice(null);
     const el = videoRef.current;
     const fromVideo =
       el && !Number.isNaN(el.currentTime) && el.currentTime > 0 ? el.currentTime : null;
@@ -575,6 +586,9 @@ export function WatchPage() {
     const n = autoReconnectAttemptRef.current;
 
     if (n <= MAX_AUTO_RECONNECT) {
+      setReconnectNotice(
+        t("watch.reconnectNotice", { current: String(n), max: String(MAX_AUTO_RECONNECT) })
+      );
       const delayMs = n === 1 ? 0 : Math.min(1000 * 2 ** (n - 2), 8000);
       clearReconnectTimeout();
       setPlayUrl("");
@@ -594,10 +608,11 @@ export function WatchPage() {
     }
 
     autoReconnectAttemptRef.current = 0;
+    setReconnectNotice(null);
     setPlaybackError(
-      "Stream interrupted (e.g. network lost or server error). Reconnect automatically failed; try again or check your connection."
+      t("watch.playbackFailedAfterRetries") + describeMediaErrorSuffix(el)
     );
-  }, [clearReconnectTimeout, currentEpisode, loadStream]);
+  }, [clearReconnectTimeout, currentEpisode, loadStream, t]);
 
   const applyResumeIfNeeded = useCallback((video: HTMLVideoElement) => {
     const resume = resumeAfterLoadRef.current;
@@ -613,6 +628,7 @@ export function WatchPage() {
 
   const handleVideoPlaying = useCallback(() => {
     autoReconnectAttemptRef.current = 0;
+    setReconnectNotice(null);
   }, []);
 
   const handleSkipIntro = useCallback(() => {
@@ -690,7 +706,7 @@ export function WatchPage() {
     }
   }, [anime, currentEpisode, loadingEpisode, navigate, playUrl, t]);
 
-  useWatchKeyboard(videoRef, Boolean(playUrl), playerSeekStepSec, episodeNav);
+  useWatchKeyboard(videoRef, Boolean(playUrl), playerSeekStepSec, episodeNav, togglePictureInPicture);
 
   useEffect(() => {
     if (!anime?.id) return;
@@ -917,6 +933,7 @@ export function WatchPage() {
                     streamRevision={streamRevision}
                     videoRef={videoRef}
                     loadingEpisode={loadingEpisode}
+                    loadingHint={reconnectNotice}
                     error={error}
                     recoveryHint={streamRecoveryHint}
                     playbackError={playbackError}
@@ -968,6 +985,7 @@ export function WatchPage() {
               <span className="text-zinc-500">Space</span> play/pause ·{" "}
               <span className="text-zinc-500">← →</span> seek ({playerSeekStepSec}s) ·{" "}
               <span className="text-zinc-500">F</span> fullscreen ·{" "}
+              <span className="text-zinc-500">P</span> PiP ·{" "}
               <span className="text-zinc-500">M</span> mute ·{" "}
               <span className="text-zinc-500">N</span> next ·{" "}
               <span className="text-zinc-500">B</span> back

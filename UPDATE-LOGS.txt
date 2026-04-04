@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.2.0
+- **Watch + reliability + perf:** PiP shortcut, reconnect UI, media error detail, smarter stream errors, `content-visibility` grids, memo episode grid. **Tag v3.2.0**.
+
 3.1.0
 - **GUI rework:** sidebar + nav, frosted header, Settings/home/discover/cards/empty states, shortcuts dialog. **Tag v3.1.0**.
 

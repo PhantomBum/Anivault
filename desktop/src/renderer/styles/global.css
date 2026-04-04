@@ -74,6 +74,14 @@
       0 4px 18px rgba(0, 0, 0, 0.38),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
+
+  /** Large poster grids: defer off-screen layout work (Chromium). */
+  @supports (content-visibility: auto) {
+    .av-poster-grid > * {
+      content-visibility: auto;
+      contain-intrinsic-size: 180px 260px;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -271,7 +271,9 @@
     "submitFrameGalleryTitle": "Enviar quadro atual à galeria companion (login + API)",
     "toastGalleryNeedAuth": "Entre em Conta e configure a URL da API para enviar à galeria.",
     "toastGallerySubmitted": "Enviado para moderação — abrindo Galeria",
-    "toastGalleryFailed": "Falha no envio à galeria"
+    "toastGalleryFailed": "Falha no envio à galeria",
+    "reconnectNotice": "Reconectando automaticamente — tentativa {{current}} de {{max}}",
+    "playbackFailedAfterRetries": "A reprodução parou após falhas nas reconexões automáticas. Tente “Recarregar stream”, outro episódio ou verifique a rede."
   },
   "communityHub": {
     "localThreadsTitle": "Tópicos locais (neste dispositivo)",

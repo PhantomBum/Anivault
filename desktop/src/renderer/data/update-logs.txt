@@ -1,5 +1,12 @@
 AniVault Unvaulted — changelog
 
+3.2.0 (Watch UX, reliability, grid performance)
+- **Watch / player:** **P** opens **Picture-in-picture** (with **Space / arrows / F / M / N / B** unchanged); hint row updated; **playback failure overlay** uses light **backdrop blur**.
+- **Reliability:** **Automatic reconnect** now shows **“Reconnecting… attempt X of 5”** while buffering; final failure message includes **HTMLMediaError** detail (network / decode / unsupported) via **`describeMediaErrorSuffix`**; **fetch/stream errors** hint network when message matches.
+- **Performance:** **`av-poster-grid`** uses **`content-visibility: auto`** on large **Discover**, **Find shows**, and **episode pill** grids to reduce layout work off-screen; **EpisodePillGrid** memoized to avoid unnecessary rerenders.
+
+Tag **`v3.2.0`**.
+
 3.1.0 (GUI rework — shell, nav, settings, cards)
 - **Sidebar:** gradient wash + **deeper shadow**; **nav items** use **icon wells**, **rounded-xl** rows, **left accent** on active, clearer hover.
 - **Main header:** **frosted bar** (`backdrop-blur` + tinted bg) for stronger separation from content.

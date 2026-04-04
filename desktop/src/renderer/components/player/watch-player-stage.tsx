@@ -11,6 +11,8 @@ type WatchPlayerStageProps = {
   streamRevision: number;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   loadingEpisode: boolean;
+  /** Extra line while buffering (e.g. automatic reconnect). */
+  loadingHint?: string | null;
   error: string | null;
   /** Shown under load failure (e.g. try another episode). */
   recoveryHint?: string | null;
@@ -35,6 +37,7 @@ export function WatchPlayerStage({
   streamRevision,
   videoRef,
   loadingEpisode,
+  loadingHint,
   error,
   recoveryHint,
   playbackError,
@@ -165,7 +168,7 @@ export function WatchPlayerStage({
               />
             ) : null}
             {playbackError ? (
-              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-black/92 px-6 text-center">
+              <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-black/92 px-6 text-center backdrop-blur-[2px]">
                 <p className="max-w-md text-sm leading-relaxed text-zinc-200">{playbackError}</p>
                 <Button
                   type="button"

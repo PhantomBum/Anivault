@@ -1,13 +1,14 @@
 import { type RefObject, useEffect } from "react";
 
 /**
- * Space: play/pause · ←/→ seek · F fullscreen · M mute · N/B next/prev episode (when provided)
+ * Space: play/pause · ←/→ seek · F fullscreen · P PiP · M mute · N/B next/prev episode (when provided)
  */
 export function useWatchKeyboard(
   videoRef: RefObject<HTMLVideoElement | null>,
   enabled: boolean,
   seekStepSec = 5,
-  episodeNav?: { onNext?: () => void; onPrev?: () => void }
+  episodeNav?: { onNext?: () => void; onPrev?: () => void },
+  onPictureInPicture?: () => void
 ) {
   useEffect(() => {
     if (!enabled) return;
@@ -28,6 +29,12 @@ export function useWatchKeyboard(
       if (e.code === "KeyB" && episodeNav?.onPrev) {
         e.preventDefault();
         episodeNav.onPrev();
+        return;
+      }
+
+      if (e.code === "KeyP" && onPictureInPicture) {
+        e.preventDefault();
+        onPictureInPicture();
         return;
       }
 
@@ -64,5 +71,5 @@ export function useWatchKeyboard(
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [enabled, videoRef, seekStepSec, episodeNav]);
+  }, [enabled, videoRef, seekStepSec, episodeNav, onPictureInPicture]);
 }

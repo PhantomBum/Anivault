@@ -271,7 +271,9 @@
     "submitFrameGalleryTitle": "Send current frame to the companion gallery (sign in + API)",
     "toastGalleryNeedAuth": "Sign in under Account and set the API URL to submit to the gallery.",
     "toastGallerySubmitted": "Submitted for review — opening Gallery",
-    "toastGalleryFailed": "Gallery upload failed"
+    "toastGalleryFailed": "Gallery upload failed",
+    "reconnectNotice": "Reconnecting automatically — attempt {{current}} of {{max}}",
+    "playbackFailedAfterRetries": "Playback stopped after automatic reconnects failed. Try “Reload stream”, pick another episode, or check your network."
   },
   "communityHub": {
     "localThreadsTitle": "Local threads (this device)",

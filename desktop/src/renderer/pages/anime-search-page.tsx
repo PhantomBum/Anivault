@@ -896,7 +896,7 @@ export function AnimeSearchPage() {
       )}
 
       {viewMode === "grid" && displayGroups.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="av-poster-grid grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {displayGroups.map((g) => {
             const primary = pickPrimaryShow(g.items, enrichMap);
             const enriched = enrichMap[primary.id];
