@@ -1,0 +1,40 @@
+# Ensures a GitHub **Release** exists for each version tag (not only a git tag).
+# The Windows installer workflow may create/update the same release when builds succeed;
+# this job runs quickly so the Releases page always has an entry with generated notes.
+#
+# Backfill an existing tag: Actions → "Publish release notes" → Run workflow → tag `v3.3.1`
+
+name: Publish release notes
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish (e.g. v3.3.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: AniVault Unvaulted ${{ github.event.inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          allowUpdates: true
+          body: |
+            Full history: [`desktop/src/renderer/data/update-logs.txt`](https://github.com/${{ github.repository }}/blob/main/desktop/src/renderer/data/update-logs.txt).
