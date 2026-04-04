@@ -77,10 +77,14 @@ export async function getGitHubStats(): Promise<GitHubStats> {
         latestAssets,
         (asset) => /\.zip$/i.test(asset.name) && /(darwin|mac|osx)/i.test(asset.name)
       ),
-      windows: findAsset(
-        latestAssets,
-        (asset) => /\.exe$/i.test(asset.name) && /(win|setup|squirrel)/i.test(asset.name)
-      ),
+      windows:
+        findAsset(latestAssets, (asset) =>
+          /^AniVaultUnvaultedSetup\.exe$/i.test(asset.name)
+        ) ??
+        findAsset(
+          latestAssets,
+          (asset) => /\.exe$/i.test(asset.name) && /(setup|installer|unvaulted)/i.test(asset.name)
+        ),
       linuxDeb: findAsset(latestAssets, (asset) => /\.deb$/i.test(asset.name)),
       linuxRpm: findAsset(latestAssets, (asset) => /\.rpm$/i.test(asset.name)),
     }

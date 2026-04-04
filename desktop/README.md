@@ -43,6 +43,10 @@ Or from repo root: `.\scripts\release-desktop.ps1 1.2.4` (PowerShell). CI workfl
 
 ---
 
+Repo-wide notes for contributors: [`CONTRIBUTING.md`](../CONTRIBUTING.md).
+
+---
+
 ## Scripts (the ones people actually use)
 
 | Command | What it does |

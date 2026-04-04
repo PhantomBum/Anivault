@@ -1,10 +1,8 @@
-# Build Windows Squirrel installer and attach binaries to the GitHub Release for this tag.
-#
-# Release: .\scripts\release-desktop.ps1 1.0.6
-#
-# Upload uses `gh release` (GitHub CLI) instead of glob-based actions — more reliable on Windows runners.
+# Windows installer: Squirrel build + upload everything next to the tag’s release.
+# Maintainer shortcut: .\scripts\release-desktop.ps1 <semver>
+# Upload is via `gh release` on the runner (more reliable here than glob upload actions).
 
-name: Release desktop (Windows)
+name: Windows installer release
 
 on:
   push:
@@ -92,7 +90,7 @@ jobs:
           if ! gh release view "$TAG" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
             gh release create "$TAG" --verify-tag --repo "${GITHUB_REPOSITORY}" \
               --title "AniVault Unvaulted ${TAG}" \
-              --notes "Windows Squirrel build (installer, nupkg, RELEASES, latest.yml). Changelog: [update-logs.txt](https://github.com/${GITHUB_REPOSITORY}/blob/main/desktop/src/renderer/data/update-logs.txt)." \
+              --notes "Windows build for ${TAG} — **AniVaultUnvaultedSetup.exe** plus updater files (nupkg, RELEASES, latest.yml). What changed: [update-logs.txt](https://github.com/${GITHUB_REPOSITORY}/blob/main/desktop/src/renderer/data/update-logs.txt)." \
               "$DIR"/*
           else
             for f in "$DIR"/*; do

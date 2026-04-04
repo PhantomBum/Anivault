@@ -44,7 +44,7 @@ export function Hero({ stats }: HeroProps) {
             />
           </div>
           <span className="font-sans text-xl font-semibold tracking-tight text-foreground">
-            AniVault
+            AniVault Unvaulted
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -70,18 +70,19 @@ export function Hero({ stats }: HeroProps) {
         <div className="flex-1 flex flex-col justify-center max-w-2xl">
           {/* Title */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] mb-6 text-balance">
-            Anime streaming
+            Desktop anime,
             <br />
             <span className="text-muted-foreground">
-              with a modern desktop UI
+              without pretending we host the video
             </span>
           </h1>
 
           {/* Description */}
           <p className="text-muted-foreground text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
-            Browse your favorite anime, binge entire series, and stay up to date
-            with the latest releases—all in a clean, simple app built for anime
-            fans.
+            Unvaulted is a Windows client built around{" "}
+            <span className="text-foreground/90">ani-cli</span>—search, pick a
+            show, watch. No subscription pitch; streams depend on what ani-cli
+            can resolve on a given day.
           </p>
 
           {/* CTA Buttons */}

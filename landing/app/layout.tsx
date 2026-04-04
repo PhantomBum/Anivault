@@ -8,8 +8,9 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'AniVault — Anime streaming desktop app',
-  description: 'Browse and watch anime with a clean desktop UI. AniVault pairs a modern interface with the ani-cli streaming stack for a focused viewing experience.',
+  title: 'AniVault Unvaulted — Windows desktop client (ani-cli)',
+  description:
+    'Unvaulted: a Windows app for watching anime through ani-cli—library, watch UI, and settings in one place. Open source; streams are not hosted here.',
   icons: {
     icon: [
       {
