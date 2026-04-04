@@ -1,9 +1,27 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
-import type { ConfigEnv, UserConfig } from "vite";
+import type { ConfigEnv, Plugin, UserConfig } from "vite";
 import { defineConfig } from "vite";
 
 import { pluginExposeRenderer } from "./vite.base.config";
+
+/**
+ * Vite injects `crossorigin` on script/link tags. Loading the renderer via
+ * `file://` (Electron `loadFile`) treats those as CORS fetches and module/CSS
+ * loads can fail silently — window stays dark with no React mount.
+ */
+function stripCrossoriginForElectronFileProtocol(): Plugin {
+  return {
+    name: "strip-crossorigin-electron-renderer",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler(html) {
+        return html.replace(/\s+crossorigin(?:="(?:anonymous|use-credentials)")?/gi, "");
+      },
+    },
+  };
+}
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -30,7 +48,7 @@ export default defineConfig((env) => {
         },
       },
     },
-    plugins: [pluginExposeRenderer(name), react()],
+    plugins: [pluginExposeRenderer(name), react(), stripCrossoriginForElectronFileProtocol()],
     resolve: {
       preserveSymlinks: true,
       alias: {

@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog
 
+1.2.3
+- **Fix:** Packaged app could show a **blank black window** — Vite added `crossorigin` on built `index.html` assets; under Electron’s `file://` loader those scripts/styles failed to run, so React never mounted. Stripped `crossorigin` in the renderer build for Electron. Tag **v1.2.3**.
+
 1.2.2
 - **Windows installer:** Branded Squirrel setup — `electron-squirrel-startup` (install/update/uninstall lifecycle), Forge `setupIcon` / `loadingGif` / metadata, generated `installer/installing.gif`. Tag **v1.2.2** → **AniVaultUnvaultedSetup.exe** on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest).
 

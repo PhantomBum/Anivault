@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+1.2.3
+- **Fix:** Black/blank window in packaged build — remove `crossorigin` from renderer `index.html` (Electron `file://` + module scripts). Tag **v1.2.3**.
+
 1.2.2
 - **Windows installer:** Branded Squirrel build (`electron-squirrel-startup`, setup icon & loading GIF, Forge metadata). Tag **v1.2.2**.
 
