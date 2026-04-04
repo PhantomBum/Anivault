@@ -21,7 +21,14 @@ type GalleryItem = {
   } | null;
 };
 
-export function GalleryPage() {
+export type GalleryPageTab = "browse" | "clips" | "upload" | "queue";
+
+export type GalleryPageProps = {
+  /** Default tab on mount (e.g. `/clips` opens the Clips tab). */
+  defaultTab?: GalleryPageTab;
+};
+
+export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [pending, setPending] = useState<GalleryItem[]>([]);
   const [err, setErr] = useState<string | null>(null);
@@ -30,6 +37,7 @@ export function GalleryPage() {
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadBusy, setUploadBusy] = useState(false);
   const [uploadMsg, setUploadMsg] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>(defaultTab);
 
   const loadApproved = useCallback(async () => {
     setErr(null);
@@ -140,7 +148,7 @@ export function GalleryPage() {
         </Button>
       </header>
 
-      <Tabs defaultValue="browse" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-2xl grid-cols-2 gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1 sm:grid-cols-4">
           <TabsTrigger
             value="browse"

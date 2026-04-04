@@ -4,7 +4,7 @@ Use this checklist before tagging a release candidate. Adjust depth to match ris
 
 ## Smoke (15–20 min)
 
-- [ ] Cold start: app opens, no blank shell, sidebar navigates (Home, Discover, Search, Lists, Calendar, Settings, Coming soon routes).
+- [ ] Cold start: app opens, no blank shell, sidebar navigates (Home, Discover, Search, Lists, Calendar, Settings, Community hub routes).
 - [ ] Watch: open a series from Discover → details → play → video starts, keyboard shortcuts (space, arrows) work; **breadcrumb** and **copy watch link**; paste/open link loads the episode.
 - [ ] Mini-player: start playback, navigate away; mini bar appears, resume from mini works; **Ctrl+Shift+P** → Resume watch / Scroll to player when available.
 - [ ] Settings: change volume, shell preset, density; “Saved” appears; Find in settings jumps to anchors; **Privacy** and **Shortcuts** tabs open; **Alt+,** cycles tabs.

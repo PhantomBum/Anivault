@@ -37,7 +37,7 @@ const TOOLS_ITEMS: NavItem[] = [
   { titleKey: "nav.legal", href: "/terms", icon: FileText },
 ];
 
-const COMING_SOON_ITEMS: NavItem[] = [
+const HUB_ITEMS: NavItem[] = [
   { titleKey: "nav.community", href: "/community", icon: Users },
   { titleKey: "nav.gallery", href: "/gallery", icon: ImageIcon },
   { titleKey: "nav.clips", href: "/clips", icon: Clapperboard },
@@ -143,7 +143,7 @@ export function AniVaultNav({
 
   const libraryTitles = LIBRARY_ITEMS.map((i) => t(i.titleKey));
   const toolsTitles = TOOLS_ITEMS.map((i) => t(i.titleKey));
-  const comingSoonTitles = COMING_SOON_ITEMS.map((i) => t(i.titleKey));
+  const hubTitles = HUB_ITEMS.map((i) => t(i.titleKey));
 
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" aria-label="Main">
@@ -163,9 +163,9 @@ export function AniVaultNav({
         sectionDivider
       />
       <NavSection
-        label={t("nav.sectionComingSoon")}
-        items={COMING_SOON_ITEMS}
-        itemTitles={comingSoonTitles}
+        label={t("nav.sectionHub")}
+        items={HUB_ITEMS}
+        itemTitles={hubTitles}
         onNavigate={onNavigate}
         collapsed={collapsed}
         sectionDivider

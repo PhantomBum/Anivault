@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+2.0.1
+- **Hub routes shipped:** `/community`, `/gallery`, `/clips`, and `/browse` load real pages (companion API for community/gallery; dense catalog browse). Sidebar **Community hub**, command palette entries, i18n subtitles. **Tag v2.0.1**.
+
 2.0.0
 - **Community release:** **62+** catalogued improvements in the bundled log (install/updates, startup reliability including **CSP removal** for `anivault://`, search/sort, watch, settings, performance). **Tag v2.0.0** → **`AniVaultUnvaultedSetup.exe`** on [GitHub Releases](https://github.com/PhantomBum/Anivault/releases/latest). If the window was ever a black screen, install this build first.
 

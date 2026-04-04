@@ -52,8 +52,17 @@ const TermsPage = lazy(() =>
 const ListsPage = lazy(() =>
   import("@/renderer/pages/lists-page").then((m) => ({ default: m.ListsPage }))
 );
-const ComingSoonPage = lazy(() =>
-  import("@/renderer/pages/coming-soon-page").then((m) => ({ default: m.ComingSoonPage }))
+const CommunityPage = lazy(() =>
+  import("@/renderer/pages/community-page").then((m) => ({ default: m.CommunityPage }))
+);
+const GalleryPage = lazy(() =>
+  import("@/renderer/pages/gallery-page").then((m) => ({ default: m.GalleryPage }))
+);
+const ClipsPage = lazy(() =>
+  import("@/renderer/pages/clips-page").then((m) => ({ default: m.ClipsPage }))
+);
+const BrowsePage = lazy(() =>
+  import("@/renderer/pages/browse-page").then((m) => ({ default: m.BrowsePage }))
 );
 
 function RouteFallback() {
@@ -99,7 +108,7 @@ export default function App() {
                 >
                   <Route path="/" element={<WelcomePage />} />
                   <Route path="/discover" element={<DiscoverPage />} />
-                  <Route path="/browse" element={<Navigate to="/discover" replace />} />
+                  <Route path="/browse" element={<BrowsePage />} />
                   <Route path="/explore" element={<Navigate to="/discover" replace />} />
                   <Route path="/schedule" element={<SchedulePage />} />
                   <Route path="/request-series" element={<RequestSeriesPage />} />
@@ -109,9 +118,9 @@ export default function App() {
                   <Route path="/watch" element={<WatchPage />} />
                   <Route path="/player" element={<PlayerPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/community" element={<ComingSoonPage />} />
-                  <Route path="/gallery" element={<ComingSoonPage />} />
-                  <Route path="/clips" element={<ComingSoonPage />} />
+                  <Route path="/community" element={<CommunityPage />} />
+                  <Route path="/gallery" element={<GalleryPage />} />
+                  <Route path="/clips" element={<ClipsPage />} />
                   <Route path="/lists" element={<ListsPage />} />
                   <Route path="/account" element={<AccountPage />} />
                 </Route>
