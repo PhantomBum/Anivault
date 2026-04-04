@@ -1,5 +1,13 @@
 AniVault Unvaulted — changelog
 
+3.0.0 (major line — UI polish, Studio hub, playbar refresh)
+- **Major version:** **3.x** opens a focused cycle on **clearer community UI**, a **real Studio hub**, and a **refreshed mini playbar** while keeping the same core player and companion APIs.
+- **Community hub surfaces:** **`#/community`**, **`#/gallery`**, and **`#/clips`** use **`AvFutureSurface`** gradients (indigo / rose / cyan) so hub routes match the Studio visual language.
+- **Settings → Studio:** no longer a maintenance placeholder — **quick links** to Community, Gallery, Clips, Browse, Updates (full changelog + **62-item** audit), and Request a show; copy explains the numbered audit lives under **Updates**.
+- **Mini player (bottom bar):** **glass + gradient** shell, **taller seek track** (`h-1`), **gradient progress fill**, stronger **shadow / ring**, and a **gradient play** button for clearer affordance while navigating away from Watch.
+
+Tag **`v3.0.0`**.
+
 2.0.6 (hotfix — crash on `config.windowAlwaysOnTop` deps)
 - **`AnivaultConfigProvider`:** the **`useEffect`** dependency array used **`config.windowAlwaysOnTop`** while **`config` was still `null`**. React evaluates deps every render, so **`Cannot read properties of null (reading 'windowAlwaysOnTop')`** threw before the UI mounted. **Fix:** use **`config?.windowAlwaysOnTop`** in the dependency array.
 

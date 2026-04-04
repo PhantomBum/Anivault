@@ -1,6 +1,7 @@
 import { Hash, LayoutGrid, RefreshCw } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import { AvFutureSurface } from "@/renderer/components/av-future-surface";
 import { CommunityLocalThreadsPanel } from "@/renderer/components/community-local-threads-panel";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
@@ -56,7 +57,10 @@ export function CommunityPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-2 text-[var(--av-text)]">
+    <AvFutureSurface
+      variant="community"
+      className="mx-auto max-w-5xl space-y-8 p-6 text-[var(--av-text)] md:p-8"
+    >
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
@@ -141,6 +145,6 @@ export function CommunityPage() {
       {reportMsg ? (
         <p className="text-center text-xs font-medium text-[var(--av-muted)]">{reportMsg}</p>
       ) : null}
-    </div>
+    </AvFutureSurface>
   );
 }

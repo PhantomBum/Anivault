@@ -2,8 +2,8 @@ import { cn } from "@/renderer/lib/utils";
 import React from "react";
 
 /**
- * Shared “Studio” visual language: soft diagonal gradient + blurred orbs (indigo / fuchsia family).
- * Use for Settings → Studio and any “coming in a future release” surfaces so previews feel cohesive.
+ * Shared gradient surfaces: soft diagonal backgrounds + blurred orbs (indigo / rose / cyan by variant).
+ * Used for Settings → Studio, Community / Gallery / Clips pages, and roadmap-style cards.
  */
 const VARIANT_STYLES = {
   studio: {

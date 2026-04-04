@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.0.0
+- **Major:** **3.x** line — community/gallery/clips **gradient shells**, **Studio** hub + links + **62-item** pointer, **mini playbar** visual refresh. **Tag v3.0.0**.
+
 2.0.6
 - **Fix:** null `config` + `windowAlwaysOnTop` dependency crash (black screen). **Tag v2.0.6**.
 

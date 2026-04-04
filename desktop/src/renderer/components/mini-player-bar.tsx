@@ -113,7 +113,9 @@ export function MiniPlayerBar() {
     >
       <div
         className={cn(
-          "av-mini-player pointer-events-auto flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-[0_8px_32px_rgba(0,0,0,0.45)]",
+          "av-mini-player pointer-events-auto flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-[var(--av-border)]/90",
+          "bg-gradient-to-br from-zinc-800/35 via-[var(--av-bg-elevated)]/98 to-zinc-950/90 backdrop-blur-md",
+          "shadow-[0_12px_40px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06]",
           "md:max-w-lg"
         )}
         role="region"
@@ -121,7 +123,7 @@ export function MiniPlayerBar() {
       >
       <div
         className={cn(
-          "group relative h-0.5 w-full bg-zinc-800/80",
+          "group relative h-1 w-full bg-zinc-900/90",
           isDetached ? "cursor-default opacity-60" : "cursor-pointer"
         )}
         onPointerDown={(e) => {
@@ -135,7 +137,7 @@ export function MiniPlayerBar() {
         }}
       >
         <div
-          className="absolute inset-y-0 left-0 bg-[var(--av-accent-dim)] transition-[width] duration-300 ease-out [transition-delay:45ms]"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--av-accent-dim)] via-[var(--av-accent)]/85 to-zinc-200/25 transition-[width] duration-300 ease-out [transition-delay:45ms]"
           style={{ width: `${progress * 100}%` }}
         />
       </div>
@@ -194,7 +196,7 @@ export function MiniPlayerBar() {
           </button>
           <button
             type="button"
-            className="mx-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 text-zinc-950 shadow-md transition-transform hover:scale-[1.03] active:scale-95"
+            className="mx-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-zinc-100 to-zinc-300/90 text-zinc-950 shadow-md ring-1 ring-white/25 transition-transform hover:scale-[1.03] active:scale-95"
             aria-label={isDetached ? "Resume in player" : paused ? "Play" : "Pause"}
             onClick={togglePlay}
           >

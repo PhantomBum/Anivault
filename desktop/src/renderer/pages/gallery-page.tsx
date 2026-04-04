@@ -2,6 +2,7 @@ import { ImageIcon, Loader2, RefreshCw, Scissors } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
+import { AvFutureSurface, type AvFutureVariant } from "@/renderer/components/av-future-surface";
 import { Button } from "@/renderer/components/ui/button";
 import { Input } from "@/renderer/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/renderer/components/ui/tabs";
@@ -26,9 +27,11 @@ export type GalleryPageTab = "browse" | "clips" | "upload" | "queue";
 export type GalleryPageProps = {
   /** Default tab on mount (e.g. `/clips` opens the Clips tab). */
   defaultTab?: GalleryPageTab;
+  /** Gradient shell: rose for `/gallery`, cyan for `/clips`. */
+  surfaceVariant?: Extract<AvFutureVariant, "gallery" | "clips">;
 };
 
-export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
+export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" }: GalleryPageProps) {
   const [searchParams] = useSearchParams();
   const tabQuery = searchParams.get("tab");
 
@@ -139,7 +142,10 @@ export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
   const clipItems = items.filter((i) => (i.kind ?? "image") === "clip");
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-2 text-[var(--av-text)]">
+    <AvFutureSurface
+      variant={surfaceVariant}
+      className="mx-auto max-w-6xl space-y-6 p-6 text-[var(--av-text)] md:p-8"
+    >
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
@@ -351,6 +357,6 @@ export function GalleryPage({ defaultTab = "browse" }: GalleryPageProps) {
           )}
         </TabsContent>
       </Tabs>
-    </div>
+    </AvFutureSurface>
   );
 }

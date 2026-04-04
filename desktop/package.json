@@ -1,8 +1,8 @@
 {
   "name": "anivault",
   "productName": "AniVault Unvaulted",
-  "version": "2.0.6",
-  "description": "AniVault Unvaulted 2.x — desktop anime client powered by pystardust/ani-cli (community release).",
+  "version": "3.0.0",
+  "description": "AniVault Unvaulted 3.x — desktop anime client powered by pystardust/ani-cli (community release).",
   "repository": {
     "type": "git",
     "url": "https://github.com/PhantomBum/Anivault.git"

@@ -212,10 +212,11 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
   {
     id: "labs",
     tab: "labs",
-    label: "Studio (coming soon)",
+    label: "Studio",
     category: "Studio",
     anchorId: "settings-labs",
-    keywords: "studio labs experimental maintenance unvaulted roadmap automation sync plugins themes",
+    keywords:
+      "studio labs hub community gallery clips browse updates changelog 62 audit roadmap experimental",
   },
 ];
 
