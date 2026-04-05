@@ -4,7 +4,11 @@
  */
 import { fetchAllanimeGraphql, ALLANIME_USER_AGENT } from "../allanime-http";
 import { fetchWithTimeout } from "../http-fetch";
-import { StreamProvider, StreamUrlResult } from "./stream-provider";
+import {
+  StreamProvider,
+  StreamProviderCapabilities,
+  StreamUrlResult,
+} from "./stream-provider";
 
 const ALLANIME_REFERER = "https://allmanga.to";
 const ALLANIME_BASE = "allanime.day";
@@ -379,6 +383,13 @@ async function resolveSourceToCandidates(
 }
 
 export class AllAnimeStreamProvider implements StreamProvider {
+  readonly capabilities: StreamProviderCapabilities = {
+    name: "AllAnime",
+    supportsSub: true,
+    supportsDub: true,
+    knownQualities: [360, 480, 720, 1080],
+  };
+
   async getStreamUrl(
     showId: string,
     episode: string,

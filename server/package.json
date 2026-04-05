@@ -1,11 +1,15 @@
 {
   "name": "anivault-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "start": "tsx src/index.ts",
+    "start:legacy": "node src/index.js",
+    "dev": "tsx --watch src/index.ts",
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "test": "echo \"no tests yet\" && exit 0"
   },
   "dependencies": {
     "@fastify/cors": "^10.0.1",
@@ -16,5 +20,12 @@
     "fastify": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   }
 }

@@ -1,5 +1,22 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+4.0.0
+- **Server:** Full **TypeScript migration** — modular route files under `src/routes/`, typed DB layer, structured API types in `api-types.ts`.
+- **API:** **v1 prefix** on all routes (`/v1/auth/login`, `/v1/gallery`, `/v1/anime/:id/engagement`, etc.) with legacy `/api/` aliases for backward compatibility.
+- **Auth:** **Refresh tokens** (`/v1/auth/refresh`), separate access/refresh JWT signing, token rotation support.
+- **Moderation:** Gallery **reject** flow (`/v1/moderation/reject`), reports listing for moderators (`/v1/reports`).
+- **Billing:** **Stripe webhook** endpoint (`/v1/webhooks/stripe`) for idempotent subscription fulfillment.
+- **Deploy:** **Dockerfile** + **docker-compose.yml** + `.env.example` for self-hosting the companion server.
+- **Streaming:** Enhanced **StreamProvider** contract with capability flags (`supportsSub`, `supportsDub`, `knownQualities`, `experimental`), structured **StreamResolutionError** with error taxonomy (`no_stream`, `timeout`, `upstream_4xx`, `upstream_5xx`, `decode_failure`).
+- **Diagnostics:** In-app **stream diagnostics** buffer — last 50 errors with provider, timestamp, and classification; IPC channels for export and clear.
+- **Provider registry:** `registerStreamProvider()` enables adding future stream sources without modifying the resolver.
+- **Watch progress:** **Batch mark watched/unwatched**, **export/import** with version-stamped JSON, enriched stats (series count, total watched seconds), guard against backward position jumps.
+- **Offline:** **Storage stats** (per-show size breakdown), **integrity verification** (check which files are missing on disk), new `paused` status and `totalBytes` tracking.
+- **Privacy:** **Privacy consent** framework (`privacy-consent.ts`) — per-feature scope labels (`local_only`, `companion_server`, `external_service`), consent recording/revocation.
+- **API client:** `anivault-api.ts` upgraded to v1 endpoints; new `postGalleryClip`, `postReport`, `refreshAuthToken` helpers.
+- **CI:** New **`ci.yml`** workflow — desktop lint + test on Windows, server typecheck on Ubuntu, running on every PR and push to main.
+- **Version bump:** Desktop **4.0.0**, server **2.0.0**. **Tag v4.0.0**.
+
 3.3.5
 - **Shell:** Breadcrumb trail under page headers; **reduced-motion** calmer home mesh + route animations off.
 - **Settings:** **Privacy & data** single tab (backups + telemetry); grouped tab rows; denser panels; Studio **hub copy**.

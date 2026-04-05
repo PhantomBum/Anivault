@@ -7,6 +7,8 @@ import type {
   OfflineDownloadAddPayload,
   OfflineDownloadAddResult,
   OfflineDownloadItem,
+  OfflineIntegrityResult,
+  OfflineStorageStats,
 } from "@/shared/offline-downloads-types";
 
 import {
@@ -16,6 +18,8 @@ import {
   OFFLINE_DOWNLOADS_REMOVE,
   OFFLINE_DOWNLOADS_REVEAL,
   OFFLINE_DOWNLOADS_RETRY,
+  OFFLINE_DOWNLOADS_STORAGE_STATS,
+  OFFLINE_DOWNLOADS_VERIFY_INTEGRITY,
 } from "./offline-downloads-channels";
 import {
   clearCompletedOfflineDownloads,
@@ -42,6 +46,67 @@ function isDuplicateActive(
       i.mode === p.mode &&
       (i.status === "queued" || i.status === "downloading")
   );
+}
+
+function computeStorageStats(items: OfflineDownloadItem[]): OfflineStorageStats {
+  const dlPath = readOfflinePath();
+  const byShow = new Map<string, { showId: string; showName: string; files: number; bytes: number }>();
+  let totalFiles = 0;
+  let totalBytes = 0;
+
+  for (const item of items) {
+    if (item.status !== "complete" || !item.localPath) continue;
+    let fileSize = 0;
+    try {
+      if (fs.existsSync(item.localPath)) {
+        fileSize = fs.statSync(item.localPath).size;
+      }
+    } catch {
+      /* ignore */
+    }
+    totalFiles++;
+    totalBytes += fileSize;
+
+    const existing = byShow.get(item.showId);
+    if (existing) {
+      existing.files++;
+      existing.bytes += fileSize;
+    } else {
+      byShow.set(item.showId, {
+        showId: item.showId,
+        showName: item.showName,
+        files: 1,
+        bytes: fileSize,
+      });
+    }
+  }
+
+  return {
+    totalFiles,
+    totalBytes,
+    byShow: [...byShow.values()].sort((a, b) => b.bytes - a.bytes),
+    downloadsFolderPath: dlPath || "",
+  };
+}
+
+function verifyIntegrity(items: OfflineDownloadItem[]): OfflineIntegrityResult {
+  let checked = 0;
+  let valid = 0;
+  let missing = 0;
+  const missingIds: string[] = [];
+
+  for (const item of items) {
+    if (item.status !== "complete" || !item.localPath) continue;
+    checked++;
+    if (fs.existsSync(item.localPath)) {
+      valid++;
+    } else {
+      missing++;
+      missingIds.push(item.id);
+    }
+  }
+
+  return { checked, valid, missing, missingIds };
 }
 
 export function addOfflineDownloadsListeners() {
@@ -115,6 +180,16 @@ export function addOfflineDownloadsListeners() {
     }
     shell.showItemInFolder(localPath);
     return true;
+  });
+
+  ipcMain.handle(OFFLINE_DOWNLOADS_STORAGE_STATS, () => {
+    const items = getOfflineDownloadItems();
+    return computeStorageStats(items);
+  });
+
+  ipcMain.handle(OFFLINE_DOWNLOADS_VERIFY_INTEGRITY, () => {
+    const items = getOfflineDownloadItems();
+    return verifyIntegrity(items);
   });
 
   scheduleOfflineDownloadProcessing();

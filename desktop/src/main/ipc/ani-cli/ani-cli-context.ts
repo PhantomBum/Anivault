@@ -5,6 +5,9 @@ import {
   ANI_CLI_RECENT_CHANNEL,
   ANI_CLI_SEARCH_CHANNEL,
   ANI_CLI_SHOW_DETAILS_CHANNEL,
+  ANI_CLI_STREAM_DIAGNOSTICS_CHANNEL,
+  ANI_CLI_STREAM_DIAGNOSTICS_CLEAR_CHANNEL,
+  ANI_CLI_STREAM_PROVIDERS_CHANNEL,
   ANI_CLI_STREAM_PROXY_BASE_CHANNEL,
   ANI_CLI_STREAM_URL_CHANNEL,
 } from "./ani-cli-channels";
@@ -21,6 +24,24 @@ export interface AnimeSearchResult {
 export interface StreamUrlResult {
   url: string;
   referer: string;
+}
+
+export interface StreamDiagnosticInfo {
+  kind: string;
+  provider: string;
+  message: string;
+  timestamp: string;
+  showId: string;
+  episode: string;
+  mode: "sub" | "dub";
+}
+
+export interface StreamProviderInfo {
+  name: string;
+  supportsSub: boolean;
+  supportsDub: boolean;
+  knownQualities: number[];
+  experimental: boolean;
 }
 
 export function exposeAniCliContext() {
@@ -51,5 +72,11 @@ export function exposeAniCliContext() {
         items: AnimeSearchResult[];
         hasMore: boolean;
       }>,
+    getStreamDiagnostics: () =>
+      ipcRenderer.invoke(ANI_CLI_STREAM_DIAGNOSTICS_CHANNEL) as Promise<StreamDiagnosticInfo[]>,
+    clearStreamDiagnostics: () =>
+      ipcRenderer.invoke(ANI_CLI_STREAM_DIAGNOSTICS_CLEAR_CHANNEL) as Promise<void>,
+    getStreamProviders: () =>
+      ipcRenderer.invoke(ANI_CLI_STREAM_PROVIDERS_CHANNEL) as Promise<StreamProviderInfo[]>,
   });
 }

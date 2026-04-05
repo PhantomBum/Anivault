@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { normalizeStreamErrorMessage } from "./stream-resolver";
+import { StreamResolutionError } from "./stream-providers/stream-provider";
 
 describe("normalizeStreamErrorMessage", () => {
   it("maps no-stream errors to user-facing copy", () => {
@@ -22,6 +23,27 @@ describe("normalizeStreamErrorMessage", () => {
     expect(normalizeStreamErrorMessage(new Error("allanime request failed: 403 Forbidden"))).toContain(
       "Could not load episode data"
     );
+  });
+
+  it("maps AllAnime 5xx errors", () => {
+    expect(normalizeStreamErrorMessage(new Error("allanime API error: 502 Bad Gateway"))).toContain(
+      "Source server error"
+    );
+  });
+
+  it("maps decode failures", () => {
+    expect(normalizeStreamErrorMessage(new Error("Invalid obfuscated source URL length"))).toContain(
+      "Failed to decode"
+    );
+  });
+
+  it("handles StreamResolutionError", () => {
+    const err = new StreamResolutionError({
+      kind: "no_stream",
+      provider: "AllAnime",
+      message: "No streams found",
+    });
+    expect(normalizeStreamErrorMessage(err)).toContain("No playable stream");
   });
 
   it("passes through short unknown messages", () => {

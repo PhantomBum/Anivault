@@ -1,2 +1,16 @@
-export { getStreamUrl, normalizeStreamErrorMessage } from "./stream-resolver";
-export type { StreamUrlResult, StreamProvider } from "./stream-providers/stream-provider";
+export {
+  getStreamUrl,
+  normalizeStreamErrorMessage,
+  registerStreamProvider,
+  getRegisteredProviders,
+  getRecentStreamDiagnostics,
+  clearStreamDiagnostics,
+} from "./stream-resolver";
+export type { StreamDiagnostic } from "./stream-resolver";
+export type {
+  StreamUrlResult,
+  StreamProvider,
+  StreamProviderCapabilities,
+  StreamErrorKind,
+} from "./stream-providers/stream-provider";
+export { StreamResolutionError } from "./stream-providers/stream-provider";

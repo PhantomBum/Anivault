@@ -57,8 +57,21 @@ interface WatchProgressContext {
     mode: "sub" | "dub"
   ) => Promise<WatchProgressRecord | null>;
   clearSeries: (animeId: string) => Promise<void>;
-  stats: () => Promise<{ trackedEpisodes: number }>;
+  stats: () => Promise<{ trackedEpisodes: number; trackedSeries: number; totalWatchedSec: number }>;
   listContinue: (limit?: number) => Promise<WatchProgressContinueItem[]>;
+  batchMarkWatched: (
+    animeId: string,
+    episodes: string[],
+    mode: "sub" | "dub",
+    durationSec: number
+  ) => Promise<number>;
+  batchMarkUnwatched: (animeId: string, episodes: string[], mode: "sub" | "dub") => Promise<number>;
+  exportData: () => Promise<import("./watch-progress-types").WatchProgressExport>;
+  importData: (data: import("./watch-progress-types").WatchProgressExport) => Promise<{
+    imported: number;
+    skipped: number;
+    error?: string;
+  }>;
 }
 
 interface AppContext {
@@ -103,6 +116,24 @@ export interface UrlOpenerContext {
   openUrl: (url: string) => Promise<void>;
 }
 
+interface StreamDiagnosticInfo {
+  kind: string;
+  provider: string;
+  message: string;
+  timestamp: string;
+  showId: string;
+  episode: string;
+  mode: "sub" | "dub";
+}
+
+interface StreamProviderInfo {
+  name: string;
+  supportsSub: boolean;
+  supportsDub: boolean;
+  knownQualities: number[];
+  experimental: boolean;
+}
+
 interface AniCliContext {
   search: (query: string) => Promise<AnimeSearchResult[]>;
   getEpisodes: (showId: string, mode?: "sub" | "dub") => Promise<string[]>;
@@ -116,6 +147,9 @@ interface AniCliContext {
     items: AnimeSearchResult[];
     hasMore: boolean;
   }>;
+  getStreamDiagnostics: () => Promise<StreamDiagnosticInfo[]>;
+  clearStreamDiagnostics: () => Promise<void>;
+  getStreamProviders: () => Promise<StreamProviderInfo[]>;
 }
 
 interface OfflineDownloadsContext {
@@ -125,6 +159,8 @@ interface OfflineDownloadsContext {
   clearCompleted: () => Promise<void>;
   retry: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
   reveal: (localPath: string) => Promise<boolean>;
+  storageStats: () => Promise<import("./offline-downloads-types").OfflineStorageStats>;
+  verifyIntegrity: () => Promise<import("./offline-downloads-types").OfflineIntegrityResult>;
 }
 
 declare global {

@@ -82,12 +82,12 @@ export type ShowCommentRow = {
 
 export async function getShowEngagement(animeId: string) {
   const enc = encodeURIComponent(animeId);
-  return anivaultFetch<ShowEngagementResponse>(`/api/anime/${enc}/engagement`);
+  return anivaultFetch<ShowEngagementResponse>(`/v1/anime/${enc}/engagement`);
 }
 
 export async function postShowRating(animeId: string, rating: number) {
   const enc = encodeURIComponent(animeId);
-  return anivaultFetch<{ ok: boolean; rating: number }>(`/api/anime/${enc}/rating`, {
+  return anivaultFetch<{ ok: boolean; rating: number }>(`/v1/anime/${enc}/rating`, {
     method: "POST",
     body: JSON.stringify({ rating }),
   });
@@ -96,7 +96,7 @@ export async function postShowRating(animeId: string, rating: number) {
 export async function postShowLike(animeId: string, liked: boolean) {
   const enc = encodeURIComponent(animeId);
   return anivaultFetch<{ ok: boolean; likesCount: number; liked: boolean }>(
-    `/api/anime/${enc}/like`,
+    `/v1/anime/${enc}/like`,
     {
       method: "POST",
       body: JSON.stringify({ liked }),
@@ -107,13 +107,13 @@ export async function postShowLike(animeId: string, liked: boolean) {
 export async function getShowComments(animeId: string, limit = 20, offset = 0) {
   const enc = encodeURIComponent(animeId);
   return anivaultFetch<{ comments: ShowCommentRow[] }>(
-    `/api/anime/${enc}/comments?limit=${limit}&offset=${offset}`
+    `/v1/anime/${enc}/comments?limit=${limit}&offset=${offset}`
   );
 }
 
 export async function postShowComment(animeId: string, body: string) {
   const enc = encodeURIComponent(animeId);
-  return anivaultFetch<{ ok: boolean; id: string }>(`/api/anime/${enc}/comments`, {
+  return anivaultFetch<{ ok: boolean; id: string }>(`/v1/anime/${enc}/comments`, {
     method: "POST",
     body: JSON.stringify({ body }),
   });
@@ -121,9 +121,40 @@ export async function postShowComment(animeId: string, body: string) {
 
 /** Gallery art upload (same contract as Gallery → Upload). */
 export async function postGalleryUpload(title: string, imageBase64: string) {
-  return anivaultFetch<{ ok?: boolean }>("/api/gallery/upload", {
+  return anivaultFetch<{ ok?: boolean }>("/v1/gallery/upload", {
     method: "POST",
     body: JSON.stringify({ title: title.trim(), imageBase64 }),
+  });
+}
+
+/** Gallery clip upload with anime metadata. */
+export async function postGalleryClip(opts: {
+  title: string;
+  imageBase64: string;
+  animeId?: string;
+  animeName?: string;
+  startSec?: number;
+  endSec?: number;
+}) {
+  return anivaultFetch<{ id: string; status: string }>("/v1/gallery/clip", {
+    method: "POST",
+    body: JSON.stringify(opts),
+  });
+}
+
+/** Report content for moderation review. */
+export async function postReport(targetType: string, targetId: string, reason?: string) {
+  return anivaultFetch<{ ok: boolean; id: string }>("/v1/reports", {
+    method: "POST",
+    body: JSON.stringify({ targetType, targetId, reason }),
+  });
+}
+
+/** Refresh auth token using a refresh token. */
+export async function refreshAuthToken(refreshToken: string) {
+  return anivaultFetch<{ token: string; refreshToken: string }>("/v1/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
   });
 }
 
@@ -132,7 +163,7 @@ export async function postGalleryUpload(title: string, imageBase64: string) {
  */
 export async function testAnivaultServerConnection(): Promise<{ ok: boolean; message: string }> {
   const base = await getBaseUrl();
-  const url = `${base.replace(/\/$/, "")}/api/me`;
+  const url = `${base.replace(/\/$/, "")}/v1/me`;
   try {
     const headers = await authHeaders();
     const res = await fetch(url, { method: "GET", headers });

@@ -4,6 +4,8 @@ import type {
   OfflineDownloadAddPayload,
   OfflineDownloadAddResult,
   OfflineDownloadItem,
+  OfflineIntegrityResult,
+  OfflineStorageStats,
 } from "@/shared/offline-downloads-types";
 
 import {
@@ -13,6 +15,8 @@ import {
   OFFLINE_DOWNLOADS_REMOVE,
   OFFLINE_DOWNLOADS_REVEAL,
   OFFLINE_DOWNLOADS_RETRY,
+  OFFLINE_DOWNLOADS_STORAGE_STATS,
+  OFFLINE_DOWNLOADS_VERIFY_INTEGRITY,
 } from "./offline-downloads-channels";
 
 export function exposeOfflineDownloadsContext() {
@@ -31,5 +35,9 @@ export function exposeOfflineDownloadsContext() {
       >,
     reveal: (localPath: string) =>
       ipcRenderer.invoke(OFFLINE_DOWNLOADS_REVEAL, localPath) as Promise<boolean>,
+    storageStats: () =>
+      ipcRenderer.invoke(OFFLINE_DOWNLOADS_STORAGE_STATS) as Promise<OfflineStorageStats>,
+    verifyIntegrity: () =>
+      ipcRenderer.invoke(OFFLINE_DOWNLOADS_VERIFY_INTEGRITY) as Promise<OfflineIntegrityResult>,
   });
 }

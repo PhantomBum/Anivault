@@ -12,20 +12,20 @@ import {
   ANI_CLI_RECENT_CHANNEL,
   ANI_CLI_SEARCH_CHANNEL,
   ANI_CLI_SHOW_DETAILS_CHANNEL,
+  ANI_CLI_STREAM_DIAGNOSTICS_CHANNEL,
+  ANI_CLI_STREAM_DIAGNOSTICS_CLEAR_CHANNEL,
+  ANI_CLI_STREAM_PROVIDERS_CHANNEL,
   ANI_CLI_STREAM_PROXY_BASE_CHANNEL,
   ANI_CLI_STREAM_URL_CHANNEL,
 } from "./ani-cli-channels";
-import { getStreamUrl } from "./ani-cli-stream";
+import {
+  getStreamUrl,
+  getRecentStreamDiagnostics,
+  clearStreamDiagnostics,
+  getRegisteredProviders,
+} from "./ani-cli-stream";
 
-/**
- * One IPC handler per request from the renderer. Heavy grids batch work in the renderer layer
- * (`for-each-with-concurrency`, session cache) so the main process stays responsive.
- */
-
-/** Failsafe if inner resolution hangs (stream-resolver already caps work, but IPC must not hang forever). */
 const IPC_STREAM_URL_TIMEOUT_MS = 120_000;
-
-/** Show details / episode list can block if ani-cli never returns; cap wait so the UI can recover. */
 const IPC_SHOW_DETAILS_EPISODES_TIMEOUT_MS = 120_000;
 
 function withIpcTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
@@ -68,5 +68,19 @@ export function addAniCliListeners() {
   );
   ipcMain.handle(ANI_CLI_RECENT_CHANNEL, (_event, page: number, limit?: number) =>
     getRecentAnime(page, limit ?? 12)
+  );
+
+  ipcMain.handle(ANI_CLI_STREAM_DIAGNOSTICS_CHANNEL, () => getRecentStreamDiagnostics());
+  ipcMain.handle(ANI_CLI_STREAM_DIAGNOSTICS_CLEAR_CHANNEL, () => {
+    clearStreamDiagnostics();
+  });
+  ipcMain.handle(ANI_CLI_STREAM_PROVIDERS_CHANNEL, () =>
+    getRegisteredProviders().map((p) => ({
+      name: p.capabilities.name,
+      supportsSub: p.capabilities.supportsSub,
+      supportsDub: p.capabilities.supportsDub,
+      knownQualities: p.capabilities.knownQualities,
+      experimental: p.capabilities.experimental ?? false,
+    }))
   );
 }

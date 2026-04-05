@@ -3,3 +3,7 @@ export const WATCH_PROGRESS_GET = "watch-progress:get";
 export const WATCH_PROGRESS_CLEAR_SERIES = "watch-progress:clear-series";
 export const WATCH_PROGRESS_STATS = "watch-progress:stats";
 export const WATCH_PROGRESS_LIST_CONTINUE = "watch-progress:list-continue";
+export const WATCH_PROGRESS_BATCH_MARK_WATCHED = "watch-progress:batch-mark-watched";
+export const WATCH_PROGRESS_BATCH_MARK_UNWATCHED = "watch-progress:batch-mark-unwatched";
+export const WATCH_PROGRESS_EXPORT = "watch-progress:export";
+export const WATCH_PROGRESS_IMPORT = "watch-progress:import";

@@ -15,7 +15,11 @@ type AuditEntry = {
   created_at: string;
 };
 
-type AuthResponse = { token: string; plan: AnivaultStoreSchema["plan"] };
+type AuthResponse = {
+  token: string;
+  refreshToken?: string;
+  plan: AnivaultStoreSchema["plan"];
+};
 
 export function AccountPage() {
   const [email, setEmail] = useState("");
@@ -25,9 +29,10 @@ export function AccountPage() {
   const [msg, setMsg] = useState<string | null>(null);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [auditErr, setAuditErr] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const refresh = useCallback(async () => {
-    const res = await anivaultFetch<MeResponse>("/api/me");
+    const res = await anivaultFetch<MeResponse>("/v1/me");
     if (res.ok && res.data?.user) {
       setMe(res.data.user);
       await window.anivault.setConfig({ plan: res.data.user.plan });
@@ -36,7 +41,7 @@ export function AccountPage() {
 
   const loadAudit = useCallback(async () => {
     setAuditErr(null);
-    const res = await anivaultFetch<{ entries: AuditEntry[] }>("/api/admin/audit");
+    const res = await anivaultFetch<{ entries: AuditEntry[] }>("/v1/admin/audit");
     if (!res.ok) {
       setAudit([]);
       setAuditErr(res.error ?? "Audit unavailable");
@@ -64,16 +69,21 @@ export function AccountPage() {
 
   const login = async () => {
     setMsg(null);
-    const res = await anivaultFetch<AuthResponse>("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok || !res.data?.token) {
-      setMsg(res.error ?? "Login failed");
-      return;
+    setLoading(true);
+    try {
+      const res = await anivaultFetch<AuthResponse>("/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok || !res.data?.token) {
+        setMsg(res.error ?? "Login failed");
+        return;
+      }
+      await persistSession(res.data);
+      setMsg("Signed in");
+    } finally {
+      setLoading(false);
     }
-    await persistSession(res.data);
-    setMsg("Signed in");
   };
 
   const register = async () => {
@@ -90,17 +100,22 @@ export function AccountPage() {
       setMsg("Password must be at least 6 characters");
       return;
     }
-    const res = await anivaultFetch<AuthResponse>("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-    });
-    if (!res.ok || !res.data?.token) {
-      setMsg(res.error ?? "Could not create account");
-      return;
+    setLoading(true);
+    try {
+      const res = await anivaultFetch<AuthResponse>("/v1/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      });
+      if (!res.ok || !res.data?.token) {
+        setMsg(res.error ?? "Could not create account");
+        return;
+      }
+      await persistSession(res.data);
+      setMsg("Account created — you are signed in");
+      setConfirmPassword("");
+    } finally {
+      setLoading(false);
     }
-    await persistSession(res.data);
-    setMsg("Account created — you are signed in");
-    setConfirmPassword("");
   };
 
   const logout = async () => {
@@ -186,8 +201,9 @@ export function AccountPage() {
               type="button"
               className="w-full rounded-xl bg-[var(--av-text)] text-[var(--av-bg)] hover:opacity-90"
               onClick={() => void login()}
+              disabled={loading}
             >
-              Sign in
+              {loading ? "Signing in…" : "Sign in"}
             </Button>
             <p className="text-[10px] text-[var(--av-muted-foreground)]">
               Demo: <span className="font-mono text-[var(--av-muted)]">demo@anivault.local</span> /{" "}
@@ -226,8 +242,9 @@ export function AccountPage() {
               type="button"
               className="w-full rounded-xl bg-[var(--av-text)] text-[var(--av-bg)] hover:opacity-90"
               onClick={() => void register()}
+              disabled={loading}
             >
-              Create account
+              {loading ? "Creating…" : "Create account"}
             </Button>
             <p className="text-[10px] leading-relaxed text-[var(--av-muted-foreground)]">
               Requires the companion API in Settings (AniVault server). You will be signed in after registration.

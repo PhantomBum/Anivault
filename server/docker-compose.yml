@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  anivault-server:
+    build: .
+    ports:
+      - "${PORT:-3847}:3847"
+    environment:
+      PORT: 3847
+      JWT_SECRET: "${JWT_SECRET:-change-me-in-production}"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-http://127.0.0.1:3847}"
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY:-}"
+      STRIPE_PRICE_PRO: "${STRIPE_PRICE_PRO:-}"
+      ENABLE_STRIPE_BILLING: "${ENABLE_STRIPE_BILLING:-false}"
+      DEEPL_API_KEY: "${DEEPL_API_KEY:-}"
+    volumes:
+      - anivault-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3847/health').then(r=>{if(!r.ok)throw 1})"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  anivault-data:

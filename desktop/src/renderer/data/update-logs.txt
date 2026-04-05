@@ -1,5 +1,16 @@
 AniVault Unvaulted — changelog
 
+4.0.0 (v4 — Foundations, streaming reliability, companion hardening, privacy framework)
+- **Server:** Full TypeScript migration with modular route files, typed DB layer, and structured API types.
+- **API:** v1 prefix on all routes with backward-compatible legacy aliases; refresh token flow for auth rotation.
+- **Streaming:** Enhanced provider contract with capability flags, error taxonomy, diagnostics buffer, and provider registry.
+- **Watch progress:** Batch mark watched/unwatched, export/import with versioned JSON, enriched stats.
+- **Offline:** Storage stats with per-show breakdown, integrity verification, paused status support.
+- **Privacy:** Per-feature privacy consent framework with scope labels and consent recording.
+- **Moderation:** Gallery reject flow, reports listing endpoint, Stripe webhook for subscription fulfillment.
+- **Deploy:** Docker Compose template with health checks for self-hosting the companion server.
+- **CI:** New ci.yml workflow — desktop lint + test on Windows, server typecheck on Ubuntu.
+
 3.3.5 (Breadcrumbs, settings hub, watch theatre + episode filters, browse polish)
 - **Navigation:** **Breadcrumbs** under the shell title (Home → …) on every route except `/`.
 - **Accessibility:** **`prefers-reduced-motion`** — simplified home mesh; route-entry animations disabled.
