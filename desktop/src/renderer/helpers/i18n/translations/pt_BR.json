@@ -30,16 +30,18 @@
     "toastDiagnosticsFailed": "Não foi possível copiar o diagnóstico"
   },
   "nav": {
-    "sectionLibrary": "Biblioteca",
-    "sectionTools": "Ferramentas",
-    "sectionHub": "Hub da comunidade",
+    "sectionCatalog": "Catálogo",
+    "sectionPlan": "Planejar",
+    "sectionSocial": "Comunidade",
+    "sectionLegal": "Legal",
     "home": "Início",
     "discover": "Descobrir",
+    "browse": "Explorar",
     "findShows": "Buscar séries",
     "myLists": "Minhas listas",
     "calendar": "Calendário",
     "requestShow": "Pedir série",
-    "legal": "Legal",
+    "legal": "Termos",
     "community": "Comunidade",
     "gallery": "Galeria",
     "clips": "Clips"

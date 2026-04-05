@@ -30,16 +30,18 @@
     "toastDiagnosticsFailed": "Could not copy diagnostics"
   },
   "nav": {
-    "sectionLibrary": "Library",
-    "sectionTools": "Tools",
-    "sectionHub": "Community hub",
+    "sectionCatalog": "Catalog",
+    "sectionPlan": "Plan & calendar",
+    "sectionSocial": "Community",
+    "sectionLegal": "Legal",
     "home": "Home",
     "discover": "Discover",
+    "browse": "Browse",
     "findShows": "Find shows",
     "myLists": "My lists",
     "calendar": "Calendar",
     "requestShow": "Request a show",
-    "legal": "Legal",
+    "legal": "Terms",
     "community": "Community",
     "gallery": "Gallery",
     "clips": "Clips"

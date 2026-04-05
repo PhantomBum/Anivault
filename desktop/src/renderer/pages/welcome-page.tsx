@@ -339,11 +339,9 @@ export function WelcomePage() {
 
   const resumeContinue = useCallback(
     async (item: WatchProgressContinueItem) => {
+      const d = continueDetails[item.animeId];
       const name =
-        continueDetails[item.animeId]?.name &&
-        continueDetails[item.animeId]?.name !== UNKNOWN_SERIES_LABEL
-          ? continueDetails[item.animeId]!.name
-          : item.animeId;
+        d?.name && d.name !== UNKNOWN_SERIES_LABEL ? d.name : item.animeId;
       try {
         const episodes = await cachedGetEpisodes(item.animeId, item.mode, () =>
           getAniCli().getEpisodes(item.animeId, item.mode)
@@ -436,11 +434,9 @@ export function WelcomePage() {
             <HorizontalCarousel
               variant="home"
               items={continueItems.map((c) => {
+                const cd = continueDetails[c.animeId];
                 const label =
-                  continueDetails[c.animeId]?.name &&
-                  continueDetails[c.animeId]?.name !== UNKNOWN_SERIES_LABEL
-                    ? continueDetails[c.animeId]!.name
-                    : c.animeId;
+                  cd?.name && cd.name !== UNKNOWN_SERIES_LABEL ? cd.name : c.animeId;
                 const pct =
                   c.durationSec > 0
                     ? Math.min(100, Math.round((c.positionSec / c.durationSec) * 100))
@@ -628,134 +624,6 @@ export function WelcomePage() {
           </Link>
         </div>
 
-        {hero ? (
-          <section className="relative overflow-hidden rounded-xl border border-[var(--av-border)]/80 shadow-lg shadow-black/25 ring-1 ring-white/[0.04]">
-            {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
-              <>
-                <div
-                  className="pointer-events-none absolute -inset-8 scale-110 bg-cover bg-center opacity-45 blur-3xl saturate-150"
-                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
-                  aria-hidden
-                />
-                <div
-                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.22]"
-                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
-                  aria-hidden
-                />
-              </>
-            ) : null}
-            <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--av-bg)]/95 via-[var(--av-bg)]/75 to-[var(--av-bg-elevated)]/85"
-              aria-hidden
-            />
-            <div className="relative flex flex-col gap-3 p-4 backdrop-blur-xl backdrop-saturate-150 sm:flex-row sm:items-stretch sm:gap-4 sm:p-5 bg-[color-mix(in_srgb,var(--av-bg-elevated)_72%,transparent)]">
-              <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-md border border-[var(--av-border)]/90 bg-[var(--av-bg)] sm:h-32 sm:w-[5.25rem]">
-                {(() => {
-                  const thumbResolved = hero.id in spotlightThumbs;
-                  const thumbUrl = spotlightThumbs[hero.id];
-                  if (!thumbResolved) {
-                    return (
-                      <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] text-[var(--av-muted)]">
-                        …
-                      </div>
-                    );
-                  }
-                  if (thumbUrl && !spotlightPosterFailed[hero.id]) {
-                    return (
-                      <img
-                        src={thumbUrl}
-                        alt=""
-                        referrerPolicy="no-referrer"
-                        decoding="async"
-                        className="h-full w-full object-cover"
-                        onError={() =>
-                          setSpotlightPosterFailed((p) => ({ ...p, [hero.id]: true }))
-                        }
-                      />
-                    );
-                  }
-                  return <PosterPlaceholder title={hero.name} />;
-                })()}
-              </div>
-
-              <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--av-muted)]">
-                    Spotlight
-                  </p>
-                  {spotlightLen > 1 ? (
-                    <div className="flex shrink-0 gap-0.5">
-                      <button
-                        type="button"
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
-                        aria-label="Previous spotlight"
-                        onClick={goPrevSpotlight}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
-                        aria-label="Next spotlight"
-                        onClick={goNextSpotlight}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-lg font-bold leading-snug tracking-tight text-[var(--av-text)] sm:text-xl">
-                    {hero.name}
-                  </h2>
-                  <p className="mt-0.5 text-xs text-[var(--av-muted)]">
-                    {hero.episodeCount} episodes · {getAvailabilityLabel(hero)}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-8 rounded-lg px-3 text-xs"
-                    onClick={() => openSearchResult(hero)}
-                  >
-                    Details
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="h-8 rounded-lg border-[var(--av-border)] px-3 text-xs"
-                    asChild
-                  >
-                    <Link to="/discover">Discover</Link>
-                  </Button>
-                </div>
-                {spotlightLen > 1 ? (
-                  <div className="flex flex-wrap gap-1.5 pt-1" role="tablist" aria-label="Spotlight picks">
-                    {spotlightVisible.map((s, i) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={i === spotlightHero}
-                        aria-label={`${s.name}`}
-                        className={cn(
-                          "h-1.5 rounded-full transition-[width,background-color] duration-200",
-                          i === spotlightHero
-                            ? "w-5 bg-[var(--av-text)]"
-                            : "w-1.5 bg-[var(--av-border)] hover:bg-[var(--av-muted)]"
-                        )}
-                        onClick={() => setSpotlightHero(i)}
-                      />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </section>
-        ) : null}
-
         {freshVisible.length > 0 ? (
           <section className="rounded-xl border border-[var(--av-border)]/70 bg-[var(--av-bg-elevated)]/25 p-3 md:p-3.5">
             <div className="mb-2 flex items-center gap-2">
@@ -791,6 +659,168 @@ export function WelcomePage() {
           </section>
         ) : null}
 
+        {hero ? (
+          <section className="relative overflow-hidden rounded-xl border border-[var(--av-border)]/80 shadow-lg shadow-black/25 ring-1 ring-white/[0.04]">
+            {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
+              <>
+                <div
+                  className="pointer-events-none absolute -inset-8 scale-110 bg-cover bg-center opacity-45 blur-3xl saturate-150"
+                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
+                  aria-hidden
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.22]"
+                  style={{ backgroundImage: `url(${spotlightThumbs[hero.id]})` }}
+                  aria-hidden
+                />
+              </>
+            ) : null}
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--av-bg)]/95 via-[var(--av-bg)]/75 to-[var(--av-bg-elevated)]/85"
+              aria-hidden
+            />
+            <div className="relative flex flex-col gap-4 p-4 backdrop-blur-xl backdrop-saturate-150 sm:p-5 lg:flex-row lg:items-stretch lg:gap-5 bg-[color-mix(in_srgb,var(--av-bg-elevated)_72%,transparent)]">
+              <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-4">
+                <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-md border border-[var(--av-border)]/90 bg-[var(--av-bg)] sm:h-32 sm:w-[5.25rem]">
+                  {(() => {
+                    const thumbResolved = hero.id in spotlightThumbs;
+                    const thumbUrl = spotlightThumbs[hero.id];
+                    if (!thumbResolved) {
+                      return (
+                        <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] text-[var(--av-muted)]">
+                          …
+                        </div>
+                      );
+                    }
+                    if (thumbUrl && !spotlightPosterFailed[hero.id]) {
+                      return (
+                        <img
+                          src={thumbUrl}
+                          alt=""
+                          referrerPolicy="no-referrer"
+                          decoding="async"
+                          className="h-full w-full object-cover"
+                          onError={() =>
+                            setSpotlightPosterFailed((p) => ({ ...p, [hero.id]: true }))
+                          }
+                        />
+                      );
+                    }
+                    return <PosterPlaceholder title={hero.name} />;
+                  })()}
+                </div>
+
+                <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--av-muted)]">
+                      Spotlight
+                    </p>
+                    {spotlightLen > 1 ? (
+                      <div className="flex shrink-0 gap-0.5">
+                        <button
+                          type="button"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
+                          aria-label="Previous spotlight"
+                          onClick={goPrevSpotlight}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] text-[var(--av-muted)] transition-colors hover:bg-[var(--av-surface-hover)] hover:text-[var(--av-text)]"
+                          aria-label="Next spotlight"
+                          onClick={goNextSpotlight}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-bold leading-snug tracking-tight text-[var(--av-text)] sm:text-xl">
+                      {hero.name}
+                    </h2>
+                    <p className="mt-0.5 text-xs text-[var(--av-muted)]">
+                      {hero.episodeCount} episodes · {getAvailabilityLabel(hero)}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-8 rounded-lg px-3 text-xs"
+                      onClick={() => openSearchResult(hero)}
+                    >
+                      Details
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-8 rounded-lg border-[var(--av-border)] px-3 text-xs"
+                      asChild
+                    >
+                      <Link to="/discover">Discover</Link>
+                    </Button>
+                  </div>
+                  {spotlightLen > 1 ? (
+                    <div className="flex flex-wrap gap-1.5 pt-1" role="tablist" aria-label="Spotlight picks">
+                      {spotlightVisible.map((s, i) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={i === spotlightHero}
+                          aria-label={`${s.name}`}
+                          className={cn(
+                            "h-1.5 rounded-full transition-[width,background-color] duration-200",
+                            i === spotlightHero
+                              ? "w-5 bg-[var(--av-text)]"
+                              : "w-1.5 bg-[var(--av-border)] hover:bg-[var(--av-muted)]"
+                          )}
+                          onClick={() => setSpotlightHero(i)}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {spotlightLen > 1 ? (
+                <aside className="shrink-0 border-t border-[var(--av-border)]/60 pt-3 lg:w-52 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+                    More picks
+                  </p>
+                  <ul className="mt-2 max-h-36 space-y-0.5 overflow-y-auto text-[13px] lg:max-h-none">
+                    {spotlightVisible.map((s, i) => (
+                      <li key={s.id}>
+                        <button
+                          type="button"
+                          className={cn(
+                            "w-full truncate rounded-md px-2 py-1 text-left transition-colors",
+                            i === spotlightHero
+                              ? "bg-[var(--av-surface)]/80 text-[var(--av-text)] ring-1 ring-white/10"
+                              : "text-[var(--av-muted)] hover:bg-[var(--av-surface)]/50 hover:text-[var(--av-text)]"
+                          )}
+                          onClick={() => setSpotlightHero(i)}
+                        >
+                          {s.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    className="mt-3 block text-center text-[10px] font-medium text-[var(--av-muted)] hover:text-[var(--av-text)] hover:underline"
+                    to="/discover"
+                  >
+                    Open Discover →
+                  </Link>
+                </aside>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
+
         <p
           className="m-0 rounded-lg border border-[var(--av-border)]/60 bg-[var(--av-surface)]/30 px-3 py-2 text-[11px] leading-relaxed text-[var(--av-muted)]"
           role="note"
@@ -807,8 +837,7 @@ export function WelcomePage() {
           .
         </p>
 
-        <div className="lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-6">
-          <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
 
         {loading && (
           <p className="text-center text-xs text-[var(--av-muted)]">Searching…</p>
@@ -929,36 +958,6 @@ export function WelcomePage() {
             )}
           </section>
         )}
-          </div>
-          <aside className="relative hidden rounded-lg border border-[var(--av-border)]/70 bg-[var(--av-bg-elevated)]/40 p-3 lg:block">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
-              Spotlight list
-            </h3>
-            <ul className="mt-2 space-y-0.5 text-[13px]">
-              {spotlightVisible.map((s, i) => (
-                <li key={s.id}>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-full truncate rounded-md px-2 py-1 text-left transition-colors",
-                      i === spotlightHero
-                        ? "bg-[var(--av-surface)]/80 text-[var(--av-text)] ring-1 ring-white/10"
-                        : "text-[var(--av-muted)] hover:bg-[var(--av-surface)]/50 hover:text-[var(--av-text)]"
-                    )}
-                    onClick={() => setSpotlightHero(i)}
-                  >
-                    {s.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <Link
-              className="mt-3 block text-center text-[10px] font-medium text-[var(--av-muted)] hover:text-[var(--av-text)] hover:underline"
-              to="/discover"
-            >
-              Open Discover →
-            </Link>
-          </aside>
         </div>
       </div>
     </div>

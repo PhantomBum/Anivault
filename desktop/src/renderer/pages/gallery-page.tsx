@@ -32,7 +32,7 @@ export type GalleryPageProps = {
 };
 
 export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" }: GalleryPageProps) {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const tabQuery = searchParams.get("tab");
 
   const [items, setItems] = useState<GalleryItem[]>([]);
@@ -95,6 +95,11 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
     void load();
   }, [load]);
 
+  const onTabChange = useCallback((v: string) => {
+    setActiveTab(v);
+    setSearchParams({ tab: v }, { replace: true });
+  }, [setSearchParams]);
+
   const approve = async (itemId: string) => {
     const res = await anivaultFetch("/api/moderation/approve", {
       method: "POST",
@@ -146,13 +151,14 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
       variant={surfaceVariant}
       className="av-page-shell max-w-6xl space-y-5 p-4 text-[var(--av-text)] md:p-5"
     >
-      <header className="flex flex-wrap items-end justify-between gap-3">
+      <header className="av-page-hero flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="av-page-section-label text-[var(--av-accent)]">Gallery</p>
           <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Community art & clips</h1>
           <p className="mt-1 max-w-xl text-xs text-[var(--av-muted)]">
-            Moderated uploads from the companion server. Images and player clips share the same review
-            queue.
+            Moderated uploads from the companion server. Tabs update the URL so you can share a view (
+            <code className="rounded bg-[var(--av-surface)] px-1 font-mono text-[10px]">?tab=clips</code>
+            ).
           </p>
         </div>
         <Button
@@ -166,7 +172,7 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
         </Button>
       </header>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
         <TabsList className="grid w-full max-w-2xl grid-cols-2 gap-1 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] p-1 sm:grid-cols-4">
           <TabsTrigger
             value="browse"

@@ -585,8 +585,10 @@ export function WatchPage() {
 
   const handleVideoError = useCallback(() => {
     const el = videoRef.current;
-    const t = el && !Number.isNaN(el.currentTime) && el.currentTime > 0 ? el.currentTime : 0;
-    lastPlaybackTimeRef.current = t > 0 ? t : lastPlaybackTimeRef.current;
+    const lastKnownTime =
+      el && !Number.isNaN(el.currentTime) && el.currentTime > 0 ? el.currentTime : 0;
+    lastPlaybackTimeRef.current =
+      lastKnownTime > 0 ? lastKnownTime : lastPlaybackTimeRef.current;
 
     const ep = currentEpisode;
 
@@ -602,7 +604,7 @@ export function WatchPage() {
       setPlayUrl("");
       setPlaybackError(null);
       const run = () => {
-        void loadStream(ep, t > 0 ? { resumeFrom: t } : undefined);
+        void loadStream(ep, lastKnownTime > 0 ? { resumeFrom: lastKnownTime } : undefined);
       };
       if (delayMs === 0) {
         run();

@@ -216,11 +216,13 @@ export async function fetchAniListBundleByTitle(search: string): Promise<{
   }
   const key = cacheKey(q);
   if (bundleCache.has(key)) {
-    const hit = bundleCache.get(key)!;
-    bundleCache.delete(key);
-    bundleCache.set(key, hit);
-    evictOldestBundleEntries();
-    return hit;
+    const hit = bundleCache.get(key);
+    if (hit !== undefined) {
+      bundleCache.delete(key);
+      bundleCache.set(key, hit);
+      evictOldestBundleEntries();
+      return hit;
+    }
   }
 
   const out = await resolveBundleWithFallbacks(q);

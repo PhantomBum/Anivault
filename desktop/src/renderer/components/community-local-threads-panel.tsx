@@ -96,7 +96,7 @@ export function CommunityLocalThreadsPanel({ servers }: { servers: ServerChip[] 
       showToast(t("communityHub.toastImportOk"));
       refresh();
     } else {
-      showToast(r.error, 4200);
+      showToast(String(r.error), 4200);
     }
   };
 

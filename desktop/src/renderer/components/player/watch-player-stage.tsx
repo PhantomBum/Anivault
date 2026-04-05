@@ -81,6 +81,11 @@ export function WatchPlayerStage({
           <div className="flex flex-col items-center gap-3 text-zinc-500">
             <Loader2 className="h-12 w-12 animate-spin text-zinc-400" />
             <span className="text-sm font-medium tracking-wide text-zinc-400">Loading stream…</span>
+            {loadingHint ? (
+              <span className="max-w-sm px-4 text-center text-xs leading-relaxed text-zinc-500">
+                {loadingHint}
+              </span>
+            ) : null}
           </div>
         ) : error && !playUrl ? (
           <div className="flex flex-col items-center gap-4 px-6 text-center">

@@ -18,7 +18,7 @@ import {
 export function addWatchProgressListeners() {
   ipcMain.handle(
     WATCH_PROGRESS_SAVE,
-    async (
+    (
       _event,
       animeId: string,
       episode: string,
@@ -33,24 +33,24 @@ export function addWatchProgressListeners() {
     }
   );
 
-  ipcMain.handle(
-    WATCH_PROGRESS_GET,
-    async (_event, animeId: string, episode: string, mode: "sub" | "dub") => {
-      if (typeof animeId !== "string" || typeof episode !== "string") return null;
-      if (mode !== "sub" && mode !== "dub") return null;
-      return getWatchProgress(animeId, episode, mode);
-    }
-  );
+  ipcMain.handle(WATCH_PROGRESS_GET, (_event, animeId: string, episode: string, mode: "sub" | "dub") => {
+    if (typeof animeId !== "string" || typeof episode !== "string") return null;
+    if (mode !== "sub" && mode !== "dub") return null;
+    return getWatchProgress(animeId, episode, mode);
+  });
 
-  ipcMain.handle(WATCH_PROGRESS_CLEAR_SERIES, async (_event, animeId: string) => {
+  ipcMain.handle(WATCH_PROGRESS_CLEAR_SERIES, (_event, animeId: string) => {
     if (typeof animeId !== "string") return;
     clearWatchProgressForAnime(animeId);
   });
 
-  ipcMain.handle(WATCH_PROGRESS_STATS, async () => watchProgressStats());
+  ipcMain.handle(WATCH_PROGRESS_STATS, () => watchProgressStats());
 
-  ipcMain.handle(WATCH_PROGRESS_LIST_CONTINUE, async (_event, limit: number) => {
-    const n = typeof limit === "number" && Number.isFinite(limit) ? Math.min(48, Math.max(1, Math.floor(limit))) : 12;
+  ipcMain.handle(WATCH_PROGRESS_LIST_CONTINUE, (_event, limit: number) => {
+    const n =
+      typeof limit === "number" && Number.isFinite(limit)
+        ? Math.min(48, Math.max(1, Math.floor(limit)))
+        : 12;
     return listContinueWatching(n);
   });
 }

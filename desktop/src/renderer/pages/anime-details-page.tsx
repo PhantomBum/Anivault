@@ -77,7 +77,7 @@ export function AnimeDetailsPage() {
   const [comments, setComments] = useState<ShowCommentRow[]>([]);
   const [commentBody, setCommentBody] = useState("");
   const [engageMsg, setEngageMsg] = useState<string | null>(null);
-  const [completedEpisodes, setCompletedEpisodes] = useState<Set<string>>(new Set());
+  const [completedEpisodes] = useState<Set<string>>(() => new Set());
 
   /** Avoids Strict Mode / fast remounts leaving loading stuck when cleanup runs before `finally`. */
   const detailsLoadGenRef = useRef(0);

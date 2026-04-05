@@ -1,9 +1,10 @@
 import {
   Calendar,
   Clapperboard,
-  Compass,
   FileText,
-  ImageIcon,
+  Grid3x3,
+  Home,
+  Image as ImageIcon,
   LayoutList,
   MessageSquarePlus,
   Search,
@@ -15,6 +16,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/renderer/components/ui/tooltip";
 import { cn } from "@/renderer/lib/utils";
 
 type NavItem = {
@@ -24,24 +31,29 @@ type NavItem = {
   matchPrefix?: boolean;
 };
 
-const LIBRARY_ITEMS: NavItem[] = [
-  { titleKey: "nav.home", href: "/", icon: Compass },
+/** Primary catalog & library destinations (top of sidebar). */
+const CATALOG_ITEMS: NavItem[] = [
+  { titleKey: "nav.home", href: "/", icon: Home },
   { titleKey: "nav.discover", href: "/discover", icon: Sparkles },
+  { titleKey: "nav.browse", href: "/browse", icon: Grid3x3 },
   { titleKey: "nav.findShows", href: "/anime", icon: Search, matchPrefix: true },
   { titleKey: "nav.myLists", href: "/lists", icon: LayoutList },
 ];
 
-const TOOLS_ITEMS: NavItem[] = [
+/** Scheduling & requests. */
+const PLAN_ITEMS: NavItem[] = [
   { titleKey: "nav.calendar", href: "/schedule", icon: Calendar },
   { titleKey: "nav.requestShow", href: "/request-series", icon: MessageSquarePlus },
-  { titleKey: "nav.legal", href: "/terms", icon: FileText },
 ];
 
-const HUB_ITEMS: NavItem[] = [
+/** Companion / moderated community surfaces. */
+const SOCIAL_ITEMS: NavItem[] = [
   { titleKey: "nav.community", href: "/community", icon: Users },
   { titleKey: "nav.gallery", href: "/gallery", icon: ImageIcon },
   { titleKey: "nav.clips", href: "/clips", icon: Clapperboard },
 ];
+
+const LEGAL_ITEMS: NavItem[] = [{ titleKey: "nav.legal", href: "/terms", icon: FileText }];
 
 function isNavActive(pathname: string, item: NavItem): boolean {
   if (item.href === "/") {
@@ -67,12 +79,13 @@ function NavButton({
   const location = useLocation();
   const active = isNavActive(location.pathname, item);
 
-  return (
+  const link = (
     <Link
       to={item.href}
       onClick={onNavigate}
       title={collapsed ? title : undefined}
       aria-label={collapsed ? title : undefined}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "group relative flex w-full items-center gap-3 rounded-xl py-2.5 text-[0.8125rem] font-medium transition-all duration-200 ease-out",
         collapsed ? "justify-center px-2" : "px-3 text-left",
@@ -96,6 +109,19 @@ function NavButton({
       {collapsed ? null : <span className="truncate">{title}</span>}
     </Link>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>{link}</TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8} className="max-w-[14rem] text-xs">
+          {title}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return link;
 }
 
 function NavSection({
@@ -145,35 +171,46 @@ export function AniVaultNav({
 }) {
   const { t } = useTranslation();
 
-  const libraryTitles = LIBRARY_ITEMS.map((i) => t(i.titleKey));
-  const toolsTitles = TOOLS_ITEMS.map((i) => t(i.titleKey));
-  const hubTitles = HUB_ITEMS.map((i) => t(i.titleKey));
+  const catalogTitles = CATALOG_ITEMS.map((i) => t(i.titleKey));
+  const planTitles = PLAN_ITEMS.map((i) => t(i.titleKey));
+  const socialTitles = SOCIAL_ITEMS.map((i) => t(i.titleKey));
+  const legalTitles = LEGAL_ITEMS.map((i) => t(i.titleKey));
 
   return (
-    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto" aria-label="Main">
-      <NavSection
-        label={t("nav.sectionLibrary")}
-        items={LIBRARY_ITEMS}
-        itemTitles={libraryTitles}
-        onNavigate={onNavigate}
-        collapsed={collapsed}
-      />
-      <NavSection
-        label={t("nav.sectionTools")}
-        items={TOOLS_ITEMS}
-        itemTitles={toolsTitles}
-        onNavigate={onNavigate}
-        collapsed={collapsed}
-        sectionDivider
-      />
-      <NavSection
-        label={t("nav.sectionHub")}
-        items={HUB_ITEMS}
-        itemTitles={hubTitles}
-        onNavigate={onNavigate}
-        collapsed={collapsed}
-        sectionDivider
-      />
-    </nav>
+    <TooltipProvider delayDuration={0}>
+      <nav className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto pr-0.5" aria-label="Main">
+        <NavSection
+          label={t("nav.sectionCatalog")}
+          items={CATALOG_ITEMS}
+          itemTitles={catalogTitles}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+        />
+        <NavSection
+          label={t("nav.sectionPlan")}
+          items={PLAN_ITEMS}
+          itemTitles={planTitles}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+          sectionDivider
+        />
+        <NavSection
+          label={t("nav.sectionSocial")}
+          items={SOCIAL_ITEMS}
+          itemTitles={socialTitles}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+          sectionDivider
+        />
+        <NavSection
+          label={t("nav.sectionLegal")}
+          items={LEGAL_ITEMS}
+          itemTitles={legalTitles}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+          sectionDivider
+        />
+      </nav>
+    </TooltipProvider>
   );
 }

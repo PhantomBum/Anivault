@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.3.4
+- **Navigation:** Sidebar **rework** — four sections (Catalog, Plan, Community, Legal), **Browse** in nav, **tooltips** when collapsed, **Home** icon. **Home:** **Spotlight** moved **below Fresh picks**; pick list **inside** spotlight card (removed duplicate sidebar column). **Community:** **Two-column** layout (local threads · companion servers). **Gallery:** **URL sync** for tabs; **Watch:** fix **i18n shadowing** bug on reconnect overlay; **lint / typing** fixes across IPC and renderer.
+
 3.3.3
 - **UI:** Shared **page shell** classes site-wide; tighter route headers. **API:** AllAnime **POST + browser headers**; catalog error hints. **Tag v3.3.3**.
 

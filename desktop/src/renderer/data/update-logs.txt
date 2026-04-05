@@ -1,5 +1,15 @@
 AniVault Unvaulted — changelog
 
+3.3.4 (Sidebar + home spotlight + community/gallery polish + watch reconnect fix)
+- **Sidebar:** New **nav groups** (Catalog / Plan & calendar / Community / Legal), **Browse** link, **collapsed tooltips**, clearer active state.
+- **Home:** **Spotlight** follows **Fresh on the catalog**; titles list lives **inside** the spotlight panel (no separate right column).
+- **Community:** **Split view** — offline threads vs companion **servers**; clearer empty server state.
+- **Gallery:** Tab changes **sync `?tab=`** in the URL for shareable links.
+- **Watch:** **Reconnect notice** no longer breaks when a variable shadowed the i18n `t` function (critical bugfix).
+- **Quality:** IPC handlers without spurious `async`; stricter **watch-progress** store typing; **loading hint** line on player stage; AniList cache **non-null** cleanup; misc ESLint cleanups.
+
+Tag **`v3.3.4`**.
+
 3.3.3 (Unified page layout + AllAnime client hardening)
 - **Layout:** Shared **`.av-page-shell`** / **`.av-page-hero`** / **`.av-page-section-label`** utilities — consistent padding and tighter headers across Home, Discover, Browse, Find shows, Settings, Lists, Schedule, Account, Terms, Explore, Community, Gallery, Clips, Request series, Coming soon, and **Anime details** body.
 - **Catalog API:** **POST GraphQL** to AllAnime with **Chrome-like headers** + GET fallback; friendlier **403** copy via `formatCatalogApiError`.

@@ -63,7 +63,7 @@ export async function saveVideoFrameAsPng(
           resolve({ ok: false, reason: "tainted" });
           return;
         }
-        const safe = baseName.replace(/[^\w\-]+/g, "_").slice(0, 80) || "frame";
+        const safe = baseName.replace(/[^\w-]+/g, "_").slice(0, 80) || "frame";
         downloadBlob(blob, `${safe}-${Date.now()}.png`);
         resolve({ ok: true });
       },
@@ -100,7 +100,11 @@ export async function recordVideoClipFromElement(
 
   let stream: MediaStream;
   try {
-    stream = video.captureStream();
+    const withCapture = video as HTMLVideoElement & { captureStream?: () => MediaStream };
+    if (typeof withCapture.captureStream !== "function") {
+      return { ok: false, reason: "unsupported" };
+    }
+    stream = withCapture.captureStream();
   } catch (e) {
     return {
       ok: false,

@@ -12,6 +12,12 @@ const store = new Store<Schema>({
   defaults: { entries: {} },
 });
 
+function readEntries(): Schema["entries"] {
+  // electron-store typings expose get/set as loosely typed for dynamic keys.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  return store.get("entries") as unknown as Schema["entries"];
+}
+
 export function watchProgressKey(
   animeId: string,
   episode: string,
@@ -28,12 +34,13 @@ export function saveWatchProgress(
   durationSec: number
 ): void {
   const k = watchProgressKey(animeId, episode, mode);
-  const entries = { ...store.get("entries") };
+  const entries: Schema["entries"] = { ...readEntries() };
   entries[k] = {
     positionSec,
     durationSec,
     updatedAt: Date.now(),
   };
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   store.set("entries", entries);
 }
 
@@ -43,30 +50,33 @@ export function getWatchProgress(
   mode: "sub" | "dub"
 ): WatchProgressRecord | null {
   const k = watchProgressKey(animeId, episode, mode);
-  return store.get("entries")[k] ?? null;
+  const entries = readEntries();
+  return entries[k] ?? null;
 }
 
 /** Remove all progress rows for one series (e.g. after “clear history”). */
 export function clearWatchProgressForAnime(animeId: string): void {
   const prefix = `${animeId}\u0001`;
-  const entries = { ...store.get("entries") };
+  const entries: Schema["entries"] = { ...readEntries() };
   for (const key of Object.keys(entries)) {
     if (key.startsWith(prefix)) {
       delete entries[key];
     }
   }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   store.set("entries", entries);
 }
 
 export function watchProgressStats(): { trackedEpisodes: number } {
-  return { trackedEpisodes: Object.keys(store.get("entries")).length };
+  const entries = readEntries();
+  return { trackedEpisodes: Object.keys(entries).length };
 }
 
 /**
  * Recent progress rows, newest first, then one entry per anime (latest touched episode).
  */
 export function listContinueWatching(limit: number): WatchProgressContinueItem[] {
-  const entries = store.get("entries");
+  const entries = readEntries();
   const rows: WatchProgressContinueItem[] = [];
   for (const [key, rec] of Object.entries(entries)) {
     const parts = key.split("\u0001");

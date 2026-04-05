@@ -8,7 +8,7 @@ import type { MatureRating } from "@/renderer/lib/mature-content";
 import { cn } from "@/renderer/lib/utils";
 import { APP_SHORT_BADGE } from "@/shared/app-brand";
 import { BookmarkPlus, ChevronLeft, ChevronRight, ImageOff, Trash2 } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export type HorizontalCarouselItem = {
@@ -222,7 +222,7 @@ function HorizontalCarouselCard({
   );
 }
 
-export const HorizontalCarousel = React.memo(function HorizontalCarousel({
+function HorizontalCarouselImpl({
   items,
   pageSize = 6,
   variant = "default",
@@ -320,4 +320,6 @@ export const HorizontalCarousel = React.memo(function HorizontalCarousel({
       </div>
     </div>
   );
-});
+}
+
+export const HorizontalCarousel = memo(HorizontalCarouselImpl);

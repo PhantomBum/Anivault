@@ -1,4 +1,4 @@
-import { Hash, LayoutGrid, RefreshCw } from "lucide-react";
+import { Hash, LayoutGrid, MessageCircle, RefreshCw, Server } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { AvFutureSurface } from "@/renderer/components/av-future-surface";
@@ -64,10 +64,10 @@ export function CommunityPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="av-page-section-label text-[var(--av-accent)]">Community</p>
-          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Servers & safety</h1>
+          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Hub & discussions</h1>
           <p className="mt-1 max-w-xl text-xs text-[var(--av-muted)]">
-            Companion API lists hubs and reports when online. Local threads below work offline (stored only on
-            this device until server-backed sync exists).
+            Offline threads stay on this device. When the companion API is online, browse hubs and file
+            reports from the right column.
           </p>
         </div>
         <Button
@@ -81,65 +81,86 @@ export function CommunityPage() {
         </Button>
       </header>
 
-      <CommunityLocalThreadsPanel servers={serverChips} />
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+        <section id="local-threads" className="min-w-0 space-y-3">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-4 w-4 shrink-0 text-[var(--av-accent)]" aria-hidden />
+            <h2 className="m-0 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+              Local threads
+            </h2>
+          </div>
+          <CommunityLocalThreadsPanel servers={serverChips} />
+        </section>
 
-      {loading ? (
-        <p className="text-sm text-[var(--av-muted)]">Loading servers…</p>
-      ) : err ? (
-        <div className="rounded-3xl border border-red-500/30 bg-red-950/20 p-6 text-sm text-red-200">
-          <p className="font-medium">{err}</p>
-          <p className="mt-2 text-xs text-red-200/80">
-            Start the companion server (see <code className="font-mono">anivault/server</code>) or set
-            the API base URL under Settings → Security.
-          </p>
-        </div>
-      ) : servers.length === 0 ? (
-        <p className="text-sm text-[var(--av-muted)]">No servers yet.</p>
-      ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {servers.map((s) => (
-            <li
-              key={s.id}
-              className="flex flex-col rounded-3xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] p-5 shadow-sm transition-colors hover:border-[var(--av-accent-dim)]"
-            >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--av-surface)] text-[var(--av-accent)]">
-                  <LayoutGrid className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-semibold leading-tight">{s.name}</h3>
-                  <p className="mt-1 inline-flex items-center gap-1 text-[11px] tabular-nums text-[var(--av-muted)]">
-                    <Hash className="h-3 w-3" />
-                    {s.slug}
-                  </p>
-                  {s.description ? (
-                    <p className="mt-2 text-sm text-[var(--av-muted)]">{s.description}</p>
-                  ) : null}
-                </div>
-              </div>
-              <div className="mt-4 flex flex-col gap-2 border-t border-[var(--av-border)] pt-4 sm:flex-row sm:items-end">
-                <Input
-                  className="min-w-0 flex-1 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs"
-                  placeholder="Report reason (optional)"
-                  value={reportReason[s.id] ?? ""}
-                  onChange={(e) =>
-                    setReportReason((prev) => ({ ...prev, [s.id]: e.target.value }))
-                  }
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="shrink-0 rounded-xl border-[var(--av-border)] text-xs uppercase"
-                  onClick={() => void reportServer(s.id)}
+        <section className="min-w-0 space-y-3">
+          <div className="flex items-center gap-2">
+            <Server className="h-4 w-4 shrink-0 text-[var(--av-accent)]" aria-hidden />
+            <h2 className="m-0 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+              Companion servers
+            </h2>
+          </div>
+
+          {loading ? (
+            <p className="text-sm text-[var(--av-muted)]">Loading servers…</p>
+          ) : err ? (
+            <div className="rounded-3xl border border-red-500/30 bg-red-950/20 p-6 text-sm text-red-200">
+              <p className="font-medium">{err}</p>
+              <p className="mt-2 text-xs text-red-200/80">
+                Start the companion server (see <code className="font-mono">anivault/server</code>) or set
+                the API base URL under Settings → Security.
+              </p>
+            </div>
+          ) : servers.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-[var(--av-border)] bg-[var(--av-surface)]/40 p-8 text-center text-sm text-[var(--av-muted)]">
+              No servers advertised yet.
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-4">
+              {servers.map((s) => (
+                <li
+                  key={s.id}
+                  className="flex flex-col rounded-3xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] p-5 shadow-sm transition-colors hover:border-[var(--av-accent-dim)]"
                 >
-                  Report
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--av-surface)] text-[var(--av-accent)]">
+                      <LayoutGrid className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-lg font-semibold leading-tight">{s.name}</h3>
+                      <p className="mt-1 inline-flex items-center gap-1 text-[11px] tabular-nums text-[var(--av-muted)]">
+                        <Hash className="h-3 w-3" />
+                        {s.slug}
+                      </p>
+                      {s.description ? (
+                        <p className="mt-2 text-sm text-[var(--av-muted)]">{s.description}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-2 border-t border-[var(--av-border)] pt-4 sm:flex-row sm:items-end">
+                    <Input
+                      className="min-w-0 flex-1 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs"
+                      placeholder="Report reason (optional)"
+                      value={reportReason[s.id] ?? ""}
+                      onChange={(e) =>
+                        setReportReason((prev) => ({ ...prev, [s.id]: e.target.value }))
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0 rounded-xl border-[var(--av-border)] text-xs uppercase"
+                      onClick={() => void reportServer(s.id)}
+                    >
+                      Report
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
       {reportMsg ? (
         <p className="text-center text-xs font-medium text-[var(--av-muted)]">{reportMsg}</p>
       ) : null}
