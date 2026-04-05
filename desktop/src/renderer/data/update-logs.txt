@@ -1,5 +1,14 @@
 AniVault Unvaulted — changelog
 
+3.3.5 (Breadcrumbs, settings hub, watch theatre + episode filters, browse polish)
+- **Navigation:** **Breadcrumbs** under the shell title (Home → …) on every route except `/`.
+- **Accessibility:** **`prefers-reduced-motion`** — simplified home mesh; route-entry animations disabled.
+- **Settings:** **Privacy & data** — one tab for Data + Privacy panels; **two labeled tab rows**; slightly **denser** panel padding; **Studio** lead line; `?tab=privacy` redirects to **`data`**.
+- **Watch:** **Theatre** button (dims chrome); **episode filters** from saved progress (batched IPC); **recovery** text adds network/rate-limit hint when relevant.
+- **Browse:** **Poster skeleton** while loading; **sort A↔Z** toggle with **localStorage** persistence.
+
+Tag **`v3.3.5`**.
+
 3.3.4 (Sidebar + home spotlight + community/gallery polish + watch reconnect fix)
 - **Sidebar:** New **nav groups** (Catalog / Plan & calendar / Community / Legal), **Browse** link, **collapsed tooltips**, clearer active state.
 - **Home:** **Spotlight** follows **Fresh on the catalog**; titles list lives **inside** the spotlight panel (no separate right column).

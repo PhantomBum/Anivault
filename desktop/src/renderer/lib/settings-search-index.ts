@@ -7,8 +7,8 @@ export const SETTINGS_TABS = [
   "translation",
   "shortcuts",
   "updates",
+  /** Backups, offline data, server test, diagnostics & telemetry (single hub). */
   "data",
-  "privacy",
   /** Placeholder for upcoming tools (maintenance gate). */
   "labs",
 ] as const;
@@ -195,17 +195,17 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchHit[] = [
   },
   {
     id: "privacy-diagnostics",
-    tab: "privacy",
+    tab: "data",
     label: "Diagnostics & app folder",
-    category: "Privacy",
+    category: "Privacy & data",
     anchorId: "settings-privacy-diagnostics",
     keywords: "diagnostics user data folder support logs path export",
   },
   {
     id: "telemetry",
-    tab: "privacy",
+    tab: "data",
     label: "Performance telemetry",
-    category: "Privacy",
+    category: "Privacy & data",
     anchorId: "settings-telemetry",
     keywords: "telemetry analytics performance opt in anonymous usage endpoint url post",
   },

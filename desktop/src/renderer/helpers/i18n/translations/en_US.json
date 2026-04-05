@@ -68,7 +68,7 @@
     "playerTitle": "Player",
     "playerSub": "Legacy",
     "settingsTitle": "Settings",
-    "settingsSub": "Playback · appearance · privacy · shortcuts · data · studio",
+    "settingsSub": "Playback · appearance · privacy & data · studio · shortcuts",
     "communityTitle": "Community",
     "communitySub": "Servers & reports (companion API)",
     "galleryTitle": "Gallery",
@@ -109,7 +109,10 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Playback · appearance · language · translation · shortcuts · updates · data · privacy · studio",
+    "subtitle": "Playback · appearance · language · shortcuts · updates · privacy & data · studio",
+    "tabGroupPlayback": "Playback & display",
+    "tabGroupData": "Data & experiments",
+    "tabPrivacyData": "Privacy & data",
     "loading": "Loading settings…",
     "findPlaceholder": "Find in settings…",
     "findAria": "Find in settings",
@@ -179,7 +182,8 @@
     "shortcutsIntro": "These shortcuts work when focus is not in a text field (except Ctrl+/). Adjust seek step and skip intro under Playback.",
     "shortcutsOpenPlayback": "Open Playback settings",
     "tabShortcuts": "Shortcuts",
-    "tabPrivacy": "Privacy"
+    "tabPrivacy": "Privacy",
+    "labsHubLead": "Jump to community routes, dense catalog, and release notes — experimental items stay gated until stable."
   },
   "lists": {
     "kicker": "Lists",
@@ -215,7 +219,10 @@
     "title": "Series",
     "subtitle": "Merged catalog probes — open Find shows for queries and filters.",
     "findShows": "Find shows",
-    "loading": "Loading catalog…"
+    "loading": "Loading catalog…",
+    "sortAz": "Sort A→Z",
+    "sortZa": "Sort Z→A",
+    "sortPersistHint": "Sort order is saved on this device."
   },
   "schedule": {
     "kicker": "Calendar",
@@ -275,7 +282,14 @@
     "toastGallerySubmitted": "Submitted for review — opening Gallery",
     "toastGalleryFailed": "Gallery upload failed",
     "reconnectNotice": "Reconnecting automatically — attempt {{current}} of {{max}}",
-    "playbackFailedAfterRetries": "Playback stopped after automatic reconnects failed. Try “Reload stream”, pick another episode, or check your network."
+    "playbackFailedAfterRetries": "Playback stopped after automatic reconnects failed. Try “Reload stream”, pick another episode, or check your network.",
+    "episodeFilterAll": "All",
+    "episodeFilterInProgress": "In progress",
+    "episodeFilterFresh": "Not started",
+    "episodeFilterHelp": "Based on saved progress for this series (may take a moment on long lists).",
+    "theatreMode": "Theatre",
+    "theatreModeTitle": "Dim chrome around the player for night viewing",
+    "recoveryExtraNetwork": "If you see timeouts, wait a few seconds and retry — the catalog source may be rate-limiting."
   },
   "refreshUpdate": {
     "toast": "Catalog refreshed from source",

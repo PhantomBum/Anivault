@@ -15,7 +15,7 @@ import { recordPerfEvent } from "@/renderer/lib/telemetry";
 import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import type { AnimeSearchResult } from "@/shared/anime-result";
-import { Grid3x3 } from "lucide-react";
+import { ArrowDownAZ, ArrowUpAZ, Grid3x3 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
@@ -25,6 +25,8 @@ const BROWSE_PROBE_QUERIES = ["a", "e", "i", "o", "u", "one", "na"] as const;
 
 /** Cap `getShowDetails` thumbnail merges to limit CPU/network on large merged catalogs (phase 20). */
 const BROWSE_THUMB_MERGE_CAP = 96;
+
+const BROWSE_SORT_LS = "anivault-browse-sort-az";
 
 /**
  * Dense catalog grid from merged ani-cli probes (not a full provider index).
@@ -39,6 +41,16 @@ export function BrowsePage() {
   const [thumbById, setThumbById] = useState<Record<string, string | null>>({});
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sortAz, setSortAz] = useState(true);
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem(BROWSE_SORT_LS);
+      if (s === "za") setSortAz(false);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,6 +108,24 @@ export function BrowsePage() {
     });
   }, [rows, enrichMap, allowMature]);
 
+  const visibleRowsOrdered = useMemo(() => {
+    const list = [...visibleRows];
+    list.sort((a, b) => (sortAz ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
+    return list;
+  }, [visibleRows, sortAz]);
+
+  const toggleSortAz = useCallback(() => {
+    setSortAz((v) => {
+      const next = !v;
+      try {
+        localStorage.setItem(BROWSE_SORT_LS, next ? "az" : "za");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
+
   useEffect(() => {
     if (rows.length === 0) return;
     recordPerfEvent("browse_catalog_loaded", { rowCount: rows.length });
@@ -146,16 +176,32 @@ export function BrowsePage() {
               <p className="text-xs text-[var(--av-muted)]">{t("browse.subtitle")}</p>
             </div>
           </div>
-          <Button
-            asChild
-            variant="secondary"
-            className="av-micro-press h-9 w-fit rounded-lg border-[var(--av-border)] px-3 text-xs"
-          >
-            <Link to="/anime">
-              <Grid3x3 className="mr-1.5 h-3.5 w-3.5 text-[var(--av-accent)]" />
-              {t("browse.findShows")}
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="av-micro-press h-9 gap-1.5 rounded-lg border-[var(--av-border)] px-3 text-xs"
+              onClick={toggleSortAz}
+              title={t("browse.sortPersistHint")}
+            >
+              {sortAz ? (
+                <ArrowDownAZ className="h-3.5 w-3.5 opacity-90" aria-hidden />
+              ) : (
+                <ArrowUpAZ className="h-3.5 w-3.5 opacity-90" aria-hidden />
+              )}
+              {sortAz ? t("browse.sortAz") : t("browse.sortZa")}
+            </Button>
+            <Button
+              asChild
+              variant="secondary"
+              className="av-micro-press h-9 w-fit rounded-lg border-[var(--av-border)] px-3 text-xs"
+            >
+              <Link to="/anime">
+                <Grid3x3 className="mr-1.5 h-3.5 w-3.5 text-[var(--av-accent)]" />
+                {t("browse.findShows")}
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -169,10 +215,17 @@ export function BrowsePage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-[var(--av-muted)]">{t("browse.loading")}</p>
+        <div className="av-poster-grid grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {Array.from({ length: 18 }).map((_, i) => (
+            <div
+              key={i}
+              className="aspect-[2/3] motion-safe:animate-pulse motion-reduce:animate-none rounded-2xl border border-[var(--av-border)]/60 bg-zinc-900/50"
+            />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {visibleRows.map((r) => {
+          {visibleRowsOrdered.map((r) => {
             const enriched = enrichMap[r.id];
             return (
               <AnimeTitleCard

@@ -1,5 +1,11 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.3.5
+- **Shell:** Breadcrumb trail under page headers; **reduced-motion** calmer home mesh + route animations off.
+- **Settings:** **Privacy & data** single tab (backups + telemetry); grouped tab rows; denser panels; Studio **hub copy**.
+- **Watch:** **Theatre** dim mode; episode **progress filters** (all / in progress / not started); richer **recovery** hints for timeouts.
+- **Browse:** Skeleton grid while loading; **A↔Z sort** persisted locally.
+
 3.3.4
 - **Navigation:** Sidebar **rework** — four sections (Catalog, Plan, Community, Legal), **Browse** in nav, **tooltips** when collapsed, **Home** icon. **Home:** **Spotlight** moved **below Fresh picks**; pick list **inside** spotlight card (removed duplicate sidebar column). **Community:** **Two-column** layout (local threads · companion servers). **Gallery:** **URL sync** for tabs; **Watch:** fix **i18n shadowing** bug on reconnect overlay; **lint / typing** fixes across IPC and renderer.
 

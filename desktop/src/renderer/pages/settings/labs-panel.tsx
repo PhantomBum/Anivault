@@ -105,6 +105,9 @@ export function LabsSettingsPanel({ translate }: Props) {
             <p className="max-w-2xl text-sm leading-relaxed text-[var(--av-muted-foreground)] md:text-[0.9375rem]">
               {translate("settings.labsBody")}
             </p>
+            <p className="max-w-2xl text-xs leading-relaxed text-[var(--av-muted)] md:text-sm">
+              {translate("settings.labsHubLead")}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">

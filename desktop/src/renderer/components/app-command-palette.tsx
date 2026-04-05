@@ -38,8 +38,7 @@ const SETTINGS_TAB_LABELS: Record<SettingsTab, string> = {
   translation: "Translation",
   shortcuts: "Shortcuts & input",
   updates: "Updates",
-  data: "Data",
-  privacy: "Privacy & diagnostics",
+  data: "Privacy & data",
   labs: "Studio",
 };
 

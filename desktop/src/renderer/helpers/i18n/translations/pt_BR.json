@@ -109,7 +109,10 @@
   },
   "settings": {
     "title": "Configurações",
-    "subtitle": "Reprodução · aparência · idioma · tradução · atalhos · atualizações · dados · privacidade · estúdio",
+    "subtitle": "Reprodução · aparência · idioma · atalhos · atualizações · privacidade e dados · estúdio",
+    "tabGroupPlayback": "Reprodução e interface",
+    "tabGroupData": "Dados e experimentos",
+    "tabPrivacyData": "Privacidade e dados",
     "loading": "Carregando configurações…",
     "findPlaceholder": "Buscar nas configurações…",
     "findAria": "Buscar nas configurações",
@@ -179,7 +182,8 @@
     "shortcutsIntro": "Esses atalhos funcionam quando o foco não está em um campo de texto (exceto Ctrl+/). Ajuste seek e pular abertura em Reprodução.",
     "shortcutsOpenPlayback": "Abrir configurações de reprodução",
     "tabShortcuts": "Atalhos",
-    "tabPrivacy": "Privacidade"
+    "tabPrivacy": "Privacidade",
+    "labsHubLead": "Atalhos para comunidade, catálogo denso e notas de versão — recursos experimentais ficam atrás de travas até estabilizar."
   },
   "lists": {
     "kicker": "Listas",
@@ -215,7 +219,10 @@
     "title": "Séries",
     "subtitle": "Sondas de catálogo mescladas — abra Buscar séries para filtros e consultas.",
     "findShows": "Buscar séries",
-    "loading": "Carregando catálogo…"
+    "loading": "Carregando catálogo…",
+    "sortAz": "Ordem A→Z",
+    "sortZa": "Ordem Z→A",
+    "sortPersistHint": "A ordem fica salva neste dispositivo."
   },
   "schedule": {
     "kicker": "Calendário",
@@ -275,7 +282,14 @@
     "toastGallerySubmitted": "Enviado para moderação — abrindo Galeria",
     "toastGalleryFailed": "Falha no envio à galeria",
     "reconnectNotice": "Reconectando automaticamente — tentativa {{current}} de {{max}}",
-    "playbackFailedAfterRetries": "A reprodução parou após falhas nas reconexões automáticas. Tente “Recarregar stream”, outro episódio ou verifique a rede."
+    "playbackFailedAfterRetries": "A reprodução parou após falhas nas reconexões automáticas. Tente “Recarregar stream”, outro episódio ou verifique a rede.",
+    "episodeFilterAll": "Todos",
+    "episodeFilterInProgress": "Em andamento",
+    "episodeFilterFresh": "Não iniciados",
+    "episodeFilterHelp": "Com base no progresso salvo desta série (listas longas podem demorar um pouco).",
+    "theatreMode": "Cinema",
+    "theatreModeTitle": "Escurece o entorno do player para ver à noite",
+    "recoveryExtraNetwork": "Se aparecer timeout, espere alguns segundos e tente de novo — a fonte pode estar limitando requisições."
   },
   "refreshUpdate": {
     "toast": "Catálogo atualizado da fonte",

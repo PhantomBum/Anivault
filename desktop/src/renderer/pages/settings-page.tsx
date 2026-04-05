@@ -12,7 +12,7 @@ import {
 } from "@/renderer/lib/settings-search-index";
 import type { AnivaultStoreSchema } from "@/shared/anivault-types";
 import type { OfflineDownloadItem } from "@/shared/offline-downloads-types";
-import { Copy, Database, Keyboard, Palette, Search, Shield, Sparkles } from "lucide-react";
+import { Copy, Database, Keyboard, Palette, Search, Sparkles } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -40,6 +40,9 @@ export function SettingsPage() {
   const findWrapRef = useRef<HTMLDivElement | null>(null);
 
   const activeTab = useMemo((): SettingsTab => {
+    if (tabParam === "privacy") {
+      return "data";
+    }
     if (SETTINGS_TABS.includes(tabParam as SettingsTab)) {
       return tabParam as SettingsTab;
     }
@@ -65,6 +68,10 @@ export function SettingsPage() {
   const searchHits = useMemo(() => filterSettingsSearch(findQuery), [findQuery]);
 
   useEffect(() => {
+    if (tabParam === "privacy") {
+      setSearchParams({ tab: "data" }, { replace: true });
+      return;
+    }
     if (SETTINGS_TABS.includes(tabParam as SettingsTab)) return;
     try {
       const stored = sessionStorage.getItem(SETTINGS_LAST_TAB_KEY);
@@ -301,39 +308,49 @@ export function SettingsPage() {
         }}
         className="w-full min-h-0"
       >
-        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1 rounded-2xl border border-[var(--av-border)]/80 bg-gradient-to-br from-indigo-500/[0.07] via-[var(--av-surface)]/95 to-cyan-500/[0.06] p-1.5 shadow-inner shadow-black/20 backdrop-blur-md">
-          <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
-            Playback
-          </TabsTrigger>
-          <TabsTrigger value="appearance" className={settingsTabTriggerClassName}>
-            <Palette className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            Appearance
-          </TabsTrigger>
-          <TabsTrigger value="language" className={settingsTabTriggerClassName}>
-            Language
-          </TabsTrigger>
-          <TabsTrigger value="translation" className={settingsTabTriggerClassName}>
-            Translation
-          </TabsTrigger>
-          <TabsTrigger value="shortcuts" className={settingsTabTriggerClassName}>
-            <Keyboard className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            {translate("settings.tabShortcuts")}
-          </TabsTrigger>
-          <TabsTrigger value="updates" className={settingsTabTriggerClassName}>
-            Updates
-          </TabsTrigger>
-          <TabsTrigger value="data" className={settingsTabTriggerClassName}>
-            <Database className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            Data
-          </TabsTrigger>
-          <TabsTrigger value="privacy" className={settingsTabTriggerClassName}>
-            <Shield className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            {translate("settings.tabPrivacy")}
-          </TabsTrigger>
-          <TabsTrigger value="labs" className={settingsTabTriggerClassName}>
-            <Sparkles className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-            Studio
-          </TabsTrigger>
+        <TabsList className="flex w-full flex-col gap-3 rounded-2xl border border-[var(--av-border)]/80 bg-gradient-to-br from-indigo-500/[0.07] via-[var(--av-surface)]/95 to-cyan-500/[0.06] p-2 shadow-inner shadow-black/20 backdrop-blur-md">
+          <div>
+            <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--av-muted-foreground)]">
+              {translate("settings.tabGroupPlayback")}
+            </p>
+            <div className="flex flex-wrap items-stretch gap-1">
+              <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
+                Playback
+              </TabsTrigger>
+              <TabsTrigger value="appearance" className={settingsTabTriggerClassName}>
+                <Palette className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+                Appearance
+              </TabsTrigger>
+              <TabsTrigger value="language" className={settingsTabTriggerClassName}>
+                Language
+              </TabsTrigger>
+              <TabsTrigger value="translation" className={settingsTabTriggerClassName}>
+                Translation
+              </TabsTrigger>
+              <TabsTrigger value="shortcuts" className={settingsTabTriggerClassName}>
+                <Keyboard className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+                {translate("settings.tabShortcuts")}
+              </TabsTrigger>
+              <TabsTrigger value="updates" className={settingsTabTriggerClassName}>
+                Updates
+              </TabsTrigger>
+            </div>
+          </div>
+          <div>
+            <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--av-muted-foreground)]">
+              {translate("settings.tabGroupData")}
+            </p>
+            <div className="flex flex-wrap items-stretch gap-1">
+              <TabsTrigger value="data" className={settingsTabTriggerClassName}>
+                <Database className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+                {translate("settings.tabPrivacyData")}
+              </TabsTrigger>
+              <TabsTrigger value="labs" className={settingsTabTriggerClassName}>
+                <Sparkles className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+                Studio
+              </TabsTrigger>
+            </div>
+          </div>
         </TabsList>
 
         <TabsContent value="playback" className={settingsTabContentClassName}>
@@ -372,10 +389,9 @@ export function SettingsPage() {
             connBusy={connBusy}
             setConnBusy={setConnBusy}
           />
-        </TabsContent>
-
-        <TabsContent value="privacy" className={settingsTabContentClassName}>
-          <PrivacySettingsPanel cfg={cfg} persist={persist} translate={translate} />
+          <div className="border-t border-[var(--av-border)]/70 pt-6">
+            <PrivacySettingsPanel cfg={cfg} persist={persist} translate={translate} />
+          </div>
         </TabsContent>
 
         <TabsContent value="labs" className={settingsTabContentClassName}>

@@ -535,3 +535,19 @@
     transform: none;
   }
 }
+
+/* Calmer shell for users who prefer reduced motion — keep contrast, drop multi-layer mesh motion */
+@media (prefers-reduced-motion: reduce) {
+  .av-home-mesh {
+    background-image: radial-gradient(
+      ellipse 90% 60% at 50% -5%,
+      rgba(99, 102, 241, 0.09),
+      transparent 58%
+    );
+  }
+  .motion-safe\:animate-av-route-in,
+  .motion-safe\:animate-av-fade-up,
+  .motion-safe\:animate-av-soft-pulse {
+    animation: none !important;
+  }
+}

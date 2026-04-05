@@ -9,6 +9,7 @@ import {
   Link2,
   ListOrdered,
   MessageCircle,
+  PanelTop,
   SkipForward,
   ThumbsDown,
   ThumbsUp,
@@ -189,6 +190,11 @@ export function WatchPage() {
   }, [location.state]);
 
   const [episodeFilter, setEpisodeFilter] = useState("");
+  const [episodeProgressFilter, setEpisodeProgressFilter] = useState<"all" | "in_progress" | "fresh">(
+    "all"
+  );
+  const [theatreMode, setTheatreMode] = useState(false);
+  const [epProgress, setEpProgress] = useState<Record<string, "none" | "partial" | "done">>({});
   const [engagement, setEngagement] = useState<ShowEngagementResponse | null>(null);
   const [comments, setComments] = useState<ShowCommentRow[]>([]);
   const [commentBody, setCommentBody] = useState("");
@@ -228,11 +234,59 @@ export function WatchPage() {
 
   const sortedEpisodes = useMemo(() => sortEpisodeLabels(episodes), [episodes]);
 
+  const epsProgressKey = useMemo(() => sortedEpisodes.join("\u0001"), [sortedEpisodes]);
+
+  useEffect(() => {
+    if (!anime?.id || sortedEpisodes.length === 0) {
+      setEpProgress({});
+      return;
+    }
+    if (!window.watchProgress) {
+      setEpProgress({});
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const wp = window.watchProgress;
+      if (!wp) return;
+      const next: Record<string, "none" | "partial" | "done"> = {};
+      const chunk = 16;
+      for (let i = 0; i < sortedEpisodes.length; i += chunk) {
+        if (cancelled) return;
+        const slice = sortedEpisodes.slice(i, i + chunk);
+        await Promise.all(
+          slice.map(async (ep) => {
+            try {
+              const p = await wp.get(anime.id, ep, anime.mode);
+              if (!p || p.durationSec < 24) {
+                next[ep] = "none";
+                return;
+              }
+              const ratio = p.positionSec / p.durationSec;
+              next[ep] = ratio >= 0.92 ? "done" : "partial";
+            } catch {
+              next[ep] = "none";
+            }
+          })
+        );
+      }
+      if (!cancelled) setEpProgress(next);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [anime?.id, anime?.mode, epsProgressKey]);
+
   const filteredEpisodes = useMemo(() => {
     const q = episodeFilter.trim().toLowerCase();
-    if (!q) return sortedEpisodes;
-    return sortedEpisodes.filter((ep) => ep.toLowerCase().includes(q));
-  }, [sortedEpisodes, episodeFilter]);
+    let list = q ? sortedEpisodes.filter((ep) => ep.toLowerCase().includes(q)) : sortedEpisodes;
+    if (episodeProgressFilter === "in_progress") {
+      list = list.filter((ep) => epProgress[ep] === "partial");
+    } else if (episodeProgressFilter === "fresh") {
+      list = list.filter((ep) => epProgress[ep] === "none" || epProgress[ep] === undefined);
+    }
+    return list;
+  }, [sortedEpisodes, episodeFilter, episodeProgressFilter, epProgress]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerSectionRef = useRef<HTMLDivElement | null>(null);
@@ -431,15 +485,22 @@ export function WatchPage() {
 
   const streamRecoveryHint = useMemo(() => {
     if (!error) return null;
+    const parts: string[] = [];
     const i = sortedEpisodes.indexOf(currentEpisode);
     if (i >= 0 && i < sortedEpisodes.length - 1) {
-      return `If this keeps failing, try “${sortedEpisodes[i + 1]}” or pick another episode below.`;
+      parts.push(
+        `If this keeps failing, try “${sortedEpisodes[i + 1]}” or pick another episode below.`
+      );
+    } else if (sortedEpisodes.length > 1) {
+      parts.push(
+        "Some episodes may not have a playable stream from current sources — try another episode."
+      );
     }
-    if (sortedEpisodes.length > 1) {
-      return "Some episodes may not have a playable stream from current sources — try another episode.";
+    if (/timeout|timed out|403|429|rate|busy|network/i.test(error)) {
+      parts.push(t("watch.recoveryExtraNetwork"));
     }
-    return null;
-  }, [error, sortedEpisodes, currentEpisode]);
+    return parts.length ? parts.join(" ") : null;
+  }, [error, sortedEpisodes, currentEpisode, t]);
 
   const episodeNav = useMemo(() => {
     const i = sortedEpisodes.indexOf(currentEpisode);
@@ -833,8 +894,20 @@ export function WatchPage() {
   }, [anime.id, anime.mode, currentEpisode, t]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--av-bg)] text-zinc-100">
-      <header className="flex shrink-0 flex-col gap-2 border-b border-white/[0.08] bg-[var(--av-bg)] px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4">
+    <div
+      className={cn(
+        "flex h-full min-h-0 flex-col text-zinc-100 transition-colors duration-300",
+        theatreMode ? "bg-black" : "bg-[var(--av-bg)]"
+      )}
+    >
+      <header
+        className={cn(
+          "flex shrink-0 flex-col gap-2 border-b px-3 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-4",
+          theatreMode
+            ? "border-white/[0.04] bg-black/90"
+            : "border-white/[0.08] bg-[var(--av-bg)]"
+        )}
+      >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <Button
             variant="ghost"
@@ -857,6 +930,21 @@ export function WatchPage() {
               {anime.mode === "dub" ? "English dub" : "Japanese sub"}
             </p>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-10 w-10 shrink-0 text-zinc-400 hover:bg-white/5 hover:text-zinc-100",
+              theatreMode && "text-amber-200/90 hover:text-amber-100"
+            )}
+            title={t("watch.theatreModeTitle")}
+            aria-label={t("watch.theatreModeTitle")}
+            aria-pressed={theatreMode}
+            onClick={() => setTheatreMode((v) => !v)}
+          >
+            <PanelTop className="h-5 w-5" />
+          </Button>
           <Button
             type="button"
             variant="ghost"
@@ -902,7 +990,13 @@ export function WatchPage() {
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 pb-8 pt-4 sm:px-5">
         <div className="mx-auto w-full max-w-5xl space-y-6">
-          <div ref={playerSectionRef} className="relative w-full scroll-mt-24">
+          <div
+            ref={playerSectionRef}
+            className={cn(
+              "relative w-full scroll-mt-24 rounded-xl transition-shadow duration-300",
+              theatreMode && "shadow-[inset_0_0_100px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
+            )}
+          >
             {upNext ? (
               <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-4 rounded-2xl bg-black/88 px-6 text-center backdrop-blur-md">
                 <p className="text-sm font-semibold text-zinc-100">Up next</p>
@@ -1224,6 +1318,34 @@ export function WatchPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
               Episodes
             </p>
+            {sortedEpisodes.length > 3 ? (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {(
+                  [
+                    ["all", t("watch.episodeFilterAll")],
+                    ["in_progress", t("watch.episodeFilterInProgress")],
+                    ["fresh", t("watch.episodeFilterFresh")],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={cn(
+                      "rounded-lg border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors",
+                      episodeProgressFilter === id
+                        ? "border-white/25 bg-white/10 text-zinc-100"
+                        : "border-white/[0.08] bg-white/[0.03] text-zinc-500 hover:border-white/15 hover:text-zinc-300"
+                    )}
+                    onClick={() => setEpisodeProgressFilter(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {sortedEpisodes.length > 3 ? (
+              <p className="mt-2 text-[10px] leading-relaxed text-zinc-600">{t("watch.episodeFilterHelp")}</p>
+            ) : null}
             {showEpisodeFilter ? (
               <Input
                 placeholder="Filter episodes…"

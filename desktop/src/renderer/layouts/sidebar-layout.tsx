@@ -10,6 +10,7 @@ import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { RouteErrorBoundary } from "@/renderer/components/route-error-boundary";
 import { Titlebar } from "@/renderer/components/titlebar";
 import { toggleNowPlayingPlayback } from "@/renderer/lib/now-playing-playback";
+import { getRouteBreadcrumbs } from "@/renderer/lib/route-breadcrumbs";
 import { getRouteHeading } from "@/renderer/lib/route-headings";
 import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import { cn } from "@/renderer/lib/utils";
@@ -47,6 +48,10 @@ export default function SidebarLayout() {
   const navigate = useNavigate();
   const { title, sub } = useMemo(
     () => getRouteHeading(t, location.pathname),
+    [t, location.pathname]
+  );
+  const breadcrumbs = useMemo(
+    () => getRouteBreadcrumbs(t, location.pathname),
     [t, location.pathname]
   );
   const isHome = location.pathname === "/";
@@ -320,6 +325,37 @@ export default function SidebarLayout() {
                 <p className="mt-0.5 leading-snug text-[var(--av-muted)] [font-size:var(--av-shell-header-sub)]">
                   {sub}
                 </p>
+              ) : null}
+              {breadcrumbs.length > 1 ? (
+                <nav
+                  className="mt-2 flex flex-wrap items-center gap-1 text-[11px] text-[var(--av-muted-foreground)]"
+                  aria-label="Breadcrumb"
+                >
+                  {breadcrumbs.map((b, i) => {
+                    const last = i === breadcrumbs.length - 1;
+                    return (
+                      <span key={`${b.label}-${i}`} className="inline-flex items-center gap-1">
+                        {i > 0 ? (
+                          <ChevronRight className="h-3 w-3 shrink-0 opacity-50" aria-hidden />
+                        ) : null}
+                        {b.to && !last ? (
+                          <Link
+                            to={b.to}
+                            className="rounded-md text-[var(--av-muted)] underline-offset-2 transition-colors hover:text-[var(--av-text)] hover:underline"
+                          >
+                            {b.label}
+                          </Link>
+                        ) : (
+                          <span
+                            className={last ? "font-medium text-[var(--av-muted)]" : "text-[var(--av-muted)]"}
+                          >
+                            {b.label}
+                          </span>
+                        )}
+                      </span>
+                    );
+                  })}
+                </nav>
               ) : null}
             </div>
             <form
