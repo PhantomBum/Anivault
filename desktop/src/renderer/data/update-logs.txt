@@ -1,5 +1,13 @@
 AniVault Unvaulted — changelog
 
+3.3.2 (Install & release polish — gradients, home, settings, Studio)
+- **Shell:** Richer **background gradients** (indigo / rose / cyan mesh), **glass** search panels, gradient **callouts** and raised surfaces.
+- **Home:** **Search + filters** moved up with **quick links** (Discover, Browse, Lists, Calendar); **Featured picks** sidebar and **Spotlight** frame updated.
+- **Settings:** Header **orbs** + gradient **tab strip**; **Studio** hub uses larger cards and per-route accent bars.
+- **Releases:** CI can **attach Windows assets** on **manual workflow runs** (same as tag builds) using `desktop/package.json` version.
+
+Tag **`v3.3.2`**.
+
 3.3.1 (Quality patch — enrichment, catalog bridge, UX edge cases)
 - **AniList enrichment:** `useAnilistEnrichment` now uses the **`concurrency` argument** (was hard-coded `12`); effect deps use **`sig`** + a **`shows` ref** to avoid redundant runs when the array reference changes but IDs do not.
 - **Browse:** Uses **`getAniCli()`** instead of bare **`window.aniCli`** (clear error if the bridge is not ready). **Quick play** shows a toast on episode load failure (same as Discover / Find shows).

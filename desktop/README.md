@@ -2,11 +2,13 @@
 
 Electron + Vite. The interesting bit is the bridge to **ani-cli** for streams; the rest is layout, settings, watch UI, and the usual desktop glue.
 
-## Install (you’re not cloning this)
+## Install (end users)
 
-[Releases](https://github.com/PhantomBum/Anivault/releases/latest) → download **`AniVaultUnvaultedSetup.exe`** → run it. Squirrel install; no Node on your machine required.
+1. [Releases → Latest](https://github.com/PhantomBum/Anivault/releases/latest)  
+2. **`AniVaultUnvaultedSetup.exe`** → run → follow the prompt (one installer; Squirrel adds Start menu / uninstall entry).  
+3. Optional: if SmartScreen appears → **More info** → **Run anyway**.
 
-Changelog: repo root [`UPDATE-LOGS.txt`](../UPDATE-LOGS.txt) (also surfaced in the app).
+Changelog: [`UPDATE-LOGS.txt`](../UPDATE-LOGS.txt) and **Settings → Updates** in the app.
 
 ---
 
@@ -35,11 +37,15 @@ If `make` complains about **EPERM** on `anivault-unvaulted.exe`, close the runni
 
 ## Cutting a release (maintainers)
 
-1. Bump `version` in `package.json` (must match the tag you’re about to ship).
-2. Commit and push `main`.
-3. Tag and push, e.g. `git tag v1.2.4 && git push origin v1.2.4`
+From repo root (PowerShell), with a **new** semver:
 
-Or from repo root: `.\scripts\release-desktop.ps1 1.2.4` (PowerShell). CI workflow: [`.github/workflows/release-desktop.yml`](../.github/workflows/release-desktop.yml).
+`.\scripts\release-desktop.ps1 3.3.2`
+
+That sets `desktop/package.json`, commits, pushes `main`, creates **`v3.3.2`**, and pushes the tag. GitHub Actions (**Windows installer release**) builds and uploads **`AniVaultUnvaultedSetup.exe`** plus updater files to the release.
+
+Or manually: bump `desktop/package.json` → commit → push → `git tag vX.Y.Z && git push origin vX.Y.Z`.
+
+**Re-run without a new tag:** Actions → **Windows installer release** → **Run workflow** on `main` — uploads assets for whatever version is already in `desktop/package.json`.
 
 ---
 

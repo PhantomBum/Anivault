@@ -4,6 +4,7 @@ import {
   ChevronRight,
   Compass,
   Filter,
+  Grid3x3,
   LayoutList,
   Play,
   RefreshCw,
@@ -396,13 +397,10 @@ export function WelcomePage() {
 
   return (
     <div className="relative min-h-[calc(100dvh-3rem)] bg-[var(--av-bg)] text-[var(--av-text)] antialiased">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_70%_55%_at_50%_-15%,rgba(130,150,200,0.07),transparent_58%)]"
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-0 av-home-mesh" aria-hidden />
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-10 md:gap-12 md:px-8 md:pt-14">
         <header className="flex flex-col items-center gap-5 text-center">
-          <div className="av-surface-raised w-full max-w-xl rounded-3xl border border-[var(--av-border)]/85 px-8 py-10 shadow-[0_20px_56px_rgba(0,0,0,0.42)] md:px-12 md:py-12">
+          <div className="av-surface-raised w-full max-w-xl rounded-3xl border border-[var(--av-border)]/85 bg-gradient-to-br from-indigo-500/[0.04] via-[var(--av-surface)]/30 to-fuchsia-500/[0.05] px-8 py-10 shadow-[0_20px_56px_rgba(0,0,0,0.42)] md:px-12 md:py-12">
             <AniVaultWordmark size="hero" className="justify-center" />
             <p className="m-0 mt-4 text-[0.75rem] font-medium uppercase tracking-[0.2em] text-[var(--av-muted-foreground)]">
               Unvaulted
@@ -489,8 +487,145 @@ export function WelcomePage() {
           </section>
         ) : null}
 
+        <section className="av-glass-panel relative rounded-3xl p-4 sm:p-5 md:p-6 motion-safe:animate-av-fade-up">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+            <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--av-muted)]">
+              Catalog search
+            </p>
+            <span className="text-[10px] text-[var(--av-muted-foreground)]">ani-cli · local cache</span>
+          </div>
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative min-w-0 flex-1">
+              <Search
+                className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--av-muted-foreground)]"
+                strokeWidth={1.75}
+              />
+              <Input
+                type="text"
+                placeholder="Search anime..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className={cn(
+                  "h-12 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg)]/90 pl-12 pr-4 text-[15px] text-[var(--av-text)] shadow-av-xs transition-[box-shadow,border-color] duration-200",
+                  "placeholder:text-[var(--av-muted-foreground)]",
+                  "focus-visible:border-indigo-400/40 focus-visible:ring-2 focus-visible:ring-indigo-500/20 focus-visible:ring-offset-0 focus-visible:ring-offset-[var(--av-bg)]"
+                )}
+                autoFocus
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)]/90 px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+              onClick={bumpCatalogRefresh}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+              {t("refreshUpdate.button")}
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)]/90 px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                  aria-label="Search filters"
+                >
+                  <Filter className="mr-2 h-4 w-4" />
+                  Filters
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-80 border-[var(--av-border)] bg-[var(--av-surface)] p-4 text-[var(--av-text)]"
+                align="end"
+              >
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Audio</p>
+                    <Select
+                      value={filterMode}
+                      onValueChange={(v) => setFilterMode(v as typeof filterMode)}
+                    >
+                      <SelectTrigger className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs shadow-av-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="sub">Sub</SelectItem>
+                        <SelectItem value="dub">Dub</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Sort</p>
+                    <Select
+                      value={sortMode}
+                      onValueChange={(v) => setSortMode(normalizeSearchSortMode(v))}
+                    >
+                      <SelectTrigger className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs shadow-av-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="match">Source order</SelectItem>
+                        <SelectItem value="name">Title A→Z</SelectItem>
+                        <SelectItem value="name-desc">Title Z→A</SelectItem>
+                        <SelectItem value="episodes">Episodes (most)</SelectItem>
+                        <SelectItem value="episodes-asc">Episodes (fewest)</SelectItem>
+                        <SelectItem value="score">AniList score</SelectItem>
+                        <SelectItem value="year">Year (newest)</SelectItem>
+                        <SelectItem value="year-asc">Year (oldest)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p className="text-[10px] text-[var(--av-muted-foreground)]">
+                    Filters apply after results load from ani-cli.
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 motion-safe:animate-av-fade-up motion-safe:[animation-delay:80ms]">
+          <Link
+            to="/discover"
+            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/15 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-indigo-400/40 hover:shadow-lg hover:shadow-indigo-500/15"
+          >
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-300/50 to-transparent" />
+            <Compass className="h-4 w-4 text-indigo-300" aria-hidden />
+            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Discover</span>
+            <span className="text-[10px] text-[var(--av-muted)]">Catalog & rails</span>
+          </Link>
+          <Link
+            to="/browse"
+            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-violet-400/15 bg-gradient-to-br from-violet-500/12 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-violet-400/35 hover:shadow-lg hover:shadow-violet-500/10"
+          >
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/45 to-transparent" />
+            <Grid3x3 className="h-4 w-4 text-violet-300" aria-hidden />
+            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Browse</span>
+            <span className="text-[10px] text-[var(--av-muted)]">Grid & filters</span>
+          </Link>
+          <Link
+            to="/lists"
+            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-rose-400/15 bg-gradient-to-br from-rose-500/10 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-rose-400/35 hover:shadow-lg hover:shadow-rose-500/10"
+          >
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-300/45 to-transparent" />
+            <LayoutList className="h-4 w-4 text-rose-300" aria-hidden />
+            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Lists</span>
+            <span className="text-[10px] text-[var(--av-muted)]">Saved picks</span>
+          </Link>
+          <Link
+            to="/schedule"
+            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-cyan-400/15 bg-gradient-to-br from-cyan-500/12 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-cyan-400/35 hover:shadow-lg hover:shadow-cyan-500/12"
+          >
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/45 to-transparent" />
+            <Calendar className="h-4 w-4 text-cyan-300" aria-hidden />
+            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Calendar</span>
+            <span className="text-[10px] text-[var(--av-muted)]">Air times</span>
+          </Link>
+        </div>
+
         {hero ? (
-          <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)]/90 shadow-2xl shadow-black/40 ring-1 ring-white/[0.06]">
+          <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)]/90 shadow-2xl shadow-black/40 ring-1 ring-indigo-400/10">
             {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
               <>
                 <div
@@ -666,133 +801,8 @@ export function WelcomePage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button
-            type="button"
-            asChild
-            variant="secondary"
-            className="h-10 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-xs font-medium text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-          >
-            <Link to="/discover" className="inline-flex items-center gap-2">
-              <Compass className="h-4 w-4 text-[var(--av-accent)]" />
-              Discover
-            </Link>
-          </Button>
-          <Button
-            type="button"
-            asChild
-            variant="secondary"
-            className="h-10 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-xs font-medium text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-          >
-            <Link to="/lists" className="inline-flex items-center gap-2">
-              <LayoutList className="h-4 w-4 text-[var(--av-accent)]" />
-              Lists
-            </Link>
-          </Button>
-          <Button
-            type="button"
-            asChild
-            variant="secondary"
-            className="h-10 rounded-2xl border border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-xs font-medium text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-          >
-            <Link to="/schedule" className="inline-flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[var(--av-accent)]" />
-              Calendar
-            </Link>
-          </Button>
-        </div>
-
         <div className="lg:grid lg:grid-cols-[1fr_260px] lg:items-start lg:gap-10">
           <div className="flex min-w-0 flex-col gap-10">
-            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="relative min-w-0 flex-1">
-            <Search
-              className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--av-muted-foreground)]"
-              strokeWidth={1.75}
-            />
-            <Input
-              type="text"
-              placeholder="Search anime..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className={cn(
-                "h-12 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg)] pl-12 pr-4 text-[15px] text-[var(--av-text)] shadow-av-xs transition-[box-shadow,border-color] duration-200",
-                "placeholder:text-[var(--av-muted-foreground)]",
-                "focus-visible:border-[var(--av-accent-dim)] focus-visible:ring-2 focus-visible:ring-[var(--av-accent-muted)] focus-visible:ring-offset-0 focus-visible:ring-offset-[var(--av-bg)]"
-              )}
-              autoFocus
-            />
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-            onClick={bumpCatalogRefresh}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
-            {t("refreshUpdate.button")}
-          </Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
-                aria-label="Search filters"
-              >
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-80 border-[var(--av-border)] bg-[var(--av-surface)] p-4 text-[var(--av-text)]"
-              align="end"
-            >
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Audio</p>
-                  <Select
-                    value={filterMode}
-                    onValueChange={(v) => setFilterMode(v as typeof filterMode)}
-                  >
-                    <SelectTrigger className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs shadow-av-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="sub">Sub</SelectItem>
-                      <SelectItem value="dub">Dub</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-wide text-[var(--av-muted)]">Sort</p>
-                  <Select
-                    value={sortMode}
-                    onValueChange={(v) => setSortMode(normalizeSearchSortMode(v))}
-                  >
-                    <SelectTrigger className="rounded-2xl border-[var(--av-border)] bg-[var(--av-bg)] text-xs shadow-av-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="match">Source order</SelectItem>
-                      <SelectItem value="name">Title A→Z</SelectItem>
-                      <SelectItem value="name-desc">Title Z→A</SelectItem>
-                      <SelectItem value="episodes">Episodes (most)</SelectItem>
-                      <SelectItem value="episodes-asc">Episodes (fewest)</SelectItem>
-                      <SelectItem value="score">AniList score</SelectItem>
-                      <SelectItem value="year">Year (newest)</SelectItem>
-                      <SelectItem value="year-asc">Year (oldest)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-[10px] text-[var(--av-muted-foreground)]">
-                  Filters apply after results load from ani-cli.
-                </p>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
 
         {loading && (
           <p className="text-center text-sm text-[var(--av-muted)]">Searching…</p>
@@ -907,20 +917,24 @@ export function WelcomePage() {
           </section>
         )}
           </div>
-          <aside className="hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/60 p-3 lg:block">
-            <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+          <aside className="relative hidden overflow-hidden rounded-2xl border border-indigo-400/15 bg-gradient-to-b from-indigo-500/[0.07] via-[var(--av-surface)]/65 to-fuchsia-500/[0.05] p-4 shadow-av-sm backdrop-blur-sm lg:block">
+            <div
+              className="pointer-events-none absolute -right-8 top-0 h-32 w-32 rounded-full bg-cyan-400/10 blur-2xl"
+              aria-hidden
+            />
+            <h3 className="relative text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
               Featured picks
             </h3>
-            <ul className="mt-2 space-y-1 text-sm">
+            <ul className="relative mt-2 space-y-1 text-sm">
               {spotlightVisible.map((s, i) => (
                 <li key={s.id}>
                   <button
                     type="button"
                     className={cn(
-                      "w-full truncate rounded-md px-2 py-1.5 text-left text-[13px] transition-colors",
+                      "w-full truncate rounded-lg px-2 py-1.5 text-left text-[13px] transition-colors",
                       i === spotlightHero
-                        ? "bg-[var(--av-bg-elevated)] text-[var(--av-text)]"
-                        : "text-[var(--av-muted)] hover:bg-[var(--av-bg-elevated)] hover:text-[var(--av-text)]"
+                        ? "bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/10 text-[var(--av-text)] ring-1 ring-white/10"
+                        : "text-[var(--av-muted)] hover:bg-[var(--av-bg-elevated)]/80 hover:text-[var(--av-text)]"
                     )}
                     onClick={() => setSpotlightHero(i)}
                   >
@@ -930,7 +944,7 @@ export function WelcomePage() {
               ))}
             </ul>
             <Link
-              className="mt-4 block text-center text-xs text-[var(--av-accent)] hover:underline"
+              className="relative mt-4 block text-center text-xs font-medium text-indigo-300/90 hover:text-indigo-200 hover:underline"
               to="/discover"
             >
               Discover more →

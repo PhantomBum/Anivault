@@ -2,7 +2,9 @@
 
 Windows desktop app for watching anime in one place. Playback goes through **ani-cli** under the hood—think “a proper UI on top of the same sources people already use in a terminal,” not a new streaming service with a license to every show.
 
-**[Download the latest installer](https://github.com/PhantomBum/Anivault/releases/latest)** — grab `AniVaultUnvaultedSetup.exe` from the release assets (not the “Source code” zips). If there’s no `.exe` yet, that release didn’t finish building; try the previous tag or check [Actions](https://github.com/PhantomBum/Anivault/actions) for a failed run.
+**Install (Windows):** [Latest release](https://github.com/PhantomBum/Anivault/releases/latest) → download **`AniVaultUnvaultedSetup.exe`** → double‑click → done. No Node.js required.
+
+If Windows shows **“Windows protected your PC”** (unsigned build): **More info** → **Run anyway**. Only use the `.exe` from **Assets** here — ignore the “Source code” zips. If there’s no installer, the release build may still be running; check [Actions](https://github.com/PhantomBum/Anivault/actions).
 
 What actually ships is built when someone pushes a version tag; see `scripts/release-desktop.ps1` and `.github/workflows/release-desktop.yml`. Forks don’t get installers until their own CI runs.
 

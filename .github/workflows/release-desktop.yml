@@ -64,7 +64,7 @@ jobs:
           if (Test-Path $p) { Get-ChildItem $p -File | ForEach-Object { $_.Name, $_.Length } }
 
       - name: Verify Squirrel artifacts
-        if: success() && startsWith(github.ref, 'refs/tags/')
+        if: success() && (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch')
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -79,19 +79,32 @@ jobs:
           Write-Host "OK: setup.exe, nupkg, latest.yml present."
 
       - name: Publish GitHub Release assets
-        if: success() && startsWith(github.ref, 'refs/tags/')
+        if: success() && (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch')
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          TAG="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER=$(node -p "require('./package.json').version")
+            TAG="v${VER}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
           DIR="${GITHUB_WORKSPACE}/desktop/out/make/squirrel.windows/x64"
+          NOTES_WIN="Windows build for ${TAG} — **AniVaultUnvaultedSetup.exe** plus updater files (nupkg, RELEASES, latest.yml). Changelog: [update-logs.txt](https://github.com/${GITHUB_REPOSITORY}/blob/main/desktop/src/renderer/data/update-logs.txt)."
           if ! gh release view "$TAG" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create "$TAG" --verify-tag --repo "${GITHUB_REPOSITORY}" \
-              --title "AniVault Unvaulted ${TAG}" \
-              --notes "Windows build for ${TAG} — **AniVaultUnvaultedSetup.exe** plus updater files (nupkg, RELEASES, latest.yml). What changed: [update-logs.txt](https://github.com/${GITHUB_REPOSITORY}/blob/main/desktop/src/renderer/data/update-logs.txt)." \
-              "$DIR"/*
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              gh release create "$TAG" --repo "${GITHUB_REPOSITORY}" \
+                --title "AniVault Unvaulted ${TAG}" \
+                --notes "${NOTES_WIN}" \
+                "$DIR"/*
+            else
+              gh release create "$TAG" --verify-tag --repo "${GITHUB_REPOSITORY}" \
+                --title "AniVault Unvaulted ${TAG}" \
+                --notes "${NOTES_WIN}" \
+                "$DIR"/*
+            fi
           else
             for f in "$DIR"/*; do
               [ -f "$f" ] || continue

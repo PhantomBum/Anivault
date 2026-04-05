@@ -36,6 +36,6 @@ git push origin $tag
 
 Write-Host ""
 Write-Host "Done. Open: https://github.com/PhantomBum/Anivault/actions"
-Write-Host "Wait for 'Release desktop (Windows)' to turn green, then check:"
+Write-Host "Wait for 'Windows installer release' to turn green, then check:"
 Write-Host "https://github.com/PhantomBum/Anivault/releases/tag/$tag"
-Write-Host "You should see AniVaultSetup.exe, latest.yml (and optional .blockmap) under Assets."
+Write-Host "Assets should include AniVaultUnvaultedSetup.exe, latest.yml, RELEASES, and *-full.nupkg."

@@ -1,61 +1,36 @@
 GET ANIVAULT UNVAULTED (Windows)
 ================================
 
-WHERE TO DOWNLOAD
------------------
-Official repo (bookmark this; forks may not have builds):
+DOWNLOAD (3 steps)
+------------------
+1) Open: https://github.com/PhantomBum/Anivault/releases/latest
 
-  https://github.com/PhantomBum/Anivault/releases
+2) Under Assets, run:  AniVaultUnvaultedSetup.exe
+   (Ignore “Source code” zips.)
 
-Open the latest release. Under Assets you want at least:
-
-  AniVaultUnvaultedSetup.exe     — run this to install
-
-You’ll also see Squirrel updater files on the same release (e.g. *-full.nupkg, RELEASES, latest.yml).
-The in-app updater expects those to live alongside the setup on GitHub.
-
-If Assets only shows “Source code (zip/tar.gz)”, that tag never got a successful Windows build.
-Pick another release or check Actions for a red run.
+3) If Windows shows SmartScreen: More info → Run anyway.
 
 
 SHIP A NEW VERSION (maintainers)
 --------------------------------
-From the repo root in PowerShell:
+PowerShell, from repo root:
 
-  .\scripts\release-desktop.ps1 1.2.5
+  .\scripts\release-desktop.ps1 3.3.3
 
-Use a new version number each time. That bumps desktop/package.json, commits, pushes main, tags
-v1.2.5, and pushes the tag. Wait for “Release desktop (Windows)” to go green, then refresh the
-Releases page — the .exe and updater files should be attached.
+Wait for GitHub Actions “Windows installer release” to finish, then refresh the Releases page.
 
-You can also bump package.json yourself, push main, then:
+Or: bump desktop/package.json, push main, then:
 
-  git tag v1.2.5
-  git push origin v1.2.5
+  git tag v3.3.3
+  git push origin v3.3.3
 
 
-RE-RUN CI WITHOUT A NEW TAG
----------------------------
-GitHub → Actions → “Release desktop (Windows)” → Run workflow → branch main.
-Builds whatever version is already in desktop/package.json on that branch.
+RE-BUILD FROM MAIN (no new tag)
+-------------------------------
+Actions → “Windows installer release” → Run workflow → branch main.
+Builds the version in desktop/package.json and attaches files to the matching vX.Y.Z release.
 
 
-TEST IN-APP UPDATES LOCALLY
----------------------------
-1) Install an older release from GitHub.
-2) Publish a newer release with CI green and a higher version.
-3) Open the old app → Settings → Updates → check for updates.
-
-Optional logging:
-
-  set ANIVAULT_UPDATER_DEBUG=1
-  (then launch the installed exe from that same cmd window)
-
-Install path is usually under %LOCALAPPDATA% for Squirrel apps; Start menu shortcut →
-open file location is the lazy way to find it.
-
-
-REMINDER
---------
-Pushing to main only updates source. Installers show up after a green release workflow — almost
-always tied to a version tag like the steps above.
+IN-APP UPDATES
+--------------
+Install from GitHub once; later updates: Settings → Updates (needs nupkg + latest.yml on the same release).

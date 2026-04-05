@@ -8,9 +8,9 @@ import React from "react";
 const VARIANT_STYLES = {
   studio: {
     shell:
-      "border-[var(--av-accent)]/25 bg-[linear-gradient(135deg,rgba(99,102,241,0.12)_0%,rgba(24,24,27,0.92)_45%,rgba(9,9,11,0.98)_100%)]",
-    orbT: "bg-[var(--av-accent)]/15",
-    orbB: "bg-fuchsia-500/10",
+      "border-indigo-400/30 bg-[linear-gradient(128deg,rgba(99,102,241,0.16)_0%,rgba(168,85,247,0.08)_32%,rgba(24,24,27,0.93)_52%,rgba(9,9,11,0.98)_100%)] shadow-[0_0_60px_-20px_rgba(99,102,241,0.35)]",
+    orbT: "bg-indigo-400/22",
+    orbB: "bg-fuchsia-500/14",
   },
   community: {
     shell:

@@ -9,9 +9,17 @@
 .anivault-shell {
   --av-bg: #08080a;
   --av-bg-elevated: #0c0c0f;
-  --av-bg-gradient: radial-gradient(120% 80% at 50% -30%, rgba(120, 140, 180, 0.06), transparent 52%),
-    linear-gradient(180deg, #0a0a0d 0%, #08080a 42%);
-  --av-main-gradient: linear-gradient(180deg, #09090c 0%, #08080a 55%);
+  --av-bg-gradient:
+    radial-gradient(120% 90% at 8% -25%, rgba(99, 102, 241, 0.11), transparent 52%),
+    radial-gradient(90% 70% at 92% 8%, rgba(244, 63, 94, 0.07), transparent 48%),
+    radial-gradient(80% 60% at 50% 100%, rgba(34, 211, 238, 0.05), transparent 55%),
+    linear-gradient(180deg, #0b0b0f 0%, #08080a 48%);
+  --av-main-gradient: linear-gradient(
+    180deg,
+    color-mix(in srgb, #12121a 55%, #08080a) 0%,
+    #08080a 38%,
+    color-mix(in srgb, #0a0a12 70%, #08080a) 100%
+  );
   --av-surface: #121215;
   --av-surface-hover: #1c1c21;
   --av-surface-gradient: linear-gradient(180deg, #151518 0%, #121215 100%);
@@ -63,9 +71,34 @@
 /* Deeper surfaces — cards, strips (opt-in via class) */
 @layer components {
   .av-surface-raised {
-    background: linear-gradient(165deg, rgba(22, 22, 28, 0.98) 0%, rgba(14, 14, 18, 0.99) 100%);
+    background: linear-gradient(
+      155deg,
+      color-mix(in srgb, rgba(99, 102, 241, 0.06) 40%, rgba(22, 22, 28, 0.98)) 0%,
+      rgba(14, 14, 18, 0.99) 55%,
+      rgba(10, 10, 12, 0.995) 100%
+    );
     border: 1px solid color-mix(in srgb, var(--av-border) 100%, transparent);
     box-shadow: var(--av-shadow-md), var(--av-shadow-inset);
+  }
+
+  /** Home / marketing strips — layered mesh without extra DOM in every page */
+  .av-home-mesh {
+    background-image:
+      radial-gradient(ellipse 85% 55% at 50% -8%, rgba(129, 140, 248, 0.12), transparent 58%),
+      radial-gradient(ellipse 50% 40% at 100% 15%, rgba(244, 63, 94, 0.06), transparent 50%),
+      radial-gradient(ellipse 45% 35% at 0% 55%, rgba(34, 211, 238, 0.06), transparent 50%);
+  }
+
+  /** Glass search / command panels */
+  .av-glass-panel {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--av-surface) 88%, rgba(99, 102, 241, 0.12)) 0%,
+      color-mix(in srgb, var(--av-bg-elevated) 92%, transparent) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--av-border) 90%, rgba(255, 255, 255, 0.04));
+    box-shadow: var(--av-shadow-sm), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    backdrop-filter: blur(12px) saturate(1.15);
   }
 
   .av-pill-active {
@@ -131,10 +164,15 @@
     margin: 0 0 1.25rem;
     padding: 0.85rem 1rem;
     border-radius: 0.875rem;
-    border: 1px solid var(--av-border);
-    border-left: 4px solid var(--av-accent);
-    background: var(--av-surface);
-    box-shadow: var(--av-shadow-xs);
+    border: 1px solid color-mix(in srgb, var(--av-border) 100%, rgba(99, 102, 241, 0.12));
+    border-left: 4px solid #818cf8;
+    background: linear-gradient(
+      105deg,
+      rgba(99, 102, 241, 0.09) 0%,
+      color-mix(in srgb, var(--av-surface) 94%, rgba(34, 211, 238, 0.06)) 42%,
+      var(--av-surface) 100%
+    );
+    box-shadow: var(--av-shadow-xs), 0 0 40px -18px rgba(99, 102, 241, 0.35);
     font-size: 0.88rem;
     line-height: 1.5;
     color: var(--av-muted);

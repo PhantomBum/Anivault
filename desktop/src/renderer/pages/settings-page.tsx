@@ -192,8 +192,21 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-2 pb-12 text-[var(--av-text)] md:px-3">
-      <div className="av-surface-raised rounded-2xl border border-[var(--av-border)]/85 p-6 md:p-8">
+    <div className="relative mx-auto max-w-5xl space-y-6 px-2 pb-12 text-[var(--av-text)] md:px-3">
+      <div
+        className="pointer-events-none absolute inset-x-0 -top-6 h-48 rounded-[40%] bg-[radial-gradient(ellipse_90%_80%_at_50%_0%,rgba(99,102,241,0.14),transparent_65%)] opacity-90 md:h-56"
+        aria-hidden
+      />
+      <div className="av-surface-raised relative overflow-hidden rounded-2xl border border-[var(--av-border)]/85 p-6 md:p-8">
+        <div
+          className="pointer-events-none absolute -right-20 -top-24 h-48 w-48 rounded-full bg-indigo-500/15 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -bottom-16 -left-12 h-40 w-40 rounded-full bg-fuchsia-500/10 blur-3xl"
+          aria-hidden
+        />
+        <div className="relative">
         <h2 className="text-2xl font-bold tracking-tight text-[var(--av-text)] md:text-[1.75rem]">
           {translate("settings.title")}
         </h2>
@@ -277,6 +290,7 @@ export function SettingsPage() {
             {translate("settings.copyLink")}
           </Button>
         </div>
+        </div>
       </div>
 
       <Tabs
@@ -287,7 +301,7 @@ export function SettingsPage() {
         }}
         className="w-full min-h-0"
       >
-        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1 rounded-xl border border-[var(--av-border)]/90 bg-[var(--av-surface)]/80 p-1 shadow-inner backdrop-blur-sm">
+        <TabsList className="flex h-auto w-full flex-wrap items-stretch gap-1 rounded-2xl border border-[var(--av-border)]/80 bg-gradient-to-br from-indigo-500/[0.07] via-[var(--av-surface)]/95 to-cyan-500/[0.06] p-1.5 shadow-inner shadow-black/20 backdrop-blur-md">
           <TabsTrigger value="playback" className={settingsTabTriggerClassName}>
             Playback
           </TabsTrigger>
