@@ -15,6 +15,15 @@ describe("normalizeStreamErrorMessage", () => {
     );
   });
 
+  it("maps AllAnime 4xx API errors (POST/GET) to user-facing copy", () => {
+    expect(normalizeStreamErrorMessage(new Error("allanime API error: 403 Forbidden"))).toContain(
+      "Could not load episode data"
+    );
+    expect(normalizeStreamErrorMessage(new Error("allanime request failed: 403 Forbidden"))).toContain(
+      "Could not load episode data"
+    );
+  });
+
   it("passes through short unknown messages", () => {
     expect(normalizeStreamErrorMessage(new Error("Something else"))).toBe("Something else");
   });

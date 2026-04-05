@@ -52,10 +52,10 @@ export function normalizeStreamErrorMessage(err: unknown): string {
   if (/timed out|timeout|AbortError|timed out after/i.test(raw)) {
     return "Connection timed out or the service was busy. Retry, or wait a moment and try again.";
   }
-  if (/allanime request failed: 4\d\d/.test(raw)) {
+  if (/allanime (?:request failed|API error): 4\d\d/.test(raw)) {
     return "Could not load episode data from the source. Try again later.";
   }
-  if (/allanime request failed: 5\d\d/.test(raw)) {
+  if (/allanime (?:request failed|API error): 5\d\d/.test(raw)) {
     return "Source server error. Try again in a few minutes.";
   }
   return raw.length > 220 ? `${raw.slice(0, 217)}…` : raw;

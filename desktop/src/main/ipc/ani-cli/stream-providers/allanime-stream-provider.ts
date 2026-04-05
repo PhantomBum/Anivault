@@ -2,7 +2,7 @@
  * The following provider is a typescript port of the original allanime stream provider from pystardust/ani-cli.
  * See https://github.com/pystardust/ani-cli (allanime stream provider).
  */
-import { allanimeGetHeaders, ALLANIME_API, ALLANIME_USER_AGENT } from "../allanime-http";
+import { fetchAllanimeGraphql, ALLANIME_USER_AGENT } from "../allanime-http";
 import { fetchWithTimeout } from "../http-fetch";
 import { StreamProvider, StreamUrlResult } from "./stream-provider";
 
@@ -155,20 +155,6 @@ function logStep(label: string, startedAt: number, extra?: string): void {
   const durationMs = Date.now() - startedAt;
   const suffix = extra ? ` | ${extra}` : "";
   console.info(`[allanime-stream] ${label} (${durationMs}ms)${suffix}`);
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetchWithTimeout(url, {
-    method: "GET",
-    headers: allanimeGetHeaders(),
-    timeoutMs: 28000,
-  });
-
-  if (!res.ok) {
-    throw new Error(`allanime request failed: ${res.status} ${res.statusText}`);
-  }
-
-  return (await res.json()) as T;
 }
 
 function decodeObfuscatedProviderPath(sourceUrl: string): string {
@@ -406,8 +392,7 @@ export class AllAnimeStreamProvider implements StreamProvider {
       translationType: mode,
       episodeString: episode,
     };
-    const url = `${ALLANIME_API}/api?variables=${encodeURIComponent(JSON.stringify(variables))}&query=${encodeURIComponent(EPISODE_EMBED_GQL)}`;
-    const json = await fetchJson<EpisodeResponse>(url);
+    const json = await fetchAllanimeGraphql<EpisodeResponse>(EPISODE_EMBED_GQL, variables);
     logStep("episode gql fetch", episodeQueryStartedAt);
 
     const sourceFilterStartedAt = Date.now();
