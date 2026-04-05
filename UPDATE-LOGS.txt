@@ -1,5 +1,8 @@
 AniVault Unvaulted — changelog (see desktop/src/renderer/data/update-logs.txt for full history)
 
+3.3.3
+- **UI:** Shared **page shell** classes site-wide; tighter route headers. **API:** AllAnime **POST + browser headers**; catalog error hints. **Tag v3.3.3**.
+
 3.3.2
 - **Install & UI polish:** Shell/home/settings/Studio gradients; home search + quick links; CI can attach Windows assets on manual workflow runs. **Tag v3.3.2**.
 

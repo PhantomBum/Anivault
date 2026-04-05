@@ -59,15 +59,13 @@ export function CommunityPage() {
   return (
     <AvFutureSurface
       variant="community"
-      className="mx-auto max-w-5xl space-y-8 p-6 text-[var(--av-text)] md:p-8"
+      className="av-page-shell max-w-5xl space-y-6 p-4 text-[var(--av-text)] md:p-5"
     >
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
-            Community
-          </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Servers & safety</h1>
-          <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
+          <p className="av-page-section-label text-[var(--av-accent)]">Community</p>
+          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Servers & safety</h1>
+          <p className="mt-1 max-w-xl text-xs text-[var(--av-muted)]">
             Companion API lists hubs and reports when online. Local threads below work offline (stored only on
             this device until server-backed sync exists).
           </p>
@@ -75,7 +73,7 @@ export function CommunityPage() {
         <Button
           type="button"
           variant="outline"
-          className="h-10 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)] text-xs uppercase text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+          className="h-9 rounded-lg border-[var(--av-border)] bg-[var(--av-surface)] text-[11px] font-medium uppercase text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
           onClick={() => void load()}
         >
           <RefreshCw className="mr-2 h-4 w-4" />

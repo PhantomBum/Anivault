@@ -1,5 +1,11 @@
 AniVault Unvaulted — changelog
 
+3.3.3 (Unified page layout + AllAnime client hardening)
+- **Layout:** Shared **`.av-page-shell`** / **`.av-page-hero`** / **`.av-page-section-label`** utilities — consistent padding and tighter headers across Home, Discover, Browse, Find shows, Settings, Lists, Schedule, Account, Terms, Explore, Community, Gallery, Clips, Request series, Coming soon, and **Anime details** body.
+- **Catalog API:** **POST GraphQL** to AllAnime with **Chrome-like headers** + GET fallback; friendlier **403** copy via `formatCatalogApiError`.
+
+Tag **`v3.3.3`**.
+
 3.3.2 (Install & release polish — gradients, home, settings, Studio)
 - **Shell:** Richer **background gradients** (indigo / rose / cyan mesh), **glass** search panels, gradient **callouts** and raised surfaces.
 - **Home:** **Search + filters** moved up with **quick links** (Discover, Browse, Lists, Calendar); **Featured picks** sidebar and **Spotlight** frame updated.

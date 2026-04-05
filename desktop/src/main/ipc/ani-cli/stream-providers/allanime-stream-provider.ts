@@ -2,14 +2,12 @@
  * The following provider is a typescript port of the original allanime stream provider from pystardust/ani-cli.
  * See https://github.com/pystardust/ani-cli (allanime stream provider).
  */
+import { allanimeGetHeaders, ALLANIME_API, ALLANIME_USER_AGENT } from "../allanime-http";
 import { fetchWithTimeout } from "../http-fetch";
 import { StreamProvider, StreamUrlResult } from "./stream-provider";
 
 const ALLANIME_REFERER = "https://allmanga.to";
 const ALLANIME_BASE = "allanime.day";
-const ALLANIME_API = `https://api.${ALLANIME_BASE}`;
-const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0";
 const IS_DEV = process.env.NODE_ENV !== "production";
 
 const EPISODE_EMBED_GQL = `query ($showId: String!, $translationType: VaildTranslationTypeEnumType!, $episodeString: String!) { episode( showId: $showId translationType: $translationType episodeString: $episodeString ) { episodeString sourceUrls } }`;
@@ -162,10 +160,7 @@ function logStep(label: string, startedAt: number, extra?: string): void {
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetchWithTimeout(url, {
     method: "GET",
-    headers: {
-      Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
-    },
+    headers: allanimeGetHeaders(),
     timeoutMs: 28000,
   });
 
@@ -245,7 +240,7 @@ async function expandMasterM3u8(
     method: "GET",
     headers: {
       Referer: referer,
-      "User-Agent": USER_AGENT,
+      "User-Agent": ALLANIME_USER_AGENT,
     },
     timeoutMs: 32000,
   });
@@ -361,7 +356,7 @@ async function resolveSourceToCandidates(
     method: "GET",
     headers: {
       Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
+      "User-Agent": ALLANIME_USER_AGENT,
     },
     timeoutMs: 32000,
   });

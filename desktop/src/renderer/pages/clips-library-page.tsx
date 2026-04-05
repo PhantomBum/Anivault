@@ -41,14 +41,12 @@ export function ClipsLibraryPage() {
   }, [load]);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-2 text-[var(--av-text)]">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+    <div className="av-page-shell max-w-5xl space-y-4 text-[var(--av-text)]">
+      <header className="av-page-hero flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
-            Clips
-          </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Community clips</h1>
-          <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
+          <p className="av-page-section-label text-[var(--av-accent)]">Clips</p>
+          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Community clips</h1>
+          <p className="mt-1 max-w-xl text-xs text-[var(--av-muted)]">
             Short moments captured from the player and shared to the gallery (moderated). Create new
             clips from the watch screen.
           </p>

@@ -12,19 +12,17 @@ const SPOTLIGHT = [
 
 export function ExplorePage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-2 text-[var(--av-text)]">
-      <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
-          Explore
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight">Discover the catalog</h1>
-        <p className="max-w-lg text-sm leading-relaxed text-[var(--av-muted)]">
+    <div className="av-page-shell max-w-4xl space-y-5 text-[var(--av-text)]">
+      <header className="av-page-hero space-y-1.5">
+        <p className="av-page-section-label text-[var(--av-accent)]">Explore</p>
+        <h1 className="text-lg font-bold tracking-tight md:text-xl">Discover the catalog</h1>
+        <p className="max-w-lg text-xs leading-relaxed text-[var(--av-muted)]">
           Browse by mood, jump into search, or open the home hub. This view mirrors the legacy HTML
           prototype: spotlight rows will expand as we wire more curated feeds.
         </p>
       </header>
 
-      <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-6 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/80 p-4 shadow-sm md:p-5">
         <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--av-accent-muted)] blur-3xl" />
         <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-3">

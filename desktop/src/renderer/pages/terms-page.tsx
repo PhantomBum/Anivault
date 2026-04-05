@@ -4,10 +4,10 @@ import { APP_DISPLAY_NAME } from "@/shared/app-brand";
 
 export function TermsPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-8 px-4 py-6 text-[var(--av-text)]">
-      <header className="space-y-1 border-b border-[var(--av-border)] pb-4">
-        <h2 className="text-xl font-bold tracking-tight">Terms of service</h2>
-        <p className="text-sm text-[var(--av-muted)]">
+    <div className="av-page-shell max-w-2xl space-y-6 text-[var(--av-text)]">
+      <header className="av-page-hero space-y-1">
+        <h2 className="text-lg font-bold tracking-tight">Terms of service</h2>
+        <p className="text-xs text-[var(--av-muted)]">
           Last updated for this build — read alongside your local laws and provider terms.
         </p>
       </header>

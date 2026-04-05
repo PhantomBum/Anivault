@@ -133,7 +133,8 @@ export function SchedulePage() {
     for (const r of rows) {
       const k = r.air_date;
       if (!m.has(k)) m.set(k, []);
-      m.get(k)!.push(r);
+      const list = m.get(k);
+      if (list) list.push(r);
     }
     for (const list of m.values()) {
       list.sort((a, b) => a.air_at_iso.localeCompare(b.air_at_iso));
@@ -142,14 +143,12 @@ export function SchedulePage() {
   }, [rows]);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-4 py-6 text-[var(--av-text)]">
-      <header className="flex flex-col gap-2 border-b border-[var(--av-border)] pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="av-page-shell max-w-3xl space-y-5 text-[var(--av-text)]">
+      <header className="av-page-hero flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--av-accent)]">
-            {t("schedule.kicker")}
-          </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">{t("schedule.title")}</h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--av-muted)]">
+          <p className="av-page-section-label text-[var(--av-accent)]">{t("schedule.kicker")}</p>
+          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">{t("schedule.title")}</h1>
+          <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-[var(--av-muted)]">
             {source === "anilist" ? (
               <>{t("schedule.anilistBlurb")}</>
             ) : source === "server" ? (

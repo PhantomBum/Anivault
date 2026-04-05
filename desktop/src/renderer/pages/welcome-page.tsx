@@ -397,41 +397,41 @@ export function WelcomePage() {
 
   return (
     <div className="relative min-h-[calc(100dvh-3rem)] bg-[var(--av-bg)] text-[var(--av-text)] antialiased">
-      <div className="pointer-events-none absolute inset-0 av-home-mesh" aria-hidden />
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 pb-16 pt-10 md:gap-12 md:px-8 md:pt-14">
-        <header className="flex flex-col items-center gap-5 text-center">
-          <div className="av-surface-raised w-full max-w-xl rounded-3xl border border-[var(--av-border)]/85 bg-gradient-to-br from-indigo-500/[0.04] via-[var(--av-surface)]/30 to-fuchsia-500/[0.05] px-8 py-10 shadow-[0_20px_56px_rgba(0,0,0,0.42)] md:px-12 md:py-12">
-            <AniVaultWordmark size="hero" className="justify-center" />
-            <p className="m-0 mt-4 text-[0.75rem] font-medium uppercase tracking-[0.2em] text-[var(--av-muted-foreground)]">
-              Unvaulted
-            </p>
+      <div className="pointer-events-none absolute inset-0 av-home-mesh opacity-75" aria-hidden />
+      <div className="av-page-shell relative flex w-full max-w-5xl flex-col gap-6 md:gap-7">
+        <header className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--av-border)]/55 pb-3">
+          <div className="flex min-w-0 items-center gap-3.5">
+            <AniVaultWordmark size="lg" className="shrink-0" />
+            <div className="min-w-0">
+              <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--av-muted-foreground)]">
+                Unvaulted
+              </p>
+              <p className="mt-0.5 text-[11px] leading-snug text-[var(--av-muted)]">
+                <button
+                  type="button"
+                  onClick={openAniCliRepo}
+                  className="font-medium text-[var(--av-text)] underline decoration-[var(--av-border)]/90 underline-offset-2 hover:decoration-[var(--av-accent-dim)]"
+                >
+                  ani-cli
+                </button>
+                {" · "}catalog & playback
+              </p>
+            </div>
           </div>
-          <p className="max-w-lg text-sm leading-relaxed text-[var(--av-muted)]">
-            Desktop streaming powered by{" "}
-            <button
-              type="button"
-              onClick={openAniCliRepo}
-              className="text-[var(--av-text)] underline decoration-[var(--av-border)] underline-offset-[3px] transition-colors hover:decoration-[var(--av-accent)]"
-            >
-              pystardust/ani-cli
-            </button>
-            .
-            <br />
-            Watch your favourite anime directly from your desktop.
-          </p>
           {progressStats != null && progressStats.trackedEpisodes > 0 ? (
-            <p className="text-[11px] text-[var(--av-muted)]">
-              Resume data saved for {progressStats.trackedEpisodes} episode
-              {progressStats.trackedEpisodes === 1 ? "" : "s"} — pick up where you left off.
+            <p className="m-0 text-[10px] text-[var(--av-muted)]">
+              {progressStats.trackedEpisodes} ep. progress saved
             </p>
           ) : null}
         </header>
 
         {continueItems.length > 0 ? (
-          <section className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <Play className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
-              <h2 className="m-0 text-base font-bold tracking-tight">Continue watching</h2>
+          <section className="rounded-xl border border-[var(--av-border)]/70 bg-[var(--av-bg-elevated)]/30 p-3 md:p-3.5">
+            <div className="mb-2 flex items-center gap-2">
+              <Play className="h-3.5 w-3.5 text-indigo-400/90" aria-hidden />
+              <h2 className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+                Continue watching
+              </h2>
             </div>
             <HorizontalCarousel
               variant="home"
@@ -487,26 +487,26 @@ export function WelcomePage() {
           </section>
         ) : null}
 
-        <section className="av-glass-panel relative rounded-3xl p-4 sm:p-5 md:p-6 motion-safe:animate-av-fade-up">
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-            <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--av-muted)]">
-              Catalog search
+        <section className="av-glass-panel relative rounded-xl p-3 sm:p-4 motion-safe:animate-av-fade-up">
+          <div className="mb-2 flex flex-wrap items-end justify-between gap-2">
+            <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--av-muted)]">
+              Search catalog
             </p>
-            <span className="text-[10px] text-[var(--av-muted-foreground)]">ani-cli · local cache</span>
+            <span className="text-[10px] text-[var(--av-muted-foreground)]">cached</span>
           </div>
           <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative min-w-0 flex-1">
               <Search
-                className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--av-muted-foreground)]"
+                className="pointer-events-none absolute left-3 top-1/2 h-[17px] w-[17px] -translate-y-1/2 text-[var(--av-muted-foreground)]"
                 strokeWidth={1.75}
               />
               <Input
                 type="text"
-                placeholder="Search anime..."
+                placeholder="Titles, keywords…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className={cn(
-                  "h-12 rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg)]/90 pl-12 pr-4 text-[15px] text-[var(--av-text)] shadow-av-xs transition-[box-shadow,border-color] duration-200",
+                  "h-10 rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)]/90 pl-10 pr-3 text-sm text-[var(--av-text)] shadow-av-xs transition-[box-shadow,border-color] duration-200",
                   "placeholder:text-[var(--av-muted-foreground)]",
                   "focus-visible:border-indigo-400/40 focus-visible:ring-2 focus-visible:ring-indigo-500/20 focus-visible:ring-offset-0 focus-visible:ring-offset-[var(--av-bg)]"
                 )}
@@ -516,10 +516,10 @@ export function WelcomePage() {
             <Button
               type="button"
               variant="outline"
-              className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)]/90 px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+              className="h-10 shrink-0 rounded-lg border-[var(--av-border)] bg-[var(--av-surface)]/90 px-3 text-xs text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
               onClick={bumpCatalogRefresh}
             >
-              <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden />
               {t("refreshUpdate.button")}
             </Button>
             <Popover>
@@ -527,10 +527,10 @@ export function WelcomePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-12 shrink-0 rounded-2xl border-[var(--av-border)] bg-[var(--av-surface)]/90 px-4 text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
+                  className="h-10 shrink-0 rounded-lg border-[var(--av-border)] bg-[var(--av-surface)]/90 px-3 text-xs text-[var(--av-text)] hover:bg-[var(--av-surface-hover)]"
                   aria-label="Search filters"
                 >
-                  <Filter className="mr-2 h-4 w-4" />
+                  <Filter className="mr-1.5 h-3.5 w-3.5" />
                   Filters
                 </Button>
               </PopoverTrigger>
@@ -585,47 +585,51 @@ export function WelcomePage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 motion-safe:animate-av-fade-up motion-safe:[animation-delay:80ms]">
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
           <Link
             to="/discover"
-            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/15 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-indigo-400/40 hover:shadow-lg hover:shadow-indigo-500/15"
+            className="flex min-h-[3.25rem] flex-col justify-center rounded-lg border border-[var(--av-border)]/80 bg-[var(--av-surface)]/35 px-3 py-2 text-left transition-colors hover:border-indigo-400/35 hover:bg-[var(--av-surface-hover)]/80"
           >
-            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-300/50 to-transparent" />
-            <Compass className="h-4 w-4 text-indigo-300" aria-hidden />
-            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Discover</span>
-            <span className="text-[10px] text-[var(--av-muted)]">Catalog & rails</span>
+            <div className="flex items-center gap-2">
+              <Compass className="h-3.5 w-3.5 shrink-0 text-indigo-400/90" aria-hidden />
+              <span className="text-xs font-semibold text-[var(--av-text)]">Discover</span>
+            </div>
+            <span className="mt-0.5 pl-[1.375rem] text-[10px] leading-tight text-[var(--av-muted)]">Catalog rows</span>
           </Link>
           <Link
             to="/browse"
-            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-violet-400/15 bg-gradient-to-br from-violet-500/12 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-violet-400/35 hover:shadow-lg hover:shadow-violet-500/10"
+            className="flex min-h-[3.25rem] flex-col justify-center rounded-lg border border-[var(--av-border)]/80 bg-[var(--av-surface)]/35 px-3 py-2 text-left transition-colors hover:border-violet-400/30 hover:bg-[var(--av-surface-hover)]/80"
           >
-            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/45 to-transparent" />
-            <Grid3x3 className="h-4 w-4 text-violet-300" aria-hidden />
-            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Browse</span>
-            <span className="text-[10px] text-[var(--av-muted)]">Grid & filters</span>
+            <div className="flex items-center gap-2">
+              <Grid3x3 className="h-3.5 w-3.5 shrink-0 text-violet-400/90" aria-hidden />
+              <span className="text-xs font-semibold text-[var(--av-text)]">Browse</span>
+            </div>
+            <span className="mt-0.5 pl-[1.375rem] text-[10px] leading-tight text-[var(--av-muted)]">Merged grid</span>
           </Link>
           <Link
             to="/lists"
-            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-rose-400/15 bg-gradient-to-br from-rose-500/10 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-rose-400/35 hover:shadow-lg hover:shadow-rose-500/10"
+            className="flex min-h-[3.25rem] flex-col justify-center rounded-lg border border-[var(--av-border)]/80 bg-[var(--av-surface)]/35 px-3 py-2 text-left transition-colors hover:border-rose-400/30 hover:bg-[var(--av-surface-hover)]/80"
           >
-            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-300/45 to-transparent" />
-            <LayoutList className="h-4 w-4 text-rose-300" aria-hidden />
-            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Lists</span>
-            <span className="text-[10px] text-[var(--av-muted)]">Saved picks</span>
+            <div className="flex items-center gap-2">
+              <LayoutList className="h-3.5 w-3.5 shrink-0 text-rose-400/90" aria-hidden />
+              <span className="text-xs font-semibold text-[var(--av-text)]">Lists</span>
+            </div>
+            <span className="mt-0.5 pl-[1.375rem] text-[10px] leading-tight text-[var(--av-muted)]">Saved</span>
           </Link>
           <Link
             to="/schedule"
-            className="group relative flex min-h-[4.25rem] flex-col justify-center overflow-hidden rounded-2xl border border-cyan-400/15 bg-gradient-to-br from-cyan-500/12 via-[var(--av-surface)]/60 to-[var(--av-bg)] px-4 py-3 text-left transition-all hover:border-cyan-400/35 hover:shadow-lg hover:shadow-cyan-500/12"
+            className="flex min-h-[3.25rem] flex-col justify-center rounded-lg border border-[var(--av-border)]/80 bg-[var(--av-surface)]/35 px-3 py-2 text-left transition-colors hover:border-cyan-400/30 hover:bg-[var(--av-surface-hover)]/80"
           >
-            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/45 to-transparent" />
-            <Calendar className="h-4 w-4 text-cyan-300" aria-hidden />
-            <span className="mt-1.5 text-xs font-semibold text-[var(--av-text)]">Calendar</span>
-            <span className="text-[10px] text-[var(--av-muted)]">Air times</span>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3.5 w-3.5 shrink-0 text-cyan-400/90" aria-hidden />
+              <span className="text-xs font-semibold text-[var(--av-text)]">Schedule</span>
+            </div>
+            <span className="mt-0.5 pl-[1.375rem] text-[10px] leading-tight text-[var(--av-muted)]">Airing</span>
           </Link>
         </div>
 
         {hero ? (
-          <section className="relative overflow-hidden rounded-2xl border border-[var(--av-border)]/90 shadow-2xl shadow-black/40 ring-1 ring-indigo-400/10">
+          <section className="relative overflow-hidden rounded-xl border border-[var(--av-border)]/80 shadow-lg shadow-black/25 ring-1 ring-white/[0.04]">
             {spotlightThumbs[hero.id] && !spotlightPosterFailed[hero.id] ? (
               <>
                 <div
@@ -644,8 +648,8 @@ export function WelcomePage() {
               className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[var(--av-bg)]/95 via-[var(--av-bg)]/75 to-[var(--av-bg-elevated)]/85"
               aria-hidden
             />
-            <div className="relative flex flex-col gap-4 p-5 backdrop-blur-2xl backdrop-saturate-150 sm:flex-row sm:items-stretch sm:gap-5 sm:p-6 bg-[color-mix(in_srgb,var(--av-bg-elevated)_68%,transparent)]">
-              <div className="relative h-32 w-[5.25rem] shrink-0 overflow-hidden rounded-lg border border-[var(--av-border)] bg-[var(--av-bg)] sm:h-36 sm:w-24">
+            <div className="relative flex flex-col gap-3 p-4 backdrop-blur-xl backdrop-saturate-150 sm:flex-row sm:items-stretch sm:gap-4 sm:p-5 bg-[color-mix(in_srgb,var(--av-bg-elevated)_72%,transparent)]">
+              <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-md border border-[var(--av-border)]/90 bg-[var(--av-bg)] sm:h-32 sm:w-[5.25rem]">
                 {(() => {
                   const thumbResolved = hero.id in spotlightThumbs;
                   const thumbUrl = spotlightThumbs[hero.id];
@@ -753,10 +757,12 @@ export function WelcomePage() {
         ) : null}
 
         {freshVisible.length > 0 ? (
-          <section className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
-              <h2 className="m-0 text-base font-bold tracking-tight">Fresh on the catalog</h2>
+          <section className="rounded-xl border border-[var(--av-border)]/70 bg-[var(--av-bg-elevated)]/25 p-3 md:p-3.5">
+            <div className="mb-2 flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400/80" aria-hidden />
+              <h2 className="m-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+                Fresh on the catalog
+              </h2>
             </div>
             <HorizontalCarousel
               variant="home"
@@ -785,39 +791,44 @@ export function WelcomePage() {
           </section>
         ) : null}
 
-        <div className="av-callout" role="note">
-          <p className="m-0">
-            <strong className="text-[var(--av-text)]">Streams resolve through ani-cli sources.</strong>{" "}
-            Pick a series, open episodes from the details page, and play in the built-in player. For
-            the full catalog layout, use{" "}
-            <Link className="text-[var(--av-accent)] underline-offset-2 hover:underline" to="/discover">
-              Discover
-            </Link>{" "}
-            or{" "}
-            <Link className="text-[var(--av-accent)] underline-offset-2 hover:underline" to="/anime">
-              Search
-            </Link>
-            .
-          </p>
-        </div>
+        <p
+          className="m-0 rounded-lg border border-[var(--av-border)]/60 bg-[var(--av-surface)]/30 px-3 py-2 text-[11px] leading-relaxed text-[var(--av-muted)]"
+          role="note"
+        >
+          <span className="font-medium text-[var(--av-text)]">Playback</span> uses ani-cli sources — open a
+          show&apos;s episodes from details. Full grids:{" "}
+          <Link className="text-indigo-300/95 underline-offset-2 hover:underline" to="/discover">
+            Discover
+          </Link>
+          ,{" "}
+          <Link className="text-indigo-300/95 underline-offset-2 hover:underline" to="/anime">
+            Find shows
+          </Link>
+          .
+        </p>
 
-        <div className="lg:grid lg:grid-cols-[1fr_260px] lg:items-start lg:gap-10">
-          <div className="flex min-w-0 flex-col gap-10">
+        <div className="lg:grid lg:grid-cols-[1fr_220px] lg:items-start lg:gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
 
         {loading && (
-          <p className="text-center text-sm text-[var(--av-muted)]">Searching…</p>
+          <p className="text-center text-xs text-[var(--av-muted)]">Searching…</p>
         )}
         {error && (
-          <p className="text-center text-sm text-red-400" role="alert">
+          <p
+            className="rounded-lg border border-red-500/25 bg-red-950/20 px-3 py-2 text-center text-xs leading-snug text-red-200/95"
+            role="alert"
+          >
             {error}
           </p>
         )}
 
         {results.length > 0 && (
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-left text-base font-bold tracking-tight">Search results</h2>
-              <span className="text-xs text-[var(--av-muted)]">
+              <h2 className="text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+                Search results
+              </h2>
+              <span className="text-[10px] text-[var(--av-muted)]">
                 {results.length} shown
                 {results.length !== rawResults.length ? ` (of ${rawResults.length})` : ""}
               </span>
@@ -854,9 +865,11 @@ export function WelcomePage() {
         )}
 
         {!debouncedQuery.trim() && (
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-4">
-              <h2 className="text-base font-bold tracking-tight">Recently watched</h2>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+                Recently watched
+              </h2>
               <Button
                 type="button"
                 variant="ghost"
@@ -917,24 +930,20 @@ export function WelcomePage() {
           </section>
         )}
           </div>
-          <aside className="relative hidden overflow-hidden rounded-2xl border border-indigo-400/15 bg-gradient-to-b from-indigo-500/[0.07] via-[var(--av-surface)]/65 to-fuchsia-500/[0.05] p-4 shadow-av-sm backdrop-blur-sm lg:block">
-            <div
-              className="pointer-events-none absolute -right-8 top-0 h-32 w-32 rounded-full bg-cyan-400/10 blur-2xl"
-              aria-hidden
-            />
-            <h3 className="relative text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
-              Featured picks
+          <aside className="relative hidden rounded-lg border border-[var(--av-border)]/70 bg-[var(--av-bg-elevated)]/40 p-3 lg:block">
+            <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--av-muted)]">
+              Spotlight list
             </h3>
-            <ul className="relative mt-2 space-y-1 text-sm">
+            <ul className="mt-2 space-y-0.5 text-[13px]">
               {spotlightVisible.map((s, i) => (
                 <li key={s.id}>
                   <button
                     type="button"
                     className={cn(
-                      "w-full truncate rounded-lg px-2 py-1.5 text-left text-[13px] transition-colors",
+                      "w-full truncate rounded-md px-2 py-1 text-left transition-colors",
                       i === spotlightHero
-                        ? "bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/10 text-[var(--av-text)] ring-1 ring-white/10"
-                        : "text-[var(--av-muted)] hover:bg-[var(--av-bg-elevated)]/80 hover:text-[var(--av-text)]"
+                        ? "bg-[var(--av-surface)]/80 text-[var(--av-text)] ring-1 ring-white/10"
+                        : "text-[var(--av-muted)] hover:bg-[var(--av-surface)]/50 hover:text-[var(--av-text)]"
                     )}
                     onClick={() => setSpotlightHero(i)}
                   >
@@ -944,10 +953,10 @@ export function WelcomePage() {
               ))}
             </ul>
             <Link
-              className="relative mt-4 block text-center text-xs font-medium text-indigo-300/90 hover:text-indigo-200 hover:underline"
+              className="mt-3 block text-center text-[10px] font-medium text-[var(--av-muted)] hover:text-[var(--av-text)] hover:underline"
               to="/discover"
             >
-              Discover more →
+              Open Discover →
             </Link>
           </aside>
         </div>

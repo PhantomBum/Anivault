@@ -31,6 +31,7 @@ import {
   invalidateAniRecentCache,
   invalidateAniSearchCache,
 } from "@/renderer/lib/ani-session-cache";
+import { formatCatalogApiError } from "@/renderer/lib/catalog-api-errors";
 import { CATALOG_REFRESH_EVENT } from "@/renderer/lib/catalog-refresh-event";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
@@ -490,7 +491,9 @@ export function AnimeSearchPage() {
       })
       .catch((err) => {
         if (cancelled || gen !== searchGen.current) return;
-        setError(err instanceof Error ? err.message : "Search failed");
+        setError(
+          formatCatalogApiError(err instanceof Error ? err.message : "Search failed")
+        );
       })
       .finally(() => {
         if (cancelled || gen !== searchGen.current) return;
@@ -656,15 +659,15 @@ export function AnimeSearchPage() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 overflow-x-hidden bg-[var(--av-bg)] px-4 pb-10 pt-1 text-[var(--av-text)] sm:px-6 sm:pb-12">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Find shows</h1>
-        <p className="mt-1 text-sm text-[var(--av-muted)]">
-          Grid by default — AniList enriches posters and filters (not the stream source). Press{" "}
-          <kbd className="rounded border border-[var(--av-border)] bg-[var(--av-surface)] px-1.5 py-0.5 font-mono text-[10px]">
+    <div className="av-page-shell flex w-full max-w-[1600px] flex-col gap-3 overflow-x-hidden bg-[var(--av-bg)] pb-8 text-[var(--av-text)] sm:pb-10">
+      <div className="rounded-xl border border-[var(--av-border)]/80 bg-[var(--av-bg-elevated)]/35 px-4 py-3">
+        <h1 className="text-lg font-semibold tracking-tight">Find shows</h1>
+        <p className="mt-1 text-xs text-[var(--av-muted)]">
+          AniList enriches posters ·{" "}
+          <kbd className="rounded border border-[var(--av-border)] bg-[var(--av-surface)] px-1 py-0.5 font-mono text-[10px]">
             Ctrl K
           </kbd>{" "}
-          from anywhere to jump here.
+          opens this page
         </p>
       </div>
 
@@ -928,7 +931,10 @@ export function AnimeSearchPage() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-400" role="alert">
+        <p
+          className="rounded-lg border border-red-500/25 bg-red-950/20 px-3 py-2 text-xs leading-snug text-red-200/95"
+          role="alert"
+        >
           {error}
         </p>
       )}

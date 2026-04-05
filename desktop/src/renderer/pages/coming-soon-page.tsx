@@ -47,8 +47,8 @@ export function ComingSoonPage() {
   const chips = chipsFromI18n(t(`comingSoon.${config.ns}.chips`, { returnObjects: true }));
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 text-[var(--av-text)]">
-      <AvFutureSurface variant={config.variant} className="p-8 sm:p-10">
+    <div className="av-page-shell max-w-3xl py-6 text-[var(--av-text)]">
+      <AvFutureSurface variant={config.variant} className="p-5 sm:p-7">
         <div className="space-y-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--av-border)]/90 bg-[var(--av-bg)]/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--av-muted)]">

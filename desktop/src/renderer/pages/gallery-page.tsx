@@ -144,15 +144,13 @@ export function GalleryPage({ defaultTab = "browse", surfaceVariant = "gallery" 
   return (
     <AvFutureSurface
       variant={surfaceVariant}
-      className="mx-auto max-w-6xl space-y-6 p-6 text-[var(--av-text)] md:p-8"
+      className="av-page-shell max-w-6xl space-y-5 p-4 text-[var(--av-text)] md:p-5"
     >
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
-            Gallery
-          </p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Community art & clips</h1>
-          <p className="mt-1 max-w-xl text-sm text-[var(--av-muted)]">
+          <p className="av-page-section-label text-[var(--av-accent)]">Gallery</p>
+          <h1 className="mt-1 text-lg font-bold tracking-tight md:text-xl">Community art & clips</h1>
+          <p className="mt-1 max-w-xl text-xs text-[var(--av-muted)]">
             Moderated uploads from the companion server. Images and player clips share the same review
             queue.
           </p>

@@ -5,6 +5,7 @@ import {
   getAniCli,
 } from "@/renderer/lib/ani-cli-bridge";
 import { cachedAniSearch } from "@/renderer/lib/ani-session-cache";
+import { formatCatalogApiError } from "@/renderer/lib/catalog-api-errors";
 import {
   SHOW_DETAILS_FETCH_CONCURRENCY,
   mergeShowThumbnailsFromShowDetails,
@@ -39,7 +40,9 @@ export function useWelcomeSearch(debouncedQuery: string, refreshNonce = 0) {
       })
       .catch((err: unknown) => {
         if (cancelled || gen !== searchGen.current) return;
-        setError(err instanceof Error ? err.message : "Search failed");
+        setError(
+          formatCatalogApiError(err instanceof Error ? err.message : "Search failed")
+        );
       })
       .finally(() => {
         if (cancelled || gen !== searchGen.current) return;

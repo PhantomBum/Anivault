@@ -65,12 +65,15 @@ export function RequestSeriesPage() {
   };
 
   return (
-    <div className="mx-auto max-w-lg space-y-5 px-4 py-4 text-[var(--av-text)]">
-      <p className="text-sm leading-relaxed text-[var(--av-muted)]">
-        Suggest a series for the catalog. Requests are sent to{" "}
-        <span className="text-[var(--av-text)]">{REQUEST_EMAIL}</span> via your mail app, and mirrored
-        to the companion server when it&apos;s online.
-      </p>
+    <div className="av-page-shell max-w-lg space-y-4 text-[var(--av-text)]">
+      <div className="av-page-hero space-y-2">
+        <h1 className="text-lg font-bold tracking-tight">Request a series</h1>
+        <p className="text-xs leading-relaxed text-[var(--av-muted)]">
+          Suggest a series for the catalog. Requests are sent to{" "}
+          <span className="text-[var(--av-text)]">{REQUEST_EMAIL}</span> via your mail app, and mirrored
+          to the companion server when it&apos;s online.
+        </p>
+      </div>
       <div className="space-y-2">
         <label className="text-xs font-medium text-[var(--av-muted)]">Title</label>
         <Input

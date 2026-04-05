@@ -101,6 +101,44 @@
     backdrop-filter: blur(12px) saturate(1.15);
   }
 
+  /**
+   * Standard route padding + width — pair with max-w-* on the same element.
+   * Keeps Settings, Discover, lists, etc. aligned without repeating long class strings.
+   */
+  .av-page-shell {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 2.25rem;
+    color: var(--av-text);
+  }
+
+  @media (min-width: 768px) {
+    .av-page-shell {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      padding-top: 0.65rem;
+    }
+  }
+
+  .av-page-hero {
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--av-border) 82%, transparent);
+    background: color-mix(in srgb, var(--av-bg-elevated) 38%, transparent);
+    padding: 0.875rem 1rem;
+  }
+
+  .av-page-section-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--av-muted);
+  }
+
   .av-pill-active {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.07),

@@ -110,10 +110,10 @@ export function AccountPage() {
   };
 
   return (
-    <div className="mx-auto max-w-md space-y-6 text-[var(--av-text)]">
-      <div>
+    <div className="av-page-shell max-w-md space-y-5 py-2 text-[var(--av-text)]">
+      <div className="av-page-hero">
         <h2 className="text-lg font-bold tracking-tight">Account</h2>
-        <p className="mt-1 text-sm text-[var(--av-muted)]">
+        <p className="mt-1 text-xs text-[var(--av-muted)]">
           {APP_DISPLAY_NAME} — optional sign-in for synced features. API URL is configured in Settings →
           Playback (server base).
         </p>

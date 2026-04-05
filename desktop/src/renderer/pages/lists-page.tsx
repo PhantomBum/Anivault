@@ -259,13 +259,11 @@ export function ListsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 px-4 py-2 text-[var(--av-text)]">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--av-accent)]">
-          {t("lists.kicker")}
-        </p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">{t("lists.title")}</h1>
-        <p className="mt-1 text-sm text-[var(--av-muted)]">{t("lists.subtitle")}</p>
+    <div className="av-page-shell max-w-3xl space-y-6 text-[var(--av-text)]">
+      <header className="av-page-hero space-y-1">
+        <p className="av-page-section-label text-[var(--av-accent)]">{t("lists.kicker")}</p>
+        <h1 className="text-lg font-bold tracking-tight md:text-xl">{t("lists.title")}</h1>
+        <p className="mt-1 text-xs text-[var(--av-muted)]">{t("lists.subtitle")}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             type="button"
@@ -312,7 +310,7 @@ export function ListsPage() {
         </div>
       </header>
 
-      <section className="rounded-3xl border border-[var(--av-border)] bg-[var(--av-surface)] p-5 shadow-av-sm transition-[box-shadow] duration-200 hover:shadow-av-md">
+      <section className="rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]/90 p-4 shadow-av-sm transition-[box-shadow] duration-200 hover:shadow-av-md md:p-5">
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-[var(--av-accent)]" aria-hidden />
           <p className="m-0 text-xs font-semibold uppercase tracking-wide text-[var(--av-muted)]">

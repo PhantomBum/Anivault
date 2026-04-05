@@ -10,6 +10,7 @@ import type { AniListSearchTile } from "@/renderer/lib/anilist";
 import { inferMatureRating, isMatureContentBlocked } from "@/renderer/lib/mature-content";
 import { addLocalWatchlistEntry } from "@/renderer/lib/local-watchlist";
 import { getAniCli } from "@/renderer/lib/ani-cli-bridge";
+import { formatCatalogApiError } from "@/renderer/lib/catalog-api-errors";
 import { recordPerfEvent } from "@/renderer/lib/telemetry";
 import { showToast } from "@/renderer/lib/av-toast";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
@@ -57,7 +58,9 @@ export function BrowsePage() {
         const merged = [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
         setRows(merged);
       } catch (e) {
-        if (!cancelled) setErr(e instanceof Error ? e.message : "Load failed");
+        if (!cancelled) {
+          setErr(formatCatalogApiError(e instanceof Error ? e.message : "Load failed"));
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -131,31 +134,36 @@ export function BrowsePage() {
   );
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-4 text-[var(--av-text)]">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--av-border)] bg-[var(--av-surface)]">
-            <Grid3x3 className="h-6 w-6 text-[var(--av-accent)]" aria-hidden />
+    <div className="av-page-shell max-w-[1600px] space-y-3 text-[var(--av-text)]">
+      <div className="rounded-xl border border-[var(--av-border)]/80 bg-[var(--av-bg-elevated)]/35 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)]/50">
+              <Grid3x3 className="h-5 w-5 text-[var(--av-accent)]" aria-hidden />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight">{t("browse.title")}</h2>
+              <p className="text-xs text-[var(--av-muted)]">{t("browse.subtitle")}</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight">{t("browse.title")}</h2>
-            <p className="text-sm text-[var(--av-muted)]">{t("browse.subtitle")}</p>
-          </div>
+          <Button
+            asChild
+            variant="secondary"
+            className="av-micro-press h-9 w-fit rounded-lg border-[var(--av-border)] px-3 text-xs"
+          >
+            <Link to="/anime">
+              <Grid3x3 className="mr-1.5 h-3.5 w-3.5 text-[var(--av-accent)]" />
+              {t("browse.findShows")}
+            </Link>
+          </Button>
         </div>
-        <Button
-          asChild
-          variant="secondary"
-          className="av-micro-press w-fit rounded-xl border-[var(--av-border)]"
-        >
-          <Link to="/anime">
-            <Grid3x3 className="mr-2 h-4 w-4 text-[var(--av-accent)]" />
-            {t("browse.findShows")}
-          </Link>
-        </Button>
       </div>
 
       {err ? (
-        <p className="text-sm text-amber-400" role="status">
+        <p
+          className="rounded-lg border border-amber-500/20 bg-amber-950/15 px-3 py-2 text-xs text-amber-100/95"
+          role="status"
+        >
           {err}
         </p>
       ) : null}

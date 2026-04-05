@@ -23,6 +23,7 @@ import { showToast } from "@/renderer/lib/av-toast";
 import { cn } from "@/renderer/lib/utils";
 import { useAnivaultConfig } from "@/renderer/context/anivault-config-context";
 import { AvEmptyState } from "@/renderer/components/av-empty-state";
+import { formatCatalogApiError } from "@/renderer/lib/catalog-api-errors";
 import { Compass, RefreshCw, SearchX } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -102,7 +103,9 @@ export function DiscoverPage() {
         }
         if (!cancelled) setRows(list);
       } catch (e) {
-        if (!cancelled) setErr(e instanceof Error ? e.message : "Failed");
+        if (!cancelled) {
+          setErr(formatCatalogApiError(e instanceof Error ? e.message : "Failed"));
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -172,22 +175,21 @@ export function DiscoverPage() {
   }, [t]);
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-5 px-3 py-3 text-[var(--av-text)] md:px-5 md:py-5">
-      <div className="relative overflow-hidden rounded-3xl border border-[var(--av-border)]/90 bg-[linear-gradient(155deg,rgba(28,28,34,0.95)_0%,rgba(14,14,18,0.98)_55%,rgba(10,10,12,1)_100%)] p-4 shadow-[0_16px_48px_rgba(0,0,0,0.4)] ring-1 ring-white/[0.04] md:p-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(255,255,255,0.08),transparent_55%)]" />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="av-page-shell max-w-[1600px] space-y-4 text-[var(--av-text)]">
+      <div className="rounded-xl border border-[var(--av-border)]/80 bg-[var(--av-bg-elevated)]/35 p-4 md:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--av-border)] bg-[var(--av-bg-elevated)] shadow-av-xs">
-              <Compass className="h-6 w-6 text-zinc-200" aria-hidden />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--av-border)] bg-[var(--av-surface)]/50">
+              <Compass className="h-5 w-5 text-zinc-200" aria-hidden />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Discover</h2>
-              <p className="mt-0.5 max-w-xl text-sm text-[var(--av-muted)]">
-                Curated rows from the catalog. Use the header search or{" "}
+              <h2 className="text-lg font-bold tracking-tight">Discover</h2>
+              <p className="mt-0.5 max-w-xl text-xs text-[var(--av-muted)]">
+                Catalog rows ·{" "}
                 <Link className="text-[var(--av-text)] underline underline-offset-2" to="/anime">
                   Find shows
                 </Link>{" "}
-                for exact titles.
+                for exact titles
               </p>
             </div>
           </div>
@@ -195,32 +197,28 @@ export function DiscoverPage() {
             <Button
               type="button"
               variant="secondary"
-              className="h-10 rounded-2xl border border-[var(--av-border)] px-4"
+              className="h-9 rounded-lg border border-[var(--av-border)] px-3 text-xs"
               onClick={bumpCatalogRefresh}
             >
-              <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden />
               {t("refreshUpdate.button")}
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-10 shrink-0 rounded-2xl border-[var(--av-border)] px-5"
-            >
-              <Link to="/anime">Browse all</Link>
+            <Button asChild variant="outline" className="h-9 shrink-0 rounded-lg border-[var(--av-border)] px-4 text-xs">
+              <Link to="/anime">Find shows</Link>
             </Button>
           </div>
         </div>
 
-        <div className="relative mt-5 flex flex-wrap gap-2 border-t border-[var(--av-border)]/80 pt-4">
+        <div className="mt-4 flex flex-wrap gap-1.5 border-t border-[var(--av-border)]/60 pt-3">
           {TABS.map((tabDef) => (
             <button
               key={tabDef.id}
               type="button"
               className={cn(
-                "rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200",
+                "rounded-lg border px-3 py-1.5 text-[11px] font-semibold transition-colors",
                 tab === tabDef.id
-                  ? "border-zinc-400/40 bg-zinc-100/10 text-zinc-50 shadow-av-xs"
-                  : "border-transparent bg-[var(--av-bg)]/40 text-[var(--av-muted)] hover:border-[var(--av-border)] hover:text-[var(--av-text)]"
+                  ? "border-zinc-400/35 bg-zinc-100/10 text-zinc-50"
+                  : "border-transparent bg-transparent text-[var(--av-muted)] hover:border-[var(--av-border)] hover:text-[var(--av-text)]"
               )}
               onClick={() => setTab(tabDef.id)}
             >
@@ -228,13 +226,14 @@ export function DiscoverPage() {
             </button>
           ))}
         </div>
-        <p className="relative mt-2 text-[11px] leading-snug text-[var(--av-muted-foreground)]">
-          {active.hint}
-        </p>
+        <p className="mt-2 text-[10px] leading-snug text-[var(--av-muted-foreground)]">{active.hint}</p>
       </div>
 
       {err ? (
-        <p className="text-sm text-amber-400" role="status">
+        <p
+          className="rounded-lg border border-amber-500/20 bg-amber-950/15 px-3 py-2 text-xs text-amber-100/95"
+          role="status"
+        >
           {err}
         </p>
       ) : null}

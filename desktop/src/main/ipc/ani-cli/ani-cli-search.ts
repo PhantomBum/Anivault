@@ -3,10 +3,7 @@
  * See https://github.com/pystardust/ani-cli (search_anime function).
  */
 
-const ALLANIME_REFERER = "https://allmanga.to";
-const ALLANIME_API = "https://api.allanime.day";
-const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0";
+import { fetchAllanimeGraphql } from "./allanime-http";
 
 const SEARCH_GQL = `query( $search: SearchInput $limit: Int $page: Int $translationType: VaildTranslationTypeEnumType $countryOrigin: VaildCountryOriginEnumType ) { shows( search: $search limit: $limit page: $page translationType: $translationType countryOrigin: $countryOrigin ) { edges { _id name availableEpisodes __typename } } }`;
 
@@ -81,21 +78,7 @@ async function searchAnimeInner(
     countryOrigin: "ALL",
   };
 
-  const url = `${ALLANIME_API}/api?variables=${encodeURIComponent(JSON.stringify(variables))}&query=${encodeURIComponent(SEARCH_GQL)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`allanime API error: ${res.status} ${res.statusText}`);
-  }
-
-  const json = (await res.json()) as GqlShowsResponse;
+  const json = await fetchAllanimeGraphql<GqlShowsResponse>(SEARCH_GQL, variables);
   const edges = json.data?.shows?.edges ?? [];
 
   const mapped = edges.map((edge) => ({
@@ -134,21 +117,7 @@ export async function getRecentAnime(
     countryOrigin: "ALL",
   };
 
-  const url = `${ALLANIME_API}/api?variables=${encodeURIComponent(JSON.stringify(variables))}&query=${encodeURIComponent(SEARCH_GQL)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`allanime API error: ${res.status} ${res.statusText}`);
-  }
-
-  const json = (await res.json()) as GqlShowsResponse;
+  const json = await fetchAllanimeGraphql<GqlShowsResponse>(SEARCH_GQL, variables);
   const edges = json.data?.shows?.edges ?? [];
 
   const mapped = edges.map((edge) => ({
@@ -188,21 +157,7 @@ export async function getEpisodesList(
   mode: "sub" | "dub" = "sub"
 ): Promise<string[]> {
   const variables = { showId };
-  const url = `${ALLANIME_API}/api?variables=${encodeURIComponent(JSON.stringify(variables))}&query=${encodeURIComponent(EPISODES_LIST_GQL)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`allanime API error: ${res.status} ${res.statusText}`);
-  }
-
-  const json = (await res.json()) as GqlShowDetailResponse;
+  const json = await fetchAllanimeGraphql<GqlShowDetailResponse>(EPISODES_LIST_GQL, variables);
   const detail = json.data?.show?.availableEpisodesDetail?.[mode];
   if (!Array.isArray(detail)) return [];
   return [...detail].sort((a, b) => {
@@ -240,21 +195,7 @@ export interface ShowDetails {
 
 export async function getShowDetails(showId: string): Promise<ShowDetails> {
   const variables = { showId };
-  const url = `${ALLANIME_API}/api?variables=${encodeURIComponent(JSON.stringify(variables))}&query=${encodeURIComponent(SHOW_DETAILS_GQL)}`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      Referer: ALLANIME_REFERER,
-      "User-Agent": USER_AGENT,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`allanime API error: ${res.status} ${res.statusText}`);
-  }
-
-  const json = (await res.json()) as GqlShowDetailsPayload;
+  const json = await fetchAllanimeGraphql<GqlShowDetailsPayload>(SHOW_DETAILS_GQL, variables);
   const show = json.data?.show;
   if (!show) {
     throw new Error("Show not found");

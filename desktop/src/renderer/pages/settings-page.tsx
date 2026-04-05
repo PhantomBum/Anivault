@@ -192,7 +192,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="relative mx-auto max-w-5xl space-y-6 px-2 pb-12 text-[var(--av-text)] md:px-3">
+    <div className="relative av-page-shell max-w-5xl space-y-5 pb-12 text-[var(--av-text)]">
       <div
         className="pointer-events-none absolute inset-x-0 -top-6 h-48 rounded-[40%] bg-[radial-gradient(ellipse_90%_80%_at_50%_0%,rgba(99,102,241,0.14),transparent_65%)] opacity-90 md:h-56"
         aria-hidden
