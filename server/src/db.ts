@@ -48,7 +48,7 @@ function wrapPrepare(sql: string): PreparedStatement {
       }
     },
     run(...params: unknown[]): void {
-      if (params.length) sqlDb!.run(sql, params as Parameters<typeof sqlDb.run>[1]);
+      if (params.length) sqlDb!.run(sql, params as Parameters<SqlJsDatabase["run"]>[1]);
       else sqlDb!.run(sql);
       persist();
     },

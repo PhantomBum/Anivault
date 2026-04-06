@@ -3,13 +3,6 @@ import { randomUUID } from "node:crypto";
 
 import { db } from "../db.js";
 import { authHeader, isModerator, isServerAdmin } from "../auth.js";
-import { ensureProGrantForUserId } from "../pro-grant.js";
-
-function normalizeAnimeId(raw: unknown): string {
-  const s = decodeURIComponent(String(raw || ""));
-  if (s.length > 512) return "";
-  return s;
-}
 
 function clientIp(req: FastifyRequest): string {
   const x = req.headers["x-forwarded-for"];

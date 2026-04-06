@@ -31,7 +31,7 @@ export function addAnivaultListeners() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const v = anivaultStore.get(key) as AnivaultStoreSchema[typeof key];
     if (key === "apiBaseUrl") {
-      return normalizeApiBaseUrl(v as string | undefined) as AnivaultStoreSchema[typeof key];
+      return normalizeApiBaseUrl(typeof v === "string" ? v : undefined);
     }
     return v;
   });

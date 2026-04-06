@@ -2,7 +2,6 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import Stripe from "stripe";
 
 import { authHeader } from "../auth.js";
-import { ensureProGrantForUserId } from "../pro-grant.js";
 
 export async function billingRoutes(
   app: FastifyInstance,

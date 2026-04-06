@@ -29,4 +29,22 @@ module.exports = {
     project: path.resolve(__dirname, "tsconfig.json"),
     tsconfigRootDir: __dirname,
   },
+  overrides: [
+    {
+      files: [
+        "vite.base.config.ts",
+        "vite.main.config.ts",
+        "vite.preload.config.ts",
+        "vite.renderer.config.ts",
+      ],
+      rules: {
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+      },
+    },
+  ],
 };

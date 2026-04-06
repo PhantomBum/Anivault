@@ -6,6 +6,11 @@
 const LS_KEY = "anivault:community-local-threads:v1";
 export const GENERAL_SERVER_ID = "__general__";
 
+function newRandomId(): string {
+  const w = globalThis as unknown as { crypto: { randomUUID(): string } };
+  return w.crypto.randomUUID();
+}
+
 export type LocalReply = {
   id: string;
   body: string;
@@ -76,7 +81,7 @@ export function addLocalThread(serverId: string, title: string, body: string): L
   const b = body.trim();
   if (!t || !b) return null;
   const thread: LocalThread = {
-    id: crypto.randomUUID(),
+    id: newRandomId(),
     title: t.slice(0, 200),
     body: b.slice(0, 4000),
     createdAt: Date.now(),
@@ -94,7 +99,7 @@ export function addLocalReply(serverId: string, threadId: string, body: string):
   const b = body.trim();
   if (!b) return null;
   const reply: LocalReply = {
-    id: crypto.randomUUID(),
+    id: newRandomId(),
     body: b.slice(0, 4000),
     createdAt: Date.now(),
   };
