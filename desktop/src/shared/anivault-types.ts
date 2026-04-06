@@ -1,3 +1,6 @@
+/** Companion API base URL used when Settings → Server is empty or invalid. */
+export const DEFAULT_COMPANION_API_BASE_URL = "http://127.0.0.1:3847";
+
 export type AnivaultPlan = "free" | "pro";
 
 export type UiDensity = "comfortable" | "compact";

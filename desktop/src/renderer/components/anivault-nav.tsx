@@ -9,6 +9,7 @@ import {
   MessageSquarePlus,
   Search,
   Sparkles,
+  User,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -52,6 +53,9 @@ const SOCIAL_ITEMS: NavItem[] = [
   { titleKey: "nav.gallery", href: "/gallery", icon: ImageIcon },
   { titleKey: "nav.clips", href: "/clips", icon: Clapperboard },
 ];
+
+/** Sign-in / registration (companion server). */
+const ACCOUNT_ITEMS: NavItem[] = [{ titleKey: "nav.account", href: "/account", icon: User }];
 
 const LEGAL_ITEMS: NavItem[] = [{ titleKey: "nav.legal", href: "/terms", icon: FileText }];
 
@@ -174,6 +178,7 @@ export function AniVaultNav({
   const catalogTitles = CATALOG_ITEMS.map((i) => t(i.titleKey));
   const planTitles = PLAN_ITEMS.map((i) => t(i.titleKey));
   const socialTitles = SOCIAL_ITEMS.map((i) => t(i.titleKey));
+  const accountTitles = ACCOUNT_ITEMS.map((i) => t(i.titleKey));
   const legalTitles = LEGAL_ITEMS.map((i) => t(i.titleKey));
 
   return (
@@ -198,6 +203,14 @@ export function AniVaultNav({
           label={t("nav.sectionSocial")}
           items={SOCIAL_ITEMS}
           itemTitles={socialTitles}
+          onNavigate={onNavigate}
+          collapsed={collapsed}
+          sectionDivider
+        />
+        <NavSection
+          label={t("nav.sectionAccount")}
+          items={ACCOUNT_ITEMS}
+          itemTitles={accountTitles}
           onNavigate={onNavigate}
           collapsed={collapsed}
           sectionDivider

@@ -33,6 +33,7 @@
     "sectionCatalog": "Catalog",
     "sectionPlan": "Plan & calendar",
     "sectionSocial": "Community",
+    "sectionAccount": "Account",
     "sectionLegal": "Legal",
     "home": "Home",
     "discover": "Discover",
@@ -44,7 +45,8 @@
     "legal": "Terms",
     "community": "Community",
     "gallery": "Gallery",
-    "clips": "Clips"
+    "clips": "Clips",
+    "account": "Account"
   },
   "routes": {
     "homeTitle": "Home",
@@ -80,7 +82,7 @@
     "termsTitle": "Legal",
     "termsSub": "Terms of service",
     "accountTitle": "Account",
-    "accountSub": "Sign in"
+    "accountSub": "Companion sign-in and registration"
   },
   "comingSoon": {
     "backHome": "Back to home",

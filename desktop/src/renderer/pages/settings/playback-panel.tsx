@@ -6,7 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/renderer/components/ui/select";
-import type { AnivaultStoreSchema } from "@/shared/anivault-types";
+import { Button } from "@/renderer/components/ui/button";
+import { DEFAULT_COMPANION_API_BASE_URL, type AnivaultStoreSchema } from "@/shared/anivault-types";
 import React from "react";
 
 import type { PersistConfig, SettingsTranslate } from "./settings-types";
@@ -184,11 +185,27 @@ export function PlaybackSettingsPanel({ cfg, persist, translate }: Props) {
         <p className="mb-3 text-xs text-[var(--av-muted-foreground)]">
           Cloud account and optional features use this API base (local AniVault companion server by default).
         </p>
-        <Input
-          className="h-11 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-sm"
-          value={cfg.apiBaseUrl}
-          onChange={(e) => void persist({ apiBaseUrl: e.target.value.trim() })}
-        />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <Input
+            className="h-11 flex-1 rounded-xl border-[var(--av-border)] bg-[var(--av-bg)] font-mono text-sm"
+            value={cfg.apiBaseUrl}
+            onChange={(e) => void persist({ apiBaseUrl: e.target.value.trim() })}
+            placeholder={DEFAULT_COMPANION_API_BASE_URL}
+            aria-label="Companion API base URL"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 shrink-0 rounded-xl text-xs"
+            onClick={() => void persist({ apiBaseUrl: DEFAULT_COMPANION_API_BASE_URL })}
+          >
+            Use default
+          </Button>
+        </div>
+        <p className="mt-2 text-[10px] text-[var(--av-muted-foreground)]">
+          Default: <span className="font-mono">{DEFAULT_COMPANION_API_BASE_URL}</span> — run{" "}
+          <span className="font-mono">npm start</span> in the <span className="font-mono">server</span> folder.
+        </p>
       </div>
     </>
   );

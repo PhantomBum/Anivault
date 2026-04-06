@@ -1,10 +1,12 @@
-import type { AnivaultStoreSchema } from "@/shared/anivault-types";
+import { DEFAULT_COMPANION_API_BASE_URL, type AnivaultStoreSchema } from "@/shared/anivault-types";
 
 async function getBaseUrl(): Promise<string> {
   if (typeof window !== "undefined" && window.anivault) {
-    return window.anivault.getConfig("apiBaseUrl");
+    const raw = await window.anivault.getConfig("apiBaseUrl");
+    const t = typeof raw === "string" ? raw.trim() : "";
+    return t.length > 0 ? t : DEFAULT_COMPANION_API_BASE_URL;
   }
-  return "http://127.0.0.1:3847";
+  return DEFAULT_COMPANION_API_BASE_URL;
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -14,6 +16,20 @@ async function authHeaders(): Promise<HeadersInit> {
     if (token) headers.Authorization = `Bearer ${token}`;
   }
   return headers;
+}
+
+/** Turn raw `fetch` errors into copy that explains the usual cause (server not running). */
+export function humanizeCompanionFetchError(message: string, baseUrl: string): string {
+  const m = message.toLowerCase();
+  if (
+    m.includes("failed to fetch") ||
+    m.includes("networkerror") ||
+    m.includes("load failed") ||
+    m.includes("network request failed")
+  ) {
+    return `Can't reach the companion API at ${baseUrl}. Start the server (in the repo: cd server && npm install && npm start), or fix the API base URL under Settings → Playback. Windows Firewall can also block localhost if Node was blocked.`;
+  }
+  return message;
 }
 
 export async function anivaultFetch<T>(
@@ -43,9 +59,11 @@ export async function anivaultFetch<T>(
       await new Promise((r) => setTimeout(r, 350));
       return await run();
     } catch (e) {
+      const raw =
+        e instanceof Error ? e.message : first instanceof Error ? first.message : "Network error";
       return {
         ok: false,
-        error: e instanceof Error ? e.message : first instanceof Error ? first.message : "Network error",
+        error: humanizeCompanionFetchError(raw, base.replace(/\/$/, "")),
       };
     }
   }
@@ -159,6 +177,43 @@ export async function refreshAuthToken(refreshToken: string) {
 }
 
 /**
+ * Public health check (no auth). Use before sign-in / registration so users know the server is up.
+ */
+export async function pingCompanionHealth(): Promise<{
+  ok: boolean;
+  message: string;
+  baseUrl: string;
+}> {
+  const base = await getBaseUrl();
+  const normalized = base.replace(/\/$/, "");
+  const url = `${normalized}/health`;
+  try {
+    const res = await fetch(url, { method: "GET" });
+    if (res.ok) {
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; version?: string };
+      const ver = json.version != null ? ` (${String(json.version)})` : "";
+      return {
+        ok: true,
+        baseUrl: normalized,
+        message: json.ok === false ? "Server responded but health check was negative." : `Companion online${ver}.`,
+      };
+    }
+    return {
+      ok: false,
+      baseUrl: normalized,
+      message: `Server returned HTTP ${res.status} at /health.`,
+    };
+  } catch (e) {
+    const raw = e instanceof Error ? e.message : "Network error";
+    return {
+      ok: false,
+      baseUrl: normalized,
+      message: humanizeCompanionFetchError(raw, normalized),
+    };
+  }
+}
+
+/**
  * Quick reachability check for Settings / Data (phase 19). Does not validate full API surface.
  */
 export async function testAnivaultServerConnection(): Promise<{ ok: boolean; message: string }> {
@@ -178,9 +233,10 @@ export async function testAnivaultServerConnection(): Promise<{ ok: boolean; mes
     }
     return { ok: false, message: `Server returned HTTP ${res.status}.` };
   } catch (e) {
+    const raw = e instanceof Error ? e.message : "Network error";
     return {
       ok: false,
-      message: e instanceof Error ? e.message : "Network error — check URL and firewall.",
+      message: humanizeCompanionFetchError(raw, base.replace(/\/$/, "")),
     };
   }
 }

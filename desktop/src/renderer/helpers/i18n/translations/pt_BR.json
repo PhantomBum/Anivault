@@ -33,6 +33,7 @@
     "sectionCatalog": "Catálogo",
     "sectionPlan": "Planejar",
     "sectionSocial": "Comunidade",
+    "sectionAccount": "Conta",
     "sectionLegal": "Legal",
     "home": "Início",
     "discover": "Descobrir",
@@ -44,7 +45,8 @@
     "legal": "Termos",
     "community": "Comunidade",
     "gallery": "Galeria",
-    "clips": "Clips"
+    "clips": "Clips",
+    "account": "Conta"
   },
   "routes": {
     "homeTitle": "Início",
@@ -80,7 +82,7 @@
     "termsTitle": "Legal",
     "termsSub": "Termos de serviço",
     "accountTitle": "Conta",
-    "accountSub": "Entrar"
+    "accountSub": "Entrar e criar conta no companion"
   },
   "comingSoon": {
     "backHome": "Voltar ao início",

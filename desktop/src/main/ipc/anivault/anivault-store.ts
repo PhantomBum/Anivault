@@ -1,9 +1,9 @@
 import Store from "electron-store";
 
-import type { AnivaultStoreSchema } from "@/shared/anivault-types";
+import { DEFAULT_COMPANION_API_BASE_URL, type AnivaultStoreSchema } from "@/shared/anivault-types";
 
 export const anivaultDefaults: AnivaultStoreSchema = {
-  apiBaseUrl: "http://127.0.0.1:3847",
+  apiBaseUrl: DEFAULT_COMPANION_API_BASE_URL,
   authToken: "",
   plan: "free",
   translationApiKey: "",
