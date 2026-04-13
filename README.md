@@ -37,7 +37,3 @@ You need Node (20+ is fine), npm, and a Windows machine if you want to run `npm 
 **Heads-up**
 
 Availability of titles depends on ani-cli and what it can resolve; this project doesn’t host video. If something breaks after an upstream change, that’s usually where to look first.
-
----
-
-**GitHub “About” (optional)** — in the repo **Settings → General**, you can set description to something like: *Windows desktop anime client (ani-cli) — AniVault Unvaulted.* Topics that fit: `electron`, `anime`, `ani-cli`, `windows`, `typescript`, `vite`.
